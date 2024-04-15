@@ -54,6 +54,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    BasicAuth:
+      type: http
+      scheme: basic
 
   schemas:
     ErrorResponse:
@@ -1006,7 +1009,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TerminalCharacteristics'
-
   /cargo/getStatusByRequestNumber:
     get:
       tags:
@@ -1177,423 +1179,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /customer/passRequest:
-    post:
-      tags:
-        - Customer Requests
-      summary: Создать заявку на пропуск
-      description: Позволяет клиенту создать заявку на пешеходный или автомобильный пропуск для входа на территорию порта.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PassRequest'
-      parameters:
-        - name: access_type
-          in: query
-          description: Тип заявки ('visitors' для пешеходного пропуска, 'auto' для автомобильного)
-          required: true
-          schema:
-            type: string
-            enum:
-              - visitors
-              - auto      
-      responses:
-        '200':
-          description: Заявка на пропуск успешно создана
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PassRequestResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /customer/passRequest/{passId}:
-    put:
-      tags:
-        - Customer Requests
-      summary: Обновить заявку на пропуск
-      description: Позволяет клиенту обновить существующую заявку на пропуск.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: passId
-          in: path
-          description: Уникальный идентификатор заявки на пропуск
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PassRequest'
-      responses:
-        '200':
-          description: Заявка на пропуск успешно обновлена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PassRequestResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка на пропуск не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    delete:
-      tags:
-        - Customer Requests
-      summary: Удалить заявку на пропуск
-      description: Позволяет клиенту удалить существующую заявку на пропуск.
-      parameters:
-        - name: passId
-          in: path
-          description: Уникальный идентификатор заявки на пропуск
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Заявка на пропуск успешно удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Сообщение об успешном удалении
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка на пропуск не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse' 
-  /customer/passRequests:
-    get:
-      tags:
-        - Customer Requests
-      summary: Получить список всех заявок на пропуск клиента
-      description: Возвращает список всех заявок клиента на пропуск с поддержкой пагинации.
-      security:
-        - bearerAuth: []      
-      parameters:
-        - name: clientId
-          in: query
-          description: Идентификатор клиента
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: Номер страницы
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество заявок на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Успешный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество заявок на пропуск
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество заявок на странице
-                  passRequests:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PassRequestResponse'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - passRequests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявки на пропуск не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /customer/cargoRequest:
-    post:
-      tags:
-        - Customer Requests
-      summary: Создать заявку на ввоз/вывоз груза
-      description: Позволяет клиенту подать заявку на ввоз или вывоз груза.
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CargoRequest'
-      responses:
-        '200':
-          description: Заявка на ввоз/вывоз груза успешно создана
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CargoRequestResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /customer/cargoRequest/{requestId}:
-    put:
-      tags:
-        - Customer Requests
-      summary: Обновить заявку на ввоз/вывоз груза
-      description: Позволяет клиенту обновить существующую заявку на ввоз/вывоз груза.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: requestId
-          in: path
-          description: Уникальный идентификатор заявки на ввоз/вывоз груза
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CargoRequest'
-      responses:
-        '200':
-          description: Заявка на ввоз/вывоз груза успешно обновлена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CargoRequestResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка на ввоз/вывоз груза не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    delete:
-      tags:
-        - Customer Requests
-      summary: Удалить заявку на ввоз/вывоз груза
-      description: Позволяет клиенту удалить существующую заявку на ввоз/вывоз груза.
-      parameters:
-        - name: requestId
-          in: path
-          description: Уникальный идентификатор заявки на ввоз/вывоз груза
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Заявка на ввоз/вывоз груза успешно удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Сообщение об успешном удалении
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка на ввоз/вывоз груза не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /customer/cargoRequestsList:
-    get:
-      tags:
-        - Customer Requests
-      summary: Получить список всех заявок клиента на ввоз/вывоз груза
-      description: Возвращает список всех заявок клиента на ввоз/вывоз груза с поддержкой пагинации.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: clientId
-          in: query
-          description: Идентификатор клиента
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: Номер страницы
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество заявок на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Успешный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество заявок
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество заявок на странице
-                  cargoRequests:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/CargoRequestResponse'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - cargoRequests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявки не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /customer/autoVisits:
-    get:
-      tags:
-        - Customer Requests
-      summary: Получить список автовизитов с пагинацией
-      description: Возвращает список автовизитов с поддержкой пагинации.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: clientId
-          in: query
-          description: Идентификатор клиента
-          required: true
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество автовизитов на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Список автовизитов успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество автовизитов
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество автовизитов на странице
-                  autoVisits:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AutoVisit'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - autoVisits
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Автовизиты не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
   /auth/login:
     post:
       tags:
@@ -1601,22 +1186,9 @@ paths:
       summary: Авторизация пользователя
       description: >
         Эндпоинт позволяет пользователю авторизоваться в системе, используя логин и пароль, для получения JWT токена.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: Логин пользователя.
-                password:
-                  type: string
-                  description: Пароль пользователя.
-              required:
-                - username
-                - password
+      security:
+        - BasicAuth: []
+        - ApiKeyAuth: []         
       responses:
         '200':
           description: Аутентификация прошла успешно. Возвращает JWT токен.
@@ -1635,21 +1207,12 @@ paths:
                   expires_in:
                     type: integer
                     description: Время действия токена в секундах.
-        '401':
-          description: Неверный логин или пароль.
+        '403':
+          description: Ошибка.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  code:
-                    type: integer
-                    example: 401
-                    description: Код ошибки.
-                  message:
-                    type: string
-                    example: "Invalid username or password"
-                    description: Сообщение об ошибке.
+                $ref: '#/components/schemas/ErrorResponse'
   /auth/logout:
     post:
       tags:
@@ -1658,18 +1221,6 @@ paths:
       description: Позволяет пользователю завершить сессию и выйти из системы.
       security:
         - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sessionId:
-                  type: string
-                  description: Сессионный токен пользователя, который необходимо завершить
-              required:
-                - sessionId
       responses:
         '200':
           description: Успешный выход из системы
@@ -1681,20 +1232,14 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном выходе из системы
-        '401':
-          description: Пользователь не авторизован или сессия уже завершена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+        '403':
+          description: Ошибка.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   
-  /users/{organizationId}/create:
+  /users/{clientId}/create:
     post:
       tags:
         - Управление пользователями
@@ -1702,13 +1247,14 @@ paths:
       description: Позволяет администратору создать нового пользователя в системе.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []        
       parameters:
         - in: path
-          name: organizationId
+          name: clientId
           required: true
           schema:
             type: string
-          description: Уникальный идентификатор организации
+          description: Уникальный идентификатор клиента
       requestBody:
         required: true
         content:
@@ -1741,6 +1287,8 @@ paths:
                     - manager
                     - guest
               required:
+                - fullname
+                - position
                 - username
                 - password
                 - email
@@ -1759,14 +1307,65 @@ paths:
                   message:
                     type: string
                     description: Сообщение о успешном создании пользователя
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+        '403':
+          description: Ошибка.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{clientId}/list:
+    get:
+      tags:
+        - Управление пользователями
+      summary: Получение списка пользователей организации
+      description: Позволяет получить список всех пользователей, принадлежащих указанной организации.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: [] 
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор организации клиента
+      responses:
+        '200':
+          description: Список пользователей организации успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                      description: Уникальный идентификатор пользователя
+                    username:
+                      type: string
+                      description: Имя пользователя для входа в систему
+                    email:
+                      type: string
+                      format: email
+                      description: Электронная почта пользователя
+                    fullname:
+                      type: string
+                      description: Полное имя пользователя
+                    position:
+                      type: string
+                      description: Должность пользователя в организации
+                    role:
+                      type: string
+                      description: Роль пользователя в системе
+                      enum:
+                        - admin
+                        - user
+                        - manager
+                        - guest
         '403':
-          description: Доступ запрещен. Только администраторы могут создавать пользователей
+          description: Ошибка.
           content:
             application/json:
               schema:
@@ -1780,6 +1379,7 @@ paths:
       description: Позволяет администратору удалить пользователя из системы.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []  
       parameters:
         - in: path
           name: userId
@@ -1798,20 +1398,14 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном удалении пользователя
-        '400':
-          description: Неверный запрос, некорректный идентификатор пользователя
+        '401':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Доступ запрещен. Только администраторы могут удалять пользователей
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пользователь не найден
+          description: Доступ запрещен. 
           content:
             application/json:
               schema:
@@ -1823,6 +1417,7 @@ paths:
       description: Позволяет получить данные пользователя по его уникальному идентификатору.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []  
       parameters:
         - in: path
           name: userId
@@ -1866,25 +1461,12 @@ paths:
                       - user
                       - manager
                       - guest
-        '400':
-          description: Неверный запрос, некорректный идентификатор пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Доступ запрещен. Необходима аутентификация
+          description: Ошибка.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
     put:
       tags:
         - Управление пользователями
@@ -1892,6 +1474,7 @@ paths:
       description: Позволяет пользователю обновить свои личные данные.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []
       parameters:
         - in: path
           name: userId
@@ -1931,33 +1514,22 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном обновлении данных пользователя
-        '400':
-          description: Неверный запрос, некорректные данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Доступ запрещен. Пользователь не имеет права обновлять данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пользователь не найден
+          description: Ошибка.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /organization:
+  /clients/getClientInfo:
     get:
       tags:
         - Информация о клиенте
-      summary: Получение данных об организации
-      description: Позволяет получить данные об организации, идентифицированной по API ключу.
+      summary: Получение данных о клиенте
+      description: Позволяет получить данные о клиенте, идентифицированной по API ключу.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []    
       responses:
         '200':
           description: Данные об организации успешно получены
@@ -1966,9 +1538,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  organizationId:
+                  clientId:
                     type: string
-                    description: Уникальный идентификатор организации
+                    description: Уникальный идентификатор клиента
                   name:
                     type: string
                     description: Название организации
@@ -1995,87 +1567,12 @@ paths:
                     type: string
                     description: ФИО директора организации
         '403':
-          description: Доступ запрещен. Необходима аутентификация или API ключ не предоставлен
+          description: Ошибка.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Организация не найдена или API ключ не соответствует ни одной организации
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /organization/{organizationId}/users:
-    get:
-      tags:
-        - Информация о клиенте
-      summary: Получение списка пользователей организации
-      description: Позволяет получить список всех пользователей, принадлежащих указанной организации.
-      security:
-        - ApiKeyAuth: []
-      parameters:
-        - in: path
-          name: organizationId
-          required: true
-          schema:
-            type: string
-          description: Уникальный идентификатор организации клиента
-      responses:
-        '200':
-          description: Список пользователей организации успешно получен
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    userId:
-                      type: string
-                      description: Уникальный идентификатор пользователя
-                    username:
-                      type: string
-                      description: Имя пользователя для входа в систему
-                    email:
-                      type: string
-                      format: email
-                      description: Электронная почта пользователя
-                    fullname:
-                      type: string
-                      description: Полное имя пользователя
-                    position:
-                      type: string
-                      description: Должность пользователя в организации
-                    role:
-                      type: string
-                      description: Роль пользователя в системе
-                      enum:
-                        - admin
-                        - user
-                        - manager
-                        - guest
-        '400':
-          description: Неверный запрос, некорректный идентификатор организации
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Доступ запрещен. Необходима аутентификация
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Организация не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /organization/contracts:
+  /clients/{clientId}/getContractList:
     get:
       tags:
         - Информация о клиенте
@@ -2083,6 +1580,14 @@ paths:
       description: Позволяет получить список всех договоров, заключенных организацией.
       security:
         - ApiKeyAuth: []
+        - bearerAuth: []  
+      parameters:
+        - in: path
+          name: clientId
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор организации клиента        
       responses:
         '200':
           description: Список договоров успешно получен
@@ -2125,82 +1630,7 @@ paths:
                       type: string
                       description: Валюта суммы договора
         '403':
-          description: Доступ запрещен. Необходима аутентификация или API ключ не предоставлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Список договоров не найден или организация не имеет договоров
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /organization/partners:
-    post:
-      tags:
-        - Информация о клиенте
-      summary: Добавление контрагента организации-клиента
-      description: Позволяет организации-клиенту добавить нового контрагента в свой список контрагентов.
-      security:
-        - ApiKeyAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Название контрагента
-                taxId:
-                  type: string
-                  description: Идентификационный номер налогоплательщика (ИНН) контрагента
-                registrationNumber:
-                  type: string
-                  description: Основной государственный регистрационный номер (ОГРН) контрагента
-                address:
-                  type: string
-                  description: Юридический адрес контрагента
-                contactInfo:
-                  type: object
-                  properties:
-                    phone:
-                      type: string
-                      description: Контактный телефон контрагента
-                    email:
-                      type: string
-                      format: email
-                      description: Контактный email контрагента
-                director:
-                  type: string
-                  description: ФИО директора контрагента
-              required:
-                - taxId
-      responses:
-        '201':
-          description: Контрагент успешно добавлен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  counterpartId:
-                    type: string
-                    description: Уникальный идентификатор созданного контрагента
-                  message:
-                    type: string
-                    description: Сообщение о успешном добавлении контрагента
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Доступ запрещен. Необходима аутентификация или API ключ не предоставлен
+          description: Ошибка. 
           content:
             application/json:
               schema:
