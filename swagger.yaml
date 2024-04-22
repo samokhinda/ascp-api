@@ -32,13 +32,6 @@ tags:
     description: Операции связанные с управлением грузами в порту.
   - name: Операции с автотранспортом
     description: Операции, связанные с управлением автомобильным транспортом в порту.
-  - name: Операции с ЖД транспортом
-    description: Операции, связанные с управлением железнодорожным транспортом в порту.
-  - name: Операции с морским транспортом
-    description: Операции, связанные с управлением морским транспортом в порту.
-  - name: Складские операции
-    description: Операции, связанные с управлением складскими процессами в порту.
-
 
 security:
   - ApiKeyAuth: []
@@ -1237,22 +1230,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   
-  /users/{clientId}/create:
+  /users/create:
     post:
       tags:
         - Управление пользователями
       summary: Создание нового пользователя
       description: Позволяет администратору создать нового пользователя в системе.
       security:
+        - BasicAuth: []
         - ApiKeyAuth: []
         - bearerAuth: []        
-      parameters:
-        - in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-          description: Уникальный идентификатор клиента
       requestBody:
         required: true
         content:
@@ -1266,12 +1253,6 @@ paths:
                 position:
                   type: string
                   description: Должность пользователя в организации                  
-                username:
-                  type: string
-                  description: Имя пользователя для входа в систему
-                password:
-                  type: string
-                  description: Пароль пользователя
                 email:
                   type: string
                   format: email
@@ -1287,8 +1268,6 @@ paths:
               required:
                 - fullname
                 - position
-                - username
-                - password
                 - email
                 - role
       responses:
@@ -1312,7 +1291,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /users/{clientId}/list:
+  /users/list:
     get:
       tags:
         - Управление пользователями
@@ -1321,13 +1300,6 @@ paths:
       security:
         - ApiKeyAuth: []
         - bearerAuth: [] 
-      parameters:
-        - in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-          description: Уникальный идентификатор организации клиента
       responses:
         '200':
           description: Список пользователей организации успешно получен
