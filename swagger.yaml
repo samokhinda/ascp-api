@@ -1341,7 +1341,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /users/{userId}:
+  /user/{userId}:
     delete:
       tags:
         - Управление пользователями
