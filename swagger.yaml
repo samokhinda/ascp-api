@@ -22,8 +22,6 @@ tags:
     description: Получить информацию о прибытии и отправлении в пор.
   - name: Cargo Information
     description: Информация о грузах
-  - name: Customer Requests
-    description: Заявки клиента 
   - name: Авторизация 
     description: Авторизация
   - name: Управление пользователями
