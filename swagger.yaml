@@ -28,10 +28,6 @@ tags:
     description: Операции по управлению пользователями системы.
   - name: Информация о клиенте
     description: Информация о клиенте
-  - name: Операции с грузом
-    description: Операции связанные с управлением грузами в порту.
-  - name: Операции с автотранспортом
-    description: Операции, связанные с управлением автомобильным транспортом в порту.
 
 security:
   - ApiKeyAuth: []
@@ -1290,7 +1286,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /users/list:
     get:
       tags:
@@ -1340,7 +1335,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /user/{userId}:
     delete:
       tags:
@@ -1601,6 +1595,354 @@ paths:
                       description: Валюта суммы договора
         '403':
           description: Ошибка. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /requests/getClientRequests:
+    get:
+      tags:
+        - Журналы документов
+      summary: Получить список заявок клиента
+      description: Возвращает список заявок клиента из журнала БД с поддержкой пагинации.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []  
+      parameters:
+        - name: clientId
+          in: query
+          description: Идентификатор клиента
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество заявок на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список заявок успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество заявок
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество заявок на странице
+                  requests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                          description: Уникальный идентификатор заявки
+                        clientId:
+                          type: string
+                          description: Идентификатор клиента
+                        requestType:
+                          type: string
+                          description: Тип заявки
+                          example: "Заявка на погрузку автомобиля"                          
+                        status:
+                          type: string
+                          description: Статус заявки
+                          enum:
+                            - Создана
+                            - В обработке
+                            - Одобрена
+                            - Отклонена
+                        createdDate:
+                          type: string
+                          format: date-time
+                          description: Дата и время создания заявки
+                        lastModifiedDate:
+                          type: string
+                          format: date-time
+                          description: Дата и время последнего изменения заявки
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - requests
+                example:
+                  total: 2
+                  page: 1
+                  pageSize: 10
+                  requests:
+                    - requestId: "0000098212"
+                      clientId: "client_123"
+                      requestType: "Заявка на погрузку автомобиля"
+                      status: "Создана"
+                      createdDate: "2024-05-20T12:34:56Z"
+                      lastModifiedDate: "2024-05-20T12:34:56Z"
+                    - requestId: "0000092214"
+                      clientId: "client_123"
+                      requestType: "Заявка на пропуск"
+                      status: "В обработке"
+                      createdDate: "2024-05-21T08:22:33Z"
+                      lastModifiedDate: "2024-05-21T09:22:33Z"
+
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /requests/createPassRequest:
+    post:
+      tags:
+        - Операции с пропусками
+      summary: Создание новой заявки на пропуск в порт
+      description: Позволяет клиенту создать новую заявку на пропуск в порт для согласования.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestDate:
+                  type: string
+                  format: date
+                  description: Дата заявки
+                amptNumber:
+                  type: string
+                  description: Номер АМПТ
+                passType:
+                  type: string
+                  description: Тип пропуска
+                  enum: [Разовый, Многократный]
+                passFrom:
+                  type: string
+                  format: date
+                  description: Пропуск с
+                passTo:
+                  type: string
+                  format: date
+                  description: Пропуск по
+                clientRequestNumber:
+                  type: string
+                  description: Номер заявки клиента
+                passArea:
+                  type: string
+                  description: Пропуск на участок
+                  enum: [Терминал «Экономия», Терминал «Северный»]
+                client:
+                  type: string
+                  description: Клиент
+                destinationDepartment:
+                  type: string
+                  description: Подразделение назначения
+                  enum: [Согласование безопасность, Согласование логистика]
+                contract:
+                  type: string
+                  description: Договор (при наличии)
+                guestInOffice:
+                  type: boolean
+                  description: Гость в офис
+                processingPriority:
+                  type: string
+                  description: Приоритет обработки
+                  enum: [Обычный, Высокий]
+                documentAuthor:
+                  type: string
+                  description: Автор документа
+                requestSigner:
+                  type: string
+                  description: Подписант заявки
+                comment:
+                  type: string
+                  description: Комментарий
+              required:
+                - requestDate
+                - amptNumber
+                - passType
+                - passFrom
+                - passTo
+                - clientRequestNumber
+                - passArea
+                - client
+                - destinationDepartment
+                - processingPriority
+                - documentAuthor
+                - requestSigner
+      responses:
+        '200':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  passRequestId:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                  status:
+                    type: string
+                    description: Статус заявки
+                    enum: [Создана, В обработке, Одобрена, Отклонена]
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Операции с пропусками
+      summary: Обновление заявки на пропуск
+      description: Обновляет существующую заявку на пропуск в порт.
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор заявки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requestDate:
+                  type: string
+                  format: date
+                  description: Дата заявки
+                amtpNumber:
+                  type: string
+                  description: Номер АМПТ
+                passType:
+                  type: string
+                  description: Тип пропуска
+                  enum: [Разовый, Многократный]
+                passFrom:
+                  type: string
+                  format: date
+                  description: Пропуск с
+                passTo:
+                  type: string
+                  format: date
+                  description: Пропуск по
+                clientRequestNumber:
+                  type: string
+                  description: Номер заявки клиента
+                passArea:
+                  type: string
+                  description: Пропуск на участок
+                client:
+                  type: string
+                  description: Клиент
+                destinationDepartment:
+                  type: string
+                  description: Подразделение назначения
+                contract:
+                  type: string
+                  description: Договор (при наличии)
+                guestInOffice:
+                  type: boolean
+                  description: Гость в офис
+                processingPriority:
+                  type: string
+                  description: Приоритет обработки
+                  enum: [Обычный, Высокий]
+                documentAuthor:
+                  type: string
+                  description: Автор документа
+                requestSigner:
+                  type: string
+                  description: Подписант заявки
+                comment:
+                  type: string
+                  description: Комментарий
+      responses:
+        '200':
+          description: Заявка успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном обновлении заявки
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Операции с пропусками
+      summary: Удаление заявки на пропуск
+      description: Удаляет существующую заявку на пропуск в порт.
+      parameters:
+        - in: path
+          name: requestId
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор заявки
+      responses:
+        '200':
+          description: Заявка успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном удалении заявки
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Доступ запрещен
           content:
             application/json:
               schema:
