@@ -1655,13 +1655,14 @@ paths:
                         requestId:
                           type: string
                           description: Уникальный идентификатор заявки
+                          example: "0000098212"
                         clientId:
                           type: string
                           description: Идентификатор клиента
                         requestType:
                           type: string
                           description: Тип заявки
-                          example: "Заявка на погрузку автомобиля"                          
+                          example: "Заявка на погрузку автомобиля" 
                         status:
                           type: string
                           description: Статус заявки
@@ -1670,6 +1671,11 @@ paths:
                             - В обработке
                             - Одобрена
                             - Отклонена
+                          example: "В обработке"
+                        comment:
+                          type: string
+                          description: Комментарий к заявке
+                          example: "Добавьте сканы документов"
                         createdDate:
                           type: string
                           format: date-time
@@ -1683,29 +1689,7 @@ paths:
                   - page
                   - pageSize
                   - requests
-                example:
-                  total: 2
-                  page: 1
-                  pageSize: 10
-                  requests:
-                    - requestId: "0000098212"
-                      clientId: "client_123"
-                      requestType: "Заявка на погрузку автомобиля"
-                      status: "Создана"
-                      createdDate: "2024-05-20T12:34:56Z"
-                      lastModifiedDate: "2024-05-20T12:34:56Z"
-                    - requestId: "0000092214"
-                      clientId: "client_123"
-                      requestType: "Заявка на пропуск"
-                      status: "В обработке"
-                      createdDate: "2024-05-21T08:22:33Z"
-                      lastModifiedDate: "2024-05-21T09:22:33Z"
-                    - requestId: "00000111214"
-                      clientId: "client_123"
-                      requestType: "Заявка на погрузку судна"
-                      status: "Отказано"
-                      createdDate: "2024-05-21T08:22:33Z"
-                      lastModifiedDate: "2024-05-21T09:22:33Z"
+                
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
