@@ -1700,7 +1700,12 @@ paths:
                       status: "В обработке"
                       createdDate: "2024-05-21T08:22:33Z"
                       lastModifiedDate: "2024-05-21T09:22:33Z"
-
+                    - requestId: "00000111214"
+                      clientId: "client_123"
+                      requestType: "Заявка на погрузку судна"
+                      status: "Отказано"
+                      createdDate: "2024-05-21T08:22:33Z"
+                      lastModifiedDate: "2024-05-21T09:22:33Z"
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
