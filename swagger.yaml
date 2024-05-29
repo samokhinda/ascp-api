@@ -1610,12 +1610,6 @@ paths:
         - ApiKeyAuth: []
         - bearerAuth: []  
       parameters:
-        - name: clientId
-          in: query
-          description: Идентификатор клиента
-          required: true
-          schema:
-            type: string
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -1652,13 +1646,14 @@ paths:
                     items:
                       type: object
                       properties:
+                        guid:
+                          type: string
+                          description: Уникальный идентификатор документа в БД
+                          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"                      
                         requestId:
                           type: string
-                          description: Уникальный идентификатор заявки
+                          description: Регистрационный номер документа
                           example: "0000098212"
-                        clientId:
-                          type: string
-                          description: Идентификатор клиента
                         requestType:
                           type: string
                           description: Тип заявки
@@ -1701,7 +1696,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /requests/getClientDocuments:
+  /documents/getClientDocuments:
     get:
       tags:
         - Журналы документов
@@ -1747,10 +1742,14 @@ paths:
                     items:
                       type: object
                       properties:
-                        documentId:
+                        guid:
                           type: string
                           description: Уникальный идентификатор документа в БД
-                          example: "0000098212"
+                          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
+                        documentId:
+                          type: string
+                          description: Регистрационный номер документа
+                          example: "0000098212"                          
                         clientId:
                           type: string
                           description: Идентификатор клиента
@@ -1787,6 +1786,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
   /requests/createPassRequest:
     post:
       tags:
