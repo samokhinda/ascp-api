@@ -1689,7 +1689,6 @@ paths:
                   - page
                   - pageSize
                   - requests
-                
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
