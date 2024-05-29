@@ -1701,7 +1701,92 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /requests/getClientDocuments:
+    get:
+      tags:
+        - Журналы документов
+      summary: Получить список документов клиента
+      description: Возвращает список документов клиента из журнала БД с поддержкой пагинации.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []  
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество документов на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество документов
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество документов на странице
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        documentId:
+                          type: string
+                          description: Уникальный идентификатор документа в БД
+                          example: "0000098212"
+                        clientId:
+                          type: string
+                          description: Идентификатор клиента
+                        documentType:
+                          type: string
+                          description: Тип документа
+                          example: "Приемный акт" 
+                        comment:
+                          type: string
+                          description: Комментарий к документу
+                          example: "Стандартный груз"
+                        attached:
+                          type: boolean
+                          description: Наличие прикрепленных файлов в документе 
+                          example: true                         
+                        createdDate:
+                          type: string
+                          format: date-time
+                          description: Дата и время создания заявки
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - requests
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документы не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /requests/createPassRequest:
     post:
       tags:
