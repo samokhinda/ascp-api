@@ -1541,69 +1541,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /clients/{clientId}/getContractList:
-    get:
-      tags:
-        - Информация о клиенте
-      summary: Получение списка договоров организации
-      description: Позволяет получить список всех договоров, заключенных организацией.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []  
-      parameters:
-        - in: path
-          name: clientId
-          required: true
-          schema:
-            type: string
-          description: Уникальный идентификатор организации клиента        
-      responses:
-        '200':
-          description: Список договоров успешно получен
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    contractId:
-                      type: string
-                      description: Уникальный идентификатор договора
-                    contractNumber:
-                      type: string
-                      description: Номер договора
-                    startDate:
-                      type: string
-                      format: date
-                      description: Дата начала действия договора
-                    endDate:
-                      type: string
-                      format: date
-                      description: Дата окончания действия договора
-                    status:
-                      type: string
-                      description: Статус договора
-                      enum:
-                        - active
-                        - expired
-                        - terminated
-                    subject:
-                      type: string
-                      description: Предмет договора
-                    amount:
-                      type: number
-                      format: float
-                      description: Сумма договора
-                    currency:
-                      type: string
-                      description: Валюта суммы договора
-        '403':
-          description: Ошибка. 
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
   /requests/getClientRequests:
     get:
