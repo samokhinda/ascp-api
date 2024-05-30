@@ -1654,9 +1654,9 @@ paths:
                           type: string
                           description: Регистрационный номер документа
                           example: "0000098212"
-                        requestType:
+                        requestName:
                           type: string
-                          description: Тип заявки
+                          description: Название документа
                           example: "Заявка на погрузку автомобиля" 
                         status:
                           type: string
@@ -1675,10 +1675,6 @@ paths:
                           type: string
                           format: date-time
                           description: Дата и время создания заявки
-                        lastModifiedDate:
-                          type: string
-                          format: date-time
-                          description: Дата и время последнего изменения заявки
                 required:
                   - total
                   - page
@@ -1750,13 +1746,14 @@ paths:
                           type: string
                           description: Регистрационный номер документа
                           example: "0000098212"                          
-                        clientId:
+                        documentName:
                           type: string
-                          description: Идентификатор клиента
+                          description: Название документа
+                          example: "Приемный акт" 
                         documentType:
                           type: string
-                          description: Тип документа
-                          example: "Приемный акт" 
+                          description: Тип операции
+                          example: "Затарка" 
                         comment:
                           type: string
                           description: Комментарий к документу
