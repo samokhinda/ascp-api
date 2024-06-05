@@ -13,7 +13,7 @@ info:
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: http://gate.ascp.ru/wms/hs/v1/    
+  - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/   
 
 tags:
   - name: Характеристики судна
