@@ -1534,16 +1534,22 @@ paths:
                       type: string
                       description: Терминал порта (например, Экономия, Бакарица)
                     warehouse:
-                      type: string
+                      type: array
                       description: Складской комплекс
-                    cargo_weight:
-                      type: number
-                      format: float
-                      description: Вес груза в тоннах
-                    cargo_fe:
-                      type: number
-                      format: float
-                      description: Фрахтовые единицы груза
+                      items: 
+                        type: object
+                        properties:
+                          warehouse_zone:
+                            type: string
+                            description: Складская зона                        
+                          cargo_weight:
+                            type: number
+                            format: float
+                            description: Вес груза в тоннах
+                          cargo_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы груза
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1595,7 +1601,7 @@ paths:
                     terminal:
                       type: string
                       description: Терминал порта (например, Экономия, Бакарица)
-                    warehouse_zones:
+                    warehouse:
                       type: array
                       description: Список складских зон терминала с данными о контейнерных операциях
                       items:
