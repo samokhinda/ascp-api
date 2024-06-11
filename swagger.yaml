@@ -1502,69 +1502,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-/dashboard/warehouseCargo:
-  get:
-    tags:
-      - Дашборд
-    summary: Отображение количества груза клиента на складских комплексах терминалов порта
-    description: >
-      Эндпоинт для отображения количества (вес в тоннах и фрахтовых единицах) груза клиента на складских комплексах терминалов порта на определенную дату в виде гистограммы.
-    security:
-      - ApiKeyAuth: []
-      - bearerAuth: []
-    parameters:
-      - name: date
-        in: query
-        description: Дата для отображения данных
-        required: true
-        schema:
-          type: string
-          format: date
-    responses:
-      '200':
-        description: Данные по грузам на складских комплексах успешно получены
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  terminal:
-                    type: string
-                    description: Терминал порта (например, Экономия, Бакарица)
-                  warehouse:
-                    type: string
-                    description: Складской комплекс
-                  cargo_weight:
-                    type: number
-                    format: float
-                    description: Вес груза в тоннах
-                  cargo_fe:
-                    type: number
-                    format: float
-                    description: Фрахтовые единицы груза
-      '400':
-        description: Неверный запрос, отсутствуют необходимые данные
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-      '404':
-        description: Данные не найдены
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorResponse'
-
-
   /dashboard/warehouseCargo:
     get:
       tags:
         - Дашборд
-      summary: Отображение количества груза клиента на складских зонах терминалов порта
+      summary: Отображение количества груза клиента на складских комплексах терминалов порта
       description: >
-        Эндпоинт для отображения количества (вес в тоннах и фрахтовых единицах) груза клиента на складских зонах терминалов порта на определенную дату в виде гистограммы.
+        Эндпоинт для отображения количества (вес в тоннах и фрахтовых единицах) груза клиента на складских комплексах терминалов порта на определенную дату в виде гистограммы.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
@@ -1578,7 +1522,7 @@ paths:
             format: date
       responses:
         '200':
-          description: Данные по грузам на складских зонах успешно получены
+          description: Данные по грузам на складских комплексах успешно получены
           content:
             application/json:
               schema:
@@ -1589,23 +1533,17 @@ paths:
                     terminal:
                       type: string
                       description: Терминал порта (например, Экономия, Бакарица)
-                    warehouse_zones:
-                      type: array
-                      description: Список складских зон терминала с данными о грузе
-                      items:
-                        type: object
-                        properties:
-                          warehouse_zone:
-                            type: string
-                            description: Складская зона
-                          cargo_weight:
-                            type: number
-                            format: float
-                            description: Вес груза в тоннах
-                          cargo_fe:
-                            type: number
-                            format: float
-                            description: Фрахтовые единицы груза
+                    warehouse:
+                      type: string
+                      description: Складской комплекс
+                    cargo_weight:
+                      type: number
+                      format: float
+                      description: Вес груза в тоннах
+                    cargo_fe:
+                      type: number
+                      format: float
+                      description: Фрахтовые единицы груза
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
