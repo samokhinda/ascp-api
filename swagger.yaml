@@ -1264,3 +1264,423 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /dashboard/shipCargo:
+    get:
+      tags:
+        - Дашборд
+      summary: Формирование дашборда по отгрузке судна с грузами клиента
+      description: >
+        Эндпоинт для формирования дашборда по отгрузке судна с грузами клиента.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные по отгрузке и погрузке успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      description: Дата
+                    terminals:
+                      type: array
+                      description: Список терминалов порта с данными о погрузке и выгрузке
+                      items:
+                        type: object
+                        properties:
+                          terminal:
+                            type: string
+                            description: Терминал порта (например, Экономия, Бакарица)
+                          load_weight:
+                            type: number
+                            format: float
+                            description: Общий вес погруженных грузов
+                          load_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы погрузки
+                          unload_weight:
+                            type: number
+                            format: float
+                            description: Общий вес выгруженных грузов
+                          unload_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы выгрузки
+
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/railCargo:
+    get:
+      tags:
+        - Дашборд
+      summary: Формирование дашборда по отгрузке и погрузке ЖД вагонов с грузами клиента
+      description: >
+        Эндпоинт для формирования дашборда по отгрузке и погрузке ЖД вагонов с грузами клиента в разрезе терминалов порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные по отгрузке и погрузке успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      description: Дата
+                    terminals:
+                      type: array
+                      description: Список терминалов порта с данными о погрузке и выгрузке
+                      items:
+                        type: object
+                        properties:
+                          terminal:
+                            type: string
+                            description: Терминал порта (например, Экономия, Бакарица)
+                          load_weight:
+                            type: number
+                            format: float
+                            description: Общий вес погруженных грузов
+                          load_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы погрузки
+                          unload_weight:
+                            type: number
+                            format: float
+                            description: Общий вес выгруженных грузов
+                          unload_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы выгрузки
+                          processed_wagons:
+                            type: integer
+                            description: Количество обработанных вагонов
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/autoCargo:
+    get:
+      tags:
+        - Дашборд
+      summary: Формирование дашборда по отгрузке и погрузке автомобилей с грузами клиента
+      description: >
+        Эндпоинт для формирования дашборда по отгрузке и погрузке автомобилей с грузами клиента в разрезе терминалов порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные по отгрузке и погрузке успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      description: Дата
+                    terminals:
+                      type: array
+                      description: Список терминалов порта с данными о погрузке и выгрузке
+                      items:
+                        type: object
+                        properties:
+                          terminal:
+                            type: string
+                            description: Терминал порта (например, Экономия, Бакарица)
+                          load_weight:
+                            type: number
+                            format: float
+                            description: Общий вес погруженных грузов
+                          load_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы погрузки
+                          unload_weight:
+                            type: number
+                            format: float
+                            description: Общий вес выгруженных грузов
+                          unload_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы выгрузки
+                          processed_auto:
+                            type: integer
+                            description: Количество обработанных автомобилей
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+/dashboard/warehouseCargo:
+  get:
+    tags:
+      - Дашборд
+    summary: Отображение количества груза клиента на складских комплексах терминалов порта
+    description: >
+      Эндпоинт для отображения количества (вес в тоннах и фрахтовых единицах) груза клиента на складских комплексах терминалов порта на определенную дату в виде гистограммы.
+    security:
+      - ApiKeyAuth: []
+      - bearerAuth: []
+    parameters:
+      - name: date
+        in: query
+        description: Дата для отображения данных
+        required: true
+        schema:
+          type: string
+          format: date
+    responses:
+      '200':
+        description: Данные по грузам на складских комплексах успешно получены
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  terminal:
+                    type: string
+                    description: Терминал порта (например, Экономия, Бакарица)
+                  warehouse:
+                    type: string
+                    description: Складской комплекс
+                  cargo_weight:
+                    type: number
+                    format: float
+                    description: Вес груза в тоннах
+                  cargo_fe:
+                    type: number
+                    format: float
+                    description: Фрахтовые единицы груза
+      '400':
+        description: Неверный запрос, отсутствуют необходимые данные
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+      '404':
+        description: Данные не найдены
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+
+
+  /dashboard/warehouseCargo:
+    get:
+      tags:
+        - Дашборд
+      summary: Отображение количества груза клиента на складских зонах терминалов порта
+      description: >
+        Эндпоинт для отображения количества (вес в тоннах и фрахтовых единицах) груза клиента на складских зонах терминалов порта на определенную дату в виде гистограммы.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          description: Дата для отображения данных
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные по грузам на складских зонах успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    terminal:
+                      type: string
+                      description: Терминал порта (например, Экономия, Бакарица)
+                    warehouse_zones:
+                      type: array
+                      description: Список складских зон терминала с данными о грузе
+                      items:
+                        type: object
+                        properties:
+                          warehouse_zone:
+                            type: string
+                            description: Складская зона
+                          cargo_weight:
+                            type: number
+                            format: float
+                            description: Вес груза в тоннах
+                          cargo_fe:
+                            type: number
+                            format: float
+                            description: Фрахтовые единицы груза
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/containerOperations:
+    get:
+      tags:
+        - Дашборд
+      summary: Данные о количестве затаренных и растаренных контейнеров клиента
+      description: >
+        Эндпоинт для предоставления данных для дашборда о количестве затаренных и растаренных контейнеров клиента за период в разрезе терминалов и складских зон порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Данные по контейнерным операциям успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    terminal:
+                      type: string
+                      description: Терминал порта (например, Экономия, Бакарица)
+                    warehouse_zones:
+                      type: array
+                      description: Список складских зон терминала с данными о контейнерных операциях
+                      items:
+                        type: object
+                        properties:
+                          warehouse_zone:
+                            type: string
+                            description: Складская зона
+                          stuffed_containers:
+                            type: integer
+                            description: Количество затаренных контейнеров
+                          stripped_containers:
+                            type: integer
+                            description: Количество растаренных контейнеров
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
