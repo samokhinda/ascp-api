@@ -16,10 +16,18 @@ servers:
   - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/   
 
 tags:
+  - name: Характеристики судна
+    description: Характеристики судна.
+  - name: Информация о порте
+    description: Получить информацию о прибытии и отправлении в пор.
+  - name: Cargo Information
+    description: Информация о грузах
   - name: Авторизация 
     description: Авторизация
   - name: Управление пользователями
     description: Операции по управлению пользователями системы.
+  - name: Информация о клиенте
+    description: Информация о клиенте
 
 security:
   - ApiKeyAuth: []
@@ -48,213 +56,700 @@ components:
         message:
           type: string
           description: Сообщение об ошибке
-    DocumentType:
+    ShipData:
       type: object
       properties:
-        documentType:
+        ship_id:
           type: string
-          description: Тип документа
-          example: "Заявка"
-        documentName:
+          description: ID корабля
+        ship_name:
           type: string
-          description: Название типа документа
-          example: "Заявка на складскую операцию"
-        operation:
+          description: Название корабля
+        imo:
           type: string
-          description: Варианты типов операций документа
-          enum:
-            - "Пакетирование груза"
-            - "Затарка"
-          example: "Пакетирование груза"
-
-    Request:
-      type: object
-      properties:
-        documentType:
+          description: IMO номер судна
+        callsign:
           type: string
-          description: Тип
-          example: "Заявка"
-        documentName:
+          description: Позывной судна
+        ship_type:
           type: string
-          description: Название документа
-          example: "Заявка на погрузку"
-        documentOperation:
-          type: string
-          description: Операция
-          enum:
-            - "Пакетирование груза"
-            - "Затарка"
-          example: "Затарка"
-        client:
-          type: string
-          description: Клиент порта
-          example: "ООО Транс логистика"
-        contract:
-          type: string
-          description: Договор с клиентом порта
-          example: "Договор перевалки №455-24"
-        serviceLocation:
-          type: string
-          description: Место оказания услуги
-          example: "Терминал Экономия"
-        manager:
-          type: string
-          description: Ответственный за подготовку документа
-          example: "Иванов Иван Иванович"
-        signer:
-          type: string
-          description: Подписант заявки со стороны клиента
-          example: "Сидоров Дмитрий Иванович"
-        status:
-          type: string
-          description: Статус заявки
-          enum:
-            - "Создана"
-            - "В обработке"
-            - "Одобрена"
-            - "Отклонена"
-          example: "В обработке"
-        comment:
-          type: string
-          description: Комментарий к заявке
-          example: "Добавьте сканы документов"
-        createdDate:
-          type: string
-          format: date-time
-          description: Дата и время создания заявки
-
-    CargoList:
-      type: object
-      properties:
-        guid:
-          type: string
-          description: Уникальный идентификатор груза
-        name:
-          type: string
-          description: Наименование груза
-        weight:
+          description: Тип судна
+        dwt:
           type: number
-          description: Вес груза
-        volume:
+          description: Водоизмещение (DWT)
+        teu:
           type: number
-          description: Объем груза
-        length:
-          type: number
-          description: Длина груза
+          description: Вместимость TEU
         width:
           type: number
-          description: Ширина груза
-        height:
+          description: Ширина судна
+        draft:
           type: number
-          description: Высота груза
-        quantity:
-          type: integer
-          description: Количество мест
+          description: Осадка судна
+        length:
+          type: number
+          description: Длина судна
+        owner:
+          type: string
+          description: Владелец судна
+        flag:
+          type: string
+          description: Флаг судна
+        last_modified_date:
+          type: string
+          format: date-time
+          description: Дата последнего изменения карточки судна        
+    ShipPhoto:
+      type: object
+      properties:
+        photo:
+          type: string
+          format: binary
+          description: Фото судна в двоичном формате
+        upload_time:
+          type: string
+          format: date-time
+          description: Дата и время добавления фото в БД
+        is_main:
+          type: boolean
+          description: Является ли фото основным для судна
+    VesselArrival:
+      type: object
+      properties:
+        vessel_id:
+          type: string
+          description: ID судозахода
+        terminal_id:
+          type: string
+          description: ID терминала
+        terminal_name:
+          type: string
+          description: Терминал
+        berth_id:
+          type: string
+          description: ID причала
+        berth_name:
+          type: string
+          description: Причал
+        ship_id:
+          type: string
+          description: ID судна
+        ship_name:
+          type: string
+          description: Название судна
+        cargo_quantity:
+          type: number
+          description: Количество груза
+        type_prr:
+          type: string
+          description: Вид ПРР
+          enum:
+            - Погрузка 
+            - Выгрузка
+        planned_arrival_date:
+          type: string
+          format: date-time
+          description: Плановая дата прибытия
+        actual_arrival_date:
+          type: string
+          format: date-time
+          description: Фактическая дата прибытия
+        planned_departure_date:
+          type: string
+          format: date-time
+          description: Плановая дата ухода
+        actual_departure_date:
+          type: string
+          format: date-time
+          description: Фактическая дата ухода
+        status:
+          type: string
+          description: Статус судозахода
+          enum:
+            - Ожидается
+            - Прибыл
+            - Разгрузка
+            - Погрузка
+            - Отправляется
+            - Ушел
+            - Задержан
+            - Отменен
+            - В пути
+    BerthInformation:
+      type: object
+      properties:
+        berth_id:
+          type: string
+          description: ID причала
+        berth_name:
+          type: string
+          description: Название причала
+        terminal_id:
+          type: string
+          description: ID терминала
+        coordinates:
+          type: object
+          description: Координаты причала на карте
+          properties:
+            latitude:
+              type: number
+              description: Широта
+            longitude:
+              type: number
+              description: Долгота
+        characteristics:
+          type: object
+          description: Характеристики причала
+          properties:
+            length:
+              type: number
+              description: Длина причала (в метрах)
+            depth:
+              type: number
+              description: Глубина причала (в метрах)
+            capacity:
+              type: number
+              description: Вместимость причала (в тоннах)
+    TerminalCharacteristics:
+      type: object
+      properties:
+        terminal_id:
+          type: string
+          description: Уникальный идентификатор терминала
+        terminal_name:
+          type: string
+          description: Название терминала
+        capacity:
+          type: number
+          description: Вместимость терминала (в контейнерах, тоннах и т.д.)
+        throughput:
+          type: number
+          description: Пропускная способность терминала (в контейнерах в час, тоннах в сутки и т.д.)
+        equipment:
+          type: array
+          items:
+            type: string
+          description: Список оборудования терминала
+        services:
+          type: array
+          items:
+            type: string
+          description: Список предоставляемых услуг терминала
+        berths:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Количество причалов
+            length:
+              type: number
+              description: Протяженность причалов (в метрах)
+            draft:
+              type: number
+              description: Осадка судна (в метрах)
+    CargoStatusByRequestNumber:
+      type: array
+      description: Массив статусов груза
+      items:
+        type: object
+        properties:
+          status:
+            type: string
+            description: Текущий статус груза
+            enum:
+              - Ожидается
+              - Прибыл
+              - Разгрузка
+              - Хранение
+              - Отгрузка
+              - Убыл
+          timestamp:
+            type: string
+            format: date-time
+            description: Временная метка статуса груза
+          comment: 
+            type: string
+            description: Комментарий по операции с грузом
+      required:
+        - items
+    CargoUnit:
+      type: object
+      properties:
+        # id:
+        #   type: string
+        #   description: Уникальный идентификатор грузового места
+        name:
+          type: string
+          description: Наименование грузового места
         cargoType:
           type: string
           description: Тип груза
-        packaging:
-          type: string
-          description: Род упаковки
-        storageConditions:
-          type: string
-          description: Условия хранения
-        hazardClass:
-          type: string
-          description: Класс опасности
-      required:
-        - name
-        - quantity
-
-    ServiceList:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Уникальный идентификатор услуги
-        name:
-          type: string
-          description: Наименование услуги
-        cost:
+          enum:
+            - Насыпной
+            - Генеральный
+        volume:
           type: number
-          description: Стоимость услуги
+          format: float
+          description: Объем грузового места в кубических метрах (м³)
+        weight:
+          type: number
+          format: float
+          description: Вес грузового места в килограммах
+        dimensions:
+          type: object
+          description: Весогабаритные характеристики грузового места
+          properties:
+            length:
+              type: number
+              format: float
+              description: Длина грузового места в метрах
+            width:
+              type: number
+              format: float
+              description: Ширина грузового места в метрах
+            height:
+              type: number
+              format: float
+              description: Высота грузового места в метрах
+        conditions:
+          type: string
+          description: Условия хранения груза
+        unNumber:
+          type: string
+          description: Номер ООН для опасных грузов
+        dangerClass:
+          type: string
+          description: Класс опасности груза
+        markNumber:
+          type: string
+          description: Номер пломбы, если есть
+        isValuable:
+          type: boolean
+          description: Признак особо ценного груза      
       required:
+        - cargo_type
         - name
-        - cost
+        - weight
+        - dimensions
 
-    VesselLoading:
-      allOf:
-        - $ref: '#/components/schemas/Request'
-        - type: object
-          properties:
-            loadingDetails:
-              type: array
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/CargoList'
-          required:
-            - documentType
-            - documentName
-            - documentOperation
-            - client
-            - contract
-            - serviceLocation
-            - manager
-            - signer
-            - status
-            - createdDate
-            - loadingDetails
-    
-    VesselUnloading:
-      allOf:
-        - $ref: '#/components/schemas/Request'
-        - type: object
-          properties:
-            unloadingDetails:
-              type: string
-              description: Детали выгрузки судна
-              example: "Описание выгрузки судна"
-
-    RequestList:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/Request'
-        - type: object
-          properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор документа в БД
-              example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
-            requestId:
-              type: string
-              description: Регистрационный номер документа
-              example: "0000098212"
-
-    NewRequest:
-      oneOf:
-        - $ref: '#/components/schemas/VesselLoading'
-        - $ref: '#/components/schemas/VesselUnloading'
-      discriminator:
-        propertyName: documentType
-
-    RequestResponse:
+    DocumentType:
       type: object
       properties:
-        guid:
+        typeId:
           type: string
-          description: Уникальный идентификатор документа в БД
-          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
-        requestId:
+          description: Уникальный идентификатор типа документа
+          example: "1"
+        typeName:
           type: string
-          description: Регистрационный номер документа
-          example: "0000098212"
-      oneOf:
-        - $ref: '#/components/schemas/VesselLoading'
-        - $ref: '#/components/schemas/VesselUnloading'
-      discriminator:
-        propertyName: documentType
+          description: Название типа документа
+          example: "Приемный акт порта"
+        requestType:
+          type: string
+          description: Тип документа
+          enum:
+            - Приемный акт
+            - ЖДН
+            - ТН
+
+    RequestType:
+      type: object
+      properties:
+        typeId:
+          type: string
+          description: Уникальный идентификатор типа заявки
+          example: "1"
+        typeName:
+          type: string
+          description: Название типа завки
+          example: "Заявка на ввоз груза автомобилем"
+        requestType:
+          type: string
+          description: Тип заявки
+          enum:
+            - Заявка на ввоз груза
+            - Заявка на вывоз груза
+            - Заявка на пропуск в порт
+            - Заявка на Погрузка автомобиля
+            - Заявка на Погрузка судна
+            - Заявка на Погрузка вагона
+            - Заявка на выгрузка автомобиля
+            - Заявка на выгрузка судна
+            - Заявка на выгрузка вагона
+            - Заявка на складские операции
+
 
 paths:
+  /ship/findByName:
+    get:
+      tags: 
+        - Характеристики судна
+      summary: Получить характеристики морского судна по названию
+      description: Возвращает характеристики морского судна по заданному названию.
+      parameters:
+        - name: ship_name
+          in: query
+          description: Название морского судна
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipData'
+        '404':
+          description: Судно не найдено
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки
+  /ship/findById:
+    get:
+      tags: 
+        - Характеристики судна
+      summary: Получить характеристики морского судна по ID
+      description: Возвращает характеристики морского судна по заданному ID.
+      parameters:
+        - name: ship_id
+          in: query
+          description: ID морского судна
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipData'
+        '404':
+          description: Судно не найдено
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки
+  /ship/getVessels:
+    get:
+      tags: 
+        - Характеристики судна
+      summary: Получить список всех судов
+      description: Возвращает список всех доступных морских судов.
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShipData'
+        '404':
+          description: Суда не найдены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки          
+  /ship/getPhotos:
+    get:
+      tags: 
+        - Характеристики судна
+      summary: Получить все фото судна по ID
+      description: Возвращает все фото судна по заданному ID.
+      parameters:
+        - name: ship_id
+          in: query
+          description: ID морского судна
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          description: Дата, начиная с которой нужно получить фотографии
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShipPhoto'
+        '404':
+          description: Судно не найдено
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки          
+  /port/portCalls:
+    get:
+      tags:
+        - Информация о порте
+      summary: Получить информацию о судозаходах в указанном порту за указанный период
+      description: Возвращает информацию о прибытии и отправлении судов в указанном порту за заданный период времени.
+      parameters:
+        - name: terminal_id
+          in: query
+          description: ID терминала
+          required: false
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          description: Начальная дата
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          description: Конечная дата
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VesselArrival'
+        '404':
+          description: Порт не найден     
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки          
+  /port/getBerth:
+    get:
+      tags:
+        - Информация о порте
+      summary: Получить информацию о причалах порта
+      description: Возвращает информацию о причалах морского порта с указанием координат на Яндекс.Картах и другими характеристиками.
+      parameters:
+        - name: terminal_id
+          in: query
+          description: ID терминала
+          required: true
+          schema:
+            type: string
+        - name: berth_id
+          in: query
+          description: ID причала
+          required: true
+          schema:
+            type: string
+
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BerthInformation'
+        '404':
+          description: Порт не найден  
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      description: Описание ошибки          
+  /port/getTerminal:
+    get:
+      tags:
+        - Информация о порте
+      summary: Получить информацию о характеристиках терминала порта
+      description: Возвращает информацию о характеристиках терминала порта.
+      parameters:
+        - name: terminal_id
+          in: query
+          description: ID терминала
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TerminalCharacteristics'
+        '404':
+          description: Терминал не найден  
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+  /port/getBerthList:
+    get:
+      tags:
+        - Информация о порте
+      summary: Получить список причалов по ID терминала
+      description: Возвращает список всех причалов в указанном терминале порта.
+      parameters:
+        - name: terminal_id
+          in: query
+          description: ID терминала
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BerthInformation'
+        '404':
+          description: Порт не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+  /port/getTerminalList:
+    get:
+      tags:
+        - Информация о порте
+      summary: Получить список всех терминалов порта
+      description: Возвращает список всех терминалов морского порта с их характеристиками.
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TerminalCharacteristics'
+  /cargo/getStatusByRequestNumber:
+    get:
+      tags:
+        - Cargo Information
+      summary: Получить статус груза по номеру заявки клиента
+      description: Возвращает статус груза вместе с временной меткой по номеру заявки клиента.
+      parameters:
+        - name: request_number
+          in: query
+          description: Номер заявки клиента на груз
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoStatusByRequestNumber'
+        '404':
+          description: Груз по данному номеру заявки не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Описание ошибки     
+  /cargo/getCargoUnitById:
+    get:
+      tags:
+        - Cargo Information
+      summary: Получить характеристики грузового места по ID
+      description: Возвращает характеристики грузового места по заданному уникальному идентификатору.
+      parameters:
+        - name: guid
+          in: query
+          description: Уникальный идентификатор грузового места
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoUnit'
+        '404':
+          description: Грузовое место не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
   /auth/login:
     post:
       tags:
@@ -573,7 +1068,185 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /dashboard/ship:
+  /clients/getClientInfo:
+    get:
+      tags:
+        - Информация о клиенте
+      summary: Получение данных о клиенте
+      description: Позволяет получить данные о клиенте, идентифицированной по API ключу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []    
+      responses:
+        '200':
+          description: Данные об организации успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clientId:
+                    type: string
+                    description: Уникальный идентификатор клиента
+                  name:
+                    type: string
+                    description: Название организации
+                  address:
+                    type: string
+                    description: Юридический адрес организации
+                  taxId:
+                    type: string
+                    description: Идентификационный номер налогоплательщика (ИНН) организации
+                  registration:
+                    type: string
+                    description: Основной государственный регистрационный номер (ОГРН)
+                  contacts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fullName:
+                          type: string
+                          description: ФИО контактного лица организации
+                        position:
+                          type: string
+                          description: Должность контактного лица организации
+                        phone:
+                          type: string
+                          description: Контактный телефон организации
+                        email:
+                          type: string
+                          format: email
+                          description: Контактный email организации
+        '403':
+          description: Ошибка.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /types/documents:
+    get:
+      tags:
+        - Типы данных
+      summary: Получить список типов документов
+      description: Возвращает список всех доступных типов документов.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество элементов на странице
+          required: false
+          schema:
+            type: integer
+            default: 10    
+      responses:
+        '200':
+          description: Список типов документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalItems:
+                    type: integer
+                    description: Общее количество типов документов
+                    example: 100
+                  totalPages:
+                    type: integer
+                    description: Общее количество страниц
+                    example: 10
+                  currentPage:
+                    type: integer
+                    description: Текущая страница
+                    example: 1
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DocumentType'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Типы документов не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /types/requests:
+    get:
+      tags:
+        - Типы данных
+      summary: Получить список типов заявок
+      description: Возвращает список всех доступных типов заявок.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество элементов на странице
+          required: false
+          schema:
+            type: integer
+            default: 10            
+      responses:
+        '200':
+          description: Список типов документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalItems:
+                    type: integer
+                    description: Общее количество типов документов
+                    example: 100
+                  totalPages:
+                    type: integer
+                    description: Общее количество страниц
+                    example: 10
+                  currentPage:
+                    type: integer
+                    description: Текущая страница
+                    example: 1
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RequestType'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Типы заявок не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/shipCargo:
     get:
       tags:
         - Дашборд
@@ -650,7 +1323,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/ErrorResponse'
-  /dashboard/rail:
+  /dashboard/railCargo:
     get:
       tags:
         - Дашборд
@@ -729,7 +1402,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dashboard/auto:
+  /dashboard/autoCargo:
     get:
       tags:
         - Дашборд
@@ -808,7 +1481,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dashboard/warehouse:
+  /dashboard/warehouseCargo:
     get:
       tags:
         - Дашборд
@@ -868,7 +1541,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /dashboard/container:
+  /dashboard/containerOperations:
     get:
       tags:
         - Дашборд
@@ -1025,7 +1698,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /journal/documents:
+  /documents:
     get:
       tags:
         - Журнал документов
@@ -1117,15 +1790,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /journal/requests:
+  /requests:
     get:
       tags:
-        - Журнал документов
+        - Журнал заявок
       summary: Получить список заявок клиента
       description: Возвращает список заявок клиента из журнала БД с поддержкой пагинации.
       security:
         - ApiKeyAuth: []
-        - bearerAuth: []
+        - bearerAuth: []  
       parameters:
         - name: page
           in: query
@@ -1161,7 +1834,37 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestList'
+                      type: object
+                      properties:
+                        guid:
+                          type: string
+                          description: Уникальный идентификатор документа в БД
+                          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"                      
+                        requestId:
+                          type: string
+                          description: Регистрационный номер документа
+                          example: "0000098212"
+                        requestName:
+                          type: string
+                          description: Название документа
+                          example: "Заявка на погрузку автомобиля" 
+                        status:
+                          type: string
+                          description: Статус заявки
+                          enum:
+                            - Создана
+                            - В обработке
+                            - Одобрена
+                            - Отклонена
+                          example: "В обработке"
+                        comment:
+                          type: string
+                          description: Комментарий к заявке
+                          example: "Добавьте сканы документов"
+                        createdDate:
+                          type: string
+                          format: date-time
+                          description: Дата и время создания заявки
                 required:
                   - total
                   - page
@@ -1179,24 +1882,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    post:
+  /requests/{guid}:
+    get:
       tags:
-        - Журнал документов
-      summary: Создать новую заявку
-      description: Создает новую заявку в журнале документов.
+        - Журнал заявок
+      summary: Получить данные конкретной заявки
+      description: Возвращает данные конкретной заявки по guid (ID документа в БД).
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
-      requestBody:
-        description: Данные для создания новой заявки
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewRequest'
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор документа в БД
+          required: true
+          schema:
+            type: string
       responses:
-        '201':
-          description: Заявка успешно создана
+        '200':
+          description: Данные заявки успешно получены
           content:
             application/json:
               schema:
@@ -1204,144 +1908,145 @@ paths:
                 properties:
                   guid:
                     type: string
-                    description: Уникальный идентификатор созданной заявки
-                required:
-                  - guid
-
+                    description: Уникальный идентификатор документа в БД
+                    example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
+                  requestId:
+                    type: string
+                    description: Регистрационный номер документа
+                    example: "0000098212"
+                  requestType:
+                    type: string
+                    $ref: '#/components/schemas/RequestType'                    
+                    description: Тип заявки
+                    example: "Заявка на погрузка судна"
+                  requestName:
+                    type: string
+                    description: Название документа
+                    example: "Заявка на погрузку судна"
+                  status:
+                    type: string
+                    description: Статус заявки
+                    enum:
+                      - Создана
+                      - В обработке
+                      - Одобрена
+                      - Отклонена
+                    example: "В обработке"
+                  comment:
+                    type: string
+                    description: Комментарий к заявке
+                    example: "Добавьте сканы документов"
+                  createdDate:
+                    type: string
+                    format: date-time
+                    description: Дата и время создания заявки
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /journal/requests/{guid}:
+
+
+
+
+  /requests/{guid}/vesselload:
     get:
       tags:
-        - Журнал документов
-      summary: Получить заявку по идентификатору
-      description: Возвращает заявку по указанному идентификатору
+        - Журнал заявок
+      summary: Получить данные заявки по GUID
+      description: Возвращает данные заявки по указанному GUID.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
       parameters:
         - name: guid
           in: path
-          description: Уникальный идентификатор заявки
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Заявка успешно получена
+          description: Данные заявки успешно получены
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  request:
-                    $ref: '#/components/schemas/RequestResponse'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    
-    delete:
-      tags:
-        - Журнал документов
-      summary: Удалить заявку
-      description: Удаляет заявку по указанному идентификатору
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Заявка успешно удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
+                  applicationNumber:
                     type: string
-                    description: Сообщение об успешном удалении
-                required:
-                  - message
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /journal/documentypes:
-    get:
-      tags:
-        - Журнал документов
-      summary: Получить список типов заявок
-      description: Возвращает список всех доступных типов заявок.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество элементов на странице
-          required: false
-          schema:
-            type: integer
-            default: 10            
-      responses:
-        '200':
-          description: Список типов документов успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  totalItems:
-                    type: integer
-                    description: Общее количество типов документов
-                    example: 100
-                  totalPages:
-                    type: integer
-                    description: Общее количество страниц
-                    example: 10
-                  currentPage:
-                    type: integer
-                    description: Текущая страница
-                    example: 1
-                  items:
+                    description: Номер заявки
+                  date:
+                    type: string
+                    format: date-time
+                    description: Дата заявки
+                  vessel:
+                    type: string
+                    description: Судно
+                  client:
+                    type: string
+                    description: Клиент
+                  shipper:
+                    type: string
+                    description: Грузоотправитель
+                  servicePlace:
+                    type: string
+                    description: Место оказания услуги
+                  responsible:
+                    type: string
+                    description: Ответственный
+                  cargoList:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DocumentType'
+                      type: object
+                      properties:
+                        receivingPoint:
+                          type: string
+                          description: Приемный акт
+                        cargoPlace:
+                          type: string
+                          description: Грузовое место
+                        quantity:
+                          type: integer
+                          description: Количество (места)
+                        weight:
+                          type: number
+                          format: float
+                          description: Вес (кг)
+                        consignee:
+                          type: string
+                          description: Грузополучатель
+                        destinationPort:
+                          type: string
+                          description: Порт назначения
+                        transportContract:
+                          type: string
+                          description: Договор перевозки
+                        printLoadingDocument:
+                          type: boolean
+                          description: Печатать погрузочный документ
+                        printConsignment:
+                          type: boolean
+                          description: Печатать коносамент
+                        printAcceptanceCertificate:
+                          type: boolean
+                          description: Печатать приемосдаточную / передаточную ведомость
+                        urgent:
+                          type: boolean
+                          description: Срочный
+                        direction:
+                          type: string
+                          description: Направление
+                        cargoStatus:
+                          type: string
+                          description: Статус груза
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1349,7 +2054,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Типы заявок не найдены
+          description: Заявка не найдена
           content:
             application/json:
               schema:
