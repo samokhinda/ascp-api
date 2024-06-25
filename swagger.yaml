@@ -38,6 +38,7 @@ components:
       scheme: basic
 
   schemas:
+    ### Схема для ошибок
     ErrorResponse:
       type: object
       properties:
@@ -48,43 +49,192 @@ components:
         message:
           type: string
           description: Сообщение об ошибке
-    DocumentType:
+    ### Схема для получения типов заявок   
+    RequestType:
       type: object
       properties:
-        documentType:
+        name:
           type: string
-          description: Тип документа
-          example: "Заявка"
-        documentName:
+          description: Название типа заявки
+        description:
           type: string
-          description: Название типа документа
-          example: "Заявка на складскую операцию"
-        operation:
-          type: string
-          description: Варианты типов операций документа
-          enum:
-            - "Пакетирование груза"
-            - "Затарка"
-          example: "Пакетирование груза"
-
-    Request:
+          description: Описание типа заявки
+      required:
+        - name
+    
+    ### Схема для физического лица 
+    Person:
       type: object
       properties:
-        documentType:
+        fullName:
           type: string
-          description: Тип
-          example: "Заявка"
-        documentName:
+          description: ФИО физического лица
+          example: "Шестак Денис Анатольевич"
+        birthDate:
           type: string
-          description: Название документа
-          example: "Заявка на погрузку"
-        documentOperation:
+          format: date
+          description: Дата рождения
+          example: "1992-12-13"
+        gender:
           type: string
-          description: Операция
-          enum:
-            - "Пакетирование груза"
-            - "Затарка"
-          example: "Затарка"
+          description: Пол
+          example: "Мужской"
+        position:
+          type: string
+          description: Должность
+          example: "ВОДИТЕЛЬ"
+        passport:
+          type: object
+          properties:
+            series:
+              type: string
+              description: Серия и номер паспорта
+              example: "AB 3651652"
+            issuedBy:
+              type: string
+              description: Кем выдан паспорт
+              example: "Барановичский ГОВД Брестской обл."
+            issueDate:
+              type: string
+              format: date
+              description: Дата выдачи паспорта
+              example: "2021-09-24"
+        contactInfo:
+          type: object
+          properties:
+            phone:
+              type: string
+              description: Телефон
+              example: "+7 123 456 7890"
+            email:
+              type: string
+              description: Электронная почта
+              example: "example@example.com"
+      required:
+        - fullName
+        - birthDate
+        - gender
+        - position
+        - passport
+    ### Схема для автомобиля
+    Auto:
+      type: object
+      properties:
+        number:
+          type: string
+          description: Гос. номер автомобиля
+          example: "A770E067"
+        make:
+          type: string
+          description: Марка автомобиля
+          example: "Toyota"
+        model:
+          type: string
+          description: Модель автомобиля
+          example: "Camry"
+        owner:
+          type: string
+          description: Собственник автомобиля
+          example: "Иванов Иван Иванович"
+        vin:
+          type: string
+          description: VIN автомобиля
+          example: "1HGCM82633A123456"
+        color:
+          type: string
+          description: Цвет автомобиля
+          example: "Черный"
+        trailer:
+          type: object
+          description: Информация о прицепе (если имеется)
+          properties:
+            licensePlate:
+              type: string
+              description: Гос. номер прицепа
+              example: "AK544367"
+            make:
+              type: string
+              description: Марка прицепа
+              example: "Schmitz"
+            model:
+              type: string
+              description: Модель прицепа
+              example: "S.KO"
+            vin:
+              type: string
+              description: VIN прицепа
+              example: "WDB93012345678901"
+            color:
+              type: string
+              description: Цвет прицепа
+              example: "Белый"
+      required:
+        - licensePlate
+        - make
+        - owner
+    ### Схема для грузового места
+    Cargo:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор груза
+          readOnly: true          
+        name:
+          type: string
+          description: Наименование груза
+        weight:
+          type: number
+          description: Вес груза
+        volume:
+          type: number
+          description: Объем груза
+        length:
+          type: number
+          description: Длина груза
+        width:
+          type: number
+          description: Ширина груза
+        height:
+          type: number
+          description: Высота груза
+        quantity:
+          type: integer
+          description: Количество мест
+        cargoType:
+          type: string
+          description: Тип груза
+        packaging:
+          type: string
+          description: Род упаковки
+        storageConditions:
+          type: string
+          description: Условия хранения
+        hazardClass:
+          type: string
+          description: Класс опасности
+      required:
+        - name
+        - quantity
+    ### Схема для услуги
+    Service:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Наименование услуги
+          example: "Услуги погрузки-разгрузки"
+        cost:
+          type: number
+          description: Стоимость услуги
+          example: 500
+      required:
+        - name
+        - cost
+    ### Общие реквизиты заявки 
+    RequestCommon:
+      type: object
+      properties:
         client:
           type: string
           description: Клиент порта
@@ -122,137 +272,113 @@ components:
           type: string
           format: date-time
           description: Дата и время создания заявки
-
-    CargoList:
-      type: object
-      properties:
-        guid:
-          type: string
-          description: Уникальный идентификатор груза
-        name:
-          type: string
-          description: Наименование груза
-        weight:
-          type: number
-          description: Вес груза
-        volume:
-          type: number
-          description: Объем груза
-        length:
-          type: number
-          description: Длина груза
-        width:
-          type: number
-          description: Ширина груза
-        height:
-          type: number
-          description: Высота груза
-        quantity:
-          type: integer
-          description: Количество мест
-        cargoType:
-          type: string
-          description: Тип груза
-        packaging:
-          type: string
-          description: Род упаковки
-        storageConditions:
-          type: string
-          description: Условия хранения
-        hazardClass:
-          type: string
-          description: Класс опасности
-      required:
-        - name
-        - quantity
-
-    ServiceList:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Уникальный идентификатор услуги
-        name:
-          type: string
-          description: Наименование услуги
-        cost:
-          type: number
-          description: Стоимость услуги
-      required:
-        - name
-        - cost
-
-    VesselLoading:
+    ### Полиморфная схема заявки (Request)
+    CargoRequest:
       allOf:
-        - $ref: '#/components/schemas/Request'
+        - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            loadingDetails:
-              type: array
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/CargoList'
-          required:
-            - documentType
-            - documentName
-            - documentOperation
-            - client
-            - contract
-            - serviceLocation
-            - manager
-            - signer
-            - status
-            - createdDate
-            - loadingDetails
-    
-    VesselUnloading:
-      allOf:
-        - $ref: '#/components/schemas/Request'
-        - type: object
-          properties:
-            unloadingDetails:
+            requestType:
               type: string
-              description: Детали выгрузки судна
-              example: "Описание выгрузки судна"
-
-    RequestList:
+              description: Вид операции по заявке
+              example: "Обработка судна"              
+            requestOperation:
+              type: string
+              description: Вид операции по заявке
+              example: "Погрузка"              
+          oneOf:
+            - $ref: '#/components/schemas/VesselCargoRequest'
+            - $ref: '#/components/schemas/CarCargoRequest'
+ 
+    ### Схема для аккредитации водителя
+    AccreditationRequest:
       type: object
+      properties:
+        accreditationPeriod:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              description: Дата начала аккредитации
+              example: "2023-11-01"
+            endDate:
+              type: string
+              format: date
+              description: Дата окончания аккредитации
+              example: "2023-11-30"
+          required:
+            - startDate
+            - endDate
+        terminal:
+          type: string
+          description: Терминал, на который разрешен проезд
+          enum:
+            - "Экономия"
+            - "Бакарица"
+          example: "Экономия"
+        drivers:
+          type: array
+          items:
+            type: object
+            properties:
+              driver:
+                $ref: '#/components/schemas/Person'
+              auto:
+                $ref: '#/components/schemas/Auto'
+            required:
+              - driver
+              - auto
+      required:
+        - accreditationPeriod
+        - terminal
+        - drivers
+
+    ### Схема заявки на ввоз или вывоз груза автомобилем
+    CarCargoRequest:
+      type: object
+      properties:
+
+        auto:
+          $ref: '#/components/schemas/Auto'
+        driver:
+          $ref: '#/components/schemas/Person'          
+        cargoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cargo'
+
+    ### Схема заявки на услугу (ServiceRequest)
+    ServiceRequest:
+      type: object
+      properties:
+        serviceList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cargo'
+
+    VesselCargoRequest:
       allOf:
-        - $ref: '#/components/schemas/Request'
+        - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             guid:
               type: string
-              description: Уникальный идентификатор документа в БД
-              example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
-            requestId:
+              description: Уникальный идентификатор заявки
+              readOnly: true
+            operation:
               type: string
-              description: Регистрационный номер документа
-              example: "0000098212"
-
-    NewRequest:
-      oneOf:
-        - $ref: '#/components/schemas/VesselLoading'
-        - $ref: '#/components/schemas/VesselUnloading'
-      discriminator:
-        propertyName: documentType
-
-    RequestResponse:
-      type: object
-      properties:
-        guid:
-          type: string
-          description: Уникальный идентификатор документа в БД
-          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
-        requestId:
-          type: string
-          description: Регистрационный номер документа
-          example: "0000098212"
-      oneOf:
-        - $ref: '#/components/schemas/VesselLoading'
-        - $ref: '#/components/schemas/VesselUnloading'
-      discriminator:
-        propertyName: documentType
+              description: Вид операции по заявке
+              example: "Погрузка"
+            cargoList:
+              type: array
+              description: Табличная часть со списком грузов к погрузке в заявке
+              items:
+                $ref: '#/components/schemas/Cargo'
+          required:
+            - guid
+            - operation
+            - cargoList
 
 paths:
   /auth/login:
@@ -1117,12 +1243,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /journal/requests:
+  /requests/vessel:
     get:
       tags:
-        - Журнал документов
-      summary: Получить список заявок клиента
-      description: Возвращает список заявок клиента из журнала БД с поддержкой пагинации.
+        - Журнал заявок
+      summary: Получить список заявок на погрузку/выгрузку судна
+      description: Возвращает список заявок на погрузку/выгрузку судна.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
@@ -1161,7 +1287,7 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestList'
+                      $ref: '#/components/schemas/VesselCargoRequest'
                 required:
                   - total
                   - page
@@ -1181,9 +1307,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
-        - Журнал документов
-      summary: Создать новую заявку
-      description: Создает новую заявку в журнале документов.
+        - Журнал заявок
+      summary: Создать новую заявку на погрузку/выгрузку судна
+      description: Создает новую заявку на погрузку/выгрузку судна.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
@@ -1193,7 +1319,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewRequest'
+              $ref: '#/components/schemas/VesselCargoRequest'
       responses:
         '201':
           description: Заявка успешно создана
@@ -1207,19 +1333,17 @@ paths:
                     description: Уникальный идентификатор созданной заявки
                 required:
                   - guid
-
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /journal/requests/{guid}:
+  /requests/vessel/{guid}:
     get:
       tags:
-        - Журнал документов
-      summary: Получить заявку по идентификатору
+        - Журнал заявок
+      summary: Получить заявку на погрузку / выгрузку судна по идентификатору
       description: Возвращает заявку по указанному идентификатору
       security:
         - ApiKeyAuth: []
@@ -1237,10 +1361,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  request:
-                    $ref: '#/components/schemas/RequestResponse'
+                $ref: '#/components/schemas/VesselCargoRequest'
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1253,95 +1374,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    
-    delete:
-      tags:
-        - Журнал документов
-      summary: Удалить заявку
-      description: Удаляет заявку по указанному идентификатору
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Заявка успешно удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    description: Сообщение об успешном удалении
-                required:
-                  - message
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /journal/documentypes:
+  /requests/types:
     get:
       tags:
-        - Журнал документов
-      summary: Получить список типов заявок
-      description: Возвращает список всех доступных типов заявок.
+        - Журнал заявок
+      summary: Получить все типы заявок
+      description: Возвращает список всех типов заявок клиента из базы данных.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество элементов на странице
-          required: false
-          schema:
-            type: integer
-            default: 10            
       responses:
         '200':
-          description: Список типов документов успешно получен
+          description: Список типов заявок успешно получен
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  totalItems:
+                  total:
                     type: integer
-                    description: Общее количество типов документов
-                    example: 100
-                  totalPages:
-                    type: integer
-                    description: Общее количество страниц
-                    example: 10
-                  currentPage:
-                    type: integer
-                    description: Текущая страница
-                    example: 1
-                  items:
+                    description: Общее количество типов заявок
+                  requestTypes:
                     type: array
                     items:
-                      $ref: '#/components/schemas/DocumentType'
+                      $ref: '#/components/schemas/RequestType'
+                required:
+                  - total
+                  - requestTypes
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1354,3 +1413,4 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
