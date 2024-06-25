@@ -418,6 +418,14 @@ components:
               type: string
               description: Вид операции по заявке
               example: "Погрузка"
+            departureStation:
+              type: string
+              description: Станция отправления
+              example: "СОЛОМБАЛКА"
+            wagons:
+              type: integer
+              description: Количество вагонов
+              example: 2
             cargoList:
               type: array  
               description: Табличная часть со списком грузов к погрузке в заявке
@@ -1655,7 +1663,7 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CarCargoRequest'
+                      $ref: '#/components/schemas/RailCargoRequest'
                 required:
                   - total
                   - page
@@ -1695,7 +1703,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CarCargoRequest'
+                $ref: '#/components/schemas/RailCargoRequest'
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1708,3 +1716,4 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
