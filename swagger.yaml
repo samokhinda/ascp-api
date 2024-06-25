@@ -169,6 +169,7 @@ components:
               description: Цвет прицепа
               example: "Белый"
       required:
+        - number
         - licensePlate
         - make
         - owner
@@ -243,10 +244,10 @@ components:
           type: string
           description: Договор с клиентом порта
           example: "Договор перевалки №455-24"
-        serviceLocation:
+        location:
           type: string
           description: Место оказания услуги
-          example: "Терминал Экономия"
+          example: "Экономия"
         manager:
           type: string
           description: Ответственный за подготовку документа
@@ -291,10 +292,10 @@ components:
             - $ref: '#/components/schemas/CarCargoRequest'
  
     ### Схема для аккредитации водителя
-    AccreditationRequest:
+    DriverAccreditation:
       type: object
       properties:
-        accreditationPeriod:
+        accessPeriod:
           type: object
           properties:
             startDate:
@@ -310,7 +311,7 @@ components:
           required:
             - startDate
             - endDate
-        terminal:
+        location:
           type: string
           description: Терминал, на который разрешен проезд
           enum:
@@ -330,33 +331,57 @@ components:
               - driver
               - auto
       required:
-        - accreditationPeriod
-        - terminal
+        - period
+        - location
         - drivers
-
     ### Схема заявки на ввоз или вывоз груза автомобилем
     CarCargoRequest:
-      type: object
-      properties:
-
-        auto:
-          $ref: '#/components/schemas/Auto'
-        driver:
-          $ref: '#/components/schemas/Person'          
-        cargoList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Cargo'
-
-    ### Схема заявки на услугу (ServiceRequest)
-    ServiceRequest:
-      type: object
-      properties:
-        serviceList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Cargo'
-
+      allOf:
+        - $ref: '#/components/schemas/RequestCommon'
+        - type: object
+          properties:
+            guid:
+              type: string
+              description: Уникальный идентификатор заявки
+              readOnly: true
+            operation:
+              type: string
+              description: Вид операции по заявке
+              example: "Погрузка"
+            period:
+              type: object
+              description: Дата автовизита
+              properties:
+                startDate:
+                  type: string
+                  format: date
+                  description: Дата прибытия
+                  example: "2023-11-01"
+                endDate:
+                  type: string
+                  format: date
+                  description: Дата убытия
+                  example: "2023-11-30"
+              required:
+                - startDate
+                - endDate            
+            drivertList:
+              type: array
+              description: Табличная часть со списком грузов к погрузке в заявке
+              items:
+                $ref: '#/components/schemas/DriverAccreditation'            
+            cargoList:
+              type: array
+              description: Табличная часть со списком грузов к погрузке в заявке
+              items:
+                $ref: '#/components/schemas/Cargo'
+          required:
+            - guid
+            - operation
+            - period
+            - drivertList
+            - cargoList
+    ### Схема заявки на погрузку или выгрузку судна
     VesselCargoRequest:
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
@@ -371,7 +396,7 @@ components:
               description: Вид операции по заявке
               example: "Погрузка"
             cargoList:
-              type: array
+              type: array  
               description: Табличная часть со списком грузов к погрузке в заявке
               items:
                 $ref: '#/components/schemas/Cargo'
@@ -379,6 +404,30 @@ components:
             - guid
             - operation
             - cargoList
+    ### Схема заявки на погрузку или выгрузку ЖД
+    RailCargoRequest:
+      allOf:
+        - $ref: '#/components/schemas/RequestCommon'
+        - type: object
+          properties:
+            guid:
+              type: string
+              description: Уникальный идентификатор заявки
+              readOnly: true
+            operation:
+              type: string
+              description: Вид операции по заявке
+              example: "Погрузка"
+            cargoList:
+              type: array  
+              description: Табличная часть со списком грузов к погрузке в заявке
+              items:
+                $ref: '#/components/schemas/Cargo'
+          required:
+            - guid
+            - operation
+            - cargoList
+
 
 paths:
   /auth/login:
@@ -1242,6 +1291,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /requests/types:
+    get:
+      tags:
+        - Журнал заявок
+      summary: Получить все типы заявок
+      description: Возвращает список всех типов заявок клиента из базы данных.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список типов заявок успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество типов заявок
+                  requestTypes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RequestType'
+                required:
+                  - total
+                  - requestTypes
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Типы заявок не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /requests/vessel:
     get:
@@ -1313,6 +1401,14 @@ paths:
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
+      parameters:
+        - name: operation
+          in: query
+          description: Вид операции
+          required: true
+          schema:
+            type: string
+            enum: ["Погрузка", "Выгрузка"]
       requestBody:
         description: Данные для создания новой заявки
         required: true
@@ -1374,18 +1470,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /requests/types:
+
+  /requests/auto:
     get:
       tags:
         - Журнал заявок
-      summary: Получить все типы заявок
-      description: Возвращает список всех типов заявок клиента из базы данных.
+      summary: Получить список заявок на погрузку/выгрузку автомобиля
+      description: Возвращает список заявок на погрузку/выгрузку автомобиля.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество заявок на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
-          description: Список типов заявок успешно получен
+          description: Список заявок успешно получен
           content:
             application/json:
               schema:
@@ -1393,14 +1505,22 @@ paths:
                 properties:
                   total:
                     type: integer
-                    description: Общее количество типов заявок
-                  requestTypes:
+                    description: Общее количество заявок
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество заявок на странице
+                  requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestType'
+                      $ref: '#/components/schemas/CarCargoRequest'
                 required:
                   - total
-                  - requestTypes
+                  - page
+                  - pageSize
+                  - requests
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1408,9 +1528,183 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Типы заявок не найдены
+          description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Журнал заявок
+      summary: Создать новую заявку на погрузку/выгрузку судна
+      description: Создает новую заявку на погрузку/выгрузку судна.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: operation
+          in: query
+          description: Вид операции
+          required: true
+          schema:
+            type: string
+            enum: ["Погрузка", "Выгрузка"]
+      requestBody:
+        description: Данные для создания новой заявки
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarCargoRequest'
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                required:
+                  - guid
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /requests/auto/{guid}:
+    get:
+      tags:
+        - Журнал заявок
+      summary: Получить заявку на погрузку / выгрузку автомобиля по идентификатору
+      description: Возвращает заявку по указанному идентификатору
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Заявка успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarCargoRequest'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /requests/rail:
+    get:
+      tags:
+        - Журнал заявок
+      summary: Получить список заявок на погрузку/выгрузку ЖД
+      description: Возвращает список заявок на погрузку/выгрузку ЖД.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество заявок на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список заявок успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество заявок
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество заявок на странице
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CarCargoRequest'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - requests
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /requests/rail/{guid}:
+    get:
+      tags:
+        - Журнал заявок
+      summary: Получить заявку на погрузку / выгрузку ЖД по идентификатору
+      description: Возвращает заявку по указанному идентификатору
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Заявка успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarCargoRequest'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
