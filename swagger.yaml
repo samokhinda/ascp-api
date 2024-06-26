@@ -2073,79 +2073,7 @@ paths:
 
 
 
-  /pass-requests:
-    post:
-      tags:
-        - Заявки на пропуска
-      summary: Создать заявку на пропуск в порт
-      description: Создает новую заявку на пропуск в порт, как для пешеходов (гостей), так и для водителей на автомобиле.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/PersonaPassRequest'
-                - $ref: '#/components/schemas/DriverPassRequest'
-      responses:
-        '201':
-          description: Заявка успешно создана
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /pass-requests/{guid}:
-    get:
-      tags:
-        - Заявки на пропуска
-      summary: Получить заявку по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: string
-        - name: type
-          in: query
-          description: Тип заявки (пешеходный или автомобильный)
-          required: true
-          schema:
-            type: string
-            enum: [persona, driver]
-      responses:
-        '200':
-          description: Данные заявки успешно получены
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /pass-requests/search:
+  /passes/requests:
     get:
       tags:
         - Заявки на пропуска
@@ -2223,6 +2151,76 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Заявки на пропуска
+      summary: Создать заявку на пропуск в порт
+      description: Создает новую заявку на пропуск в порт, как для пешеходов (гостей), так и для водителей на автомобиле.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PersonaPassRequest'
+                - $ref: '#/components/schemas/DriverPassRequest'
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PersonaPass'
+                  - $ref: '#/components/schemas/DriverPass'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/requests/{guid}:
+    get:
+      tags:
+        - Заявки на пропуска
+      summary: Получить заявку по GUID
+      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Тип заявки (пешеходный или автомобильный)
+          required: true
+          schema:
+            type: string
+            enum: [persona, driver]
+      responses:
+        '200':
+          description: Данные заявки успешно получены
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PersonaPass'
+                  - $ref: '#/components/schemas/DriverPass'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
           content:
             application/json:
               schema:
