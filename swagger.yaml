@@ -1900,7 +1900,7 @@ paths:
           schema:
             type: string
             format: date
-        - name: type
+        - name: passType
           in: query
           description: Тип пропуска (Пешеходный или Автомобильный)
           required: false
@@ -1985,7 +1985,7 @@ paths:
       summary: Получить пропуск по ID
       description: Возвращает данные пропуска по его уникальному идентификатору.
       parameters:
-        - name: id
+        - name: guid
           in: path
           description: Уникальный идентификатор пропуска
           required: true
@@ -2013,7 +2013,7 @@ paths:
       summary: Обновить пропуск
       description: Обновляет данные существующего пропуска.
       parameters:
-        - name: id
+        - name: guid
           in: path
           description: Уникальный идентификатор пропуска
           required: true
@@ -2055,7 +2055,7 @@ paths:
       summary: Удалить пропуск
       description: Удаляет пропуск по его уникальному идентификатору.
       parameters:
-        - name: id
+        - name: guid
           in: path
           description: Уникальный идентификатор пропуска
           required: true
@@ -2166,7 +2166,7 @@ paths:
           schema:
             type: string
             format: date
-        - name: type
+        - name: passType
           in: query
           description: Тип заявки (пешеходный или автомобильный)
           required: false
