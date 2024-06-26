@@ -290,7 +290,7 @@ components:
             - $ref: '#/components/schemas/VesselCargoRequest'
             - $ref: '#/components/schemas/CarCargoRequest'
     ### Схема для заявки на пропуск для водителя
-    DriverPassRequest:
+    AutoPassRequest:
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
@@ -385,7 +385,7 @@ components:
             - location
             - persons
     ### Схема для пропуска на водителя
-    DriverPass:
+    AutoPass:
       allOf:
         - type: object
           properties:
@@ -393,10 +393,6 @@ components:
               type: string
               description: Уникальный идентификатор пропуска
               readOnly: true
-            passType:
-              type: string
-              description: Тип пропуска
-              enum: ["Автомобильный", "Пешеходный"]                
             accessPeriod:
               type: object
               properties:
@@ -443,10 +439,6 @@ components:
               type: string
               description: Уникальный идентификатор пропуска
               readOnly: true
-            passType:
-              type: string
-              description: Тип пропуска
-              enum: ["Пешеходный", "Автомобильный"]                  
             accessPeriod:
               type: object
               properties:
@@ -511,7 +503,7 @@ components:
               type: array
               description: Табличная часть со списком грузов к погрузке в заявке
               items:
-                $ref: '#/components/schemas/DriverPass'            
+                $ref: '#/components/schemas/AutoPass'            
             cargoList:
               type: array
               description: Табличная часть со списком грузов к погрузке в заявке
@@ -577,11 +569,6 @@ components:
             - guid
             - operation
             - cargoList
-
-
-  
-
-
 
 paths:
   /auth/login:
@@ -1863,316 +1850,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
- 
-
-  /passes:
-    get:
-      tags:
-        - Пропуска
-      summary: Получить список пропусков
-      description: Возвращает список всех пропусков с поддержкой пагинации.
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: true
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество пропусков на странице
-          required: true
-          schema:
-            type: integer
-            default: 10
-        - name: startDate
-          in: query
-          description: Дата начала периода
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          description: Дата окончания периода
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: type
-          in: query
-          description: Тип пропуска (Пешеходный или Автомобильный)
-          required: false
-          schema:
-            type: string
-            enum: ["Пешеходный", "Автомобильный"]            
-      responses:
-        '200':
-          description: Список пропусков успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество пропусков
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество пропусков на странице
-                  passes:
-                    type: array
-                    items:
-                      oneOf:
-                        - $ref: '#/components/schemas/DriverPass'
-                        - $ref: '#/components/schemas/PersonaPass'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - passes
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+  /passes/requests/autopass:
     post:
       tags:
         - Пропуска
-      summary: Создать пропуск
-      description: Создает новый пропуск.
-      parameters:
-        - name: passType
-          in: query
-          description: Тип заявки (пешеходный или автомобильный)
-          required: true
-          schema:
-            type: string
-            enum: ["Пешеходный", "Автомобильный"]             
+      summary: Создать заявку на автомобильный пропуск в порт
+      description: Создает заявку на получение автомобильного пропуска в порт на определенный период.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
       requestBody:
+        description: Данные для создания заявки на пропуск
         required: true
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/DriverPass'
-                - $ref: '#/components/schemas/PersonaPass'
-      responses:
-        '201':
-          description: Пропуск успешно создан
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  
-  /passes/{guid}:
-    get:
-      tags:
-        - Пропуска
-      summary: Получить пропуск по ID
-      description: Возвращает данные пропуска по его уникальному идентификатору.
-      parameters:
-        - name: id
-          in: path
-          description: Уникальный идентификатор пропуска
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Данные пропуска успешно получены
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+              $ref: '#/components/schemas/AutoPassRequest'
 
-    put:
-      tags:
-        - Пропуска
-      summary: Обновить пропуск
-      description: Обновляет данные существующего пропуска.
-      parameters:
-        - name: id
-          in: path
-          description: Уникальный идентификатор пропуска
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/DriverPass'
-                - $ref: '#/components/schemas/PersonaPass'
-      responses:
-        '200':
-          description: Пропуск успешно обновлен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  
-    delete:
-      tags:
-        - Пропуска
-      summary: Удалить пропуск
-      description: Удаляет пропуск по его уникальному идентификатору.
-      parameters:
-        - name: id
-          in: path
-          description: Уникальный идентификатор пропуска
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Пропуск успешно удален
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-
-
-  /pass-requests:
-    post:
-      tags:
-        - Заявки на пропуска
-      summary: Создать заявку на пропуск в порт
-      description: Создает новую заявку на пропуск в порт, как для пешеходов (гостей), так и для водителей на автомобиле.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/PersonaPassRequest'
-                - $ref: '#/components/schemas/DriverPassRequest'
       responses:
         '201':
           description: Заявка успешно создана
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                required:
+                  - guid
         '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /pass-requests/{guid}:
     get:
       tags:
-        - Заявки на пропуска
-      summary: Получить заявку по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+        - Пропуска
+      summary: Получить список заявок на автомобильный пропуск
+      description: Возвращает список заявок на получение автомобильного пропуска в порт.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
       parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: string
-        - name: type
-          in: query
-          description: Тип заявки (пешеходный или автомобильный)
-          required: true
-          schema:
-            type: string
-            enum: [persona, driver]
-      responses:
-        '200':
-          description: Данные заявки успешно получены
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /pass-requests/search:
-    get:
-      tags:
-        - Заявки на пропуска
-      summary: Получить список заявок
-      description: Возвращает список заявок на пропуск с возможностью фильтрации по периоду и типу.
-      parameters:
-        - name: startDate
-          in: query
-          description: Дата начала периода
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          description: Дата окончания периода
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: type
-          in: query
-          description: Тип заявки (пешеходный или автомобильный)
-          required: false
-          schema:
-            type: string
-            enum: [persona, driver]
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -2187,6 +1909,7 @@ paths:
           schema:
             type: integer
             default: 10
+
       responses:
         '200':
           description: Список заявок успешно получен
@@ -2207,16 +1930,14 @@ paths:
                   requests:
                     type: array
                     items:
-                      oneOf:
-                        - $ref: '#/components/schemas/PersonaPassRequest'
-                        - $ref: '#/components/schemas/DriverPassRequest'
+                      $ref: '#/components/schemas/AutoPassRequest'
                 required:
                   - total
                   - page
                   - pageSize
                   - requests
         '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
@@ -2227,3 +1948,374 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/requests/autopass/{guid}:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить данные заявки по GUID
+      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные пропуска успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoPassRequest'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуск не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/requests/personapass:
+    post:
+      tags:
+        - Пропуска
+      summary: Создать заявку на пеший пропуск в порт
+      description: Создает заявку на получение пешего пропуска в порт на определенный период.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        description: Данные для создания заявки на пропуск
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonaPassRequest'
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                required:
+                  - guid
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      tags:
+        - Пропуска
+      summary: Получить список заявок на пеший пропуск
+      description: Возвращает список заявок на получение пешего пропуска в порт.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество заявок на странице
+          required: true
+          schema:
+            type: integer
+            default: 10
+
+      responses:
+        '200':
+          description: Список заявок успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество заявок
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество заявок на странице
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PersonaPassRequest'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - requests
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/requests/personapass/{guid}:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить данные заявки по GUID
+      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные пропуска успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonaPassRequest'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуск не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/autopass:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить список автомобильных пропусков
+      description: Возвращает автомобильных пропусков
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество пропусков на странице
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список пропусков успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее пропусков водителей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество пропусков на странице
+                  pass:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AutoPass'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - drivers
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуска не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /passes/autopass/{guid}:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить автомобильный пропуск по GUID
+      description: Возвращает автомобильный пропуск по его уникальному идентификатору (GUID).
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор пропуска
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Пропуск успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoPass'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуск не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /passes/personapass:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить список пешеходных пропусков
+      description: Возвращает пешеходных пропусков
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество пропусков на странице
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список пропусков успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее пропусков 
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество пропусков на странице
+                  pass:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PersonaPass'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - drivers
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуска не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /passes/personapass/{guid}:
+    get:
+      tags:
+        - Пропуска
+      summary: Получить пешеходный пропуск по GUID
+      description: Возвращает пешеходный пропуск по его уникальному идентификатору (GUID).
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор пропуска
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Пропуск успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonaPass'
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуск не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
+
