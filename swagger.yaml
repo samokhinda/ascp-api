@@ -1941,42 +1941,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    post:
-      tags:
-        - Пропуска
-      summary: Создать пропуск
-      description: Создает новый пропуск.
-      parameters:
-        - name: passType
-          in: query
-          description: Тип заявки (пешеходный или автомобильный)
-          required: true
-          schema:
-            type: string
-            enum: ["Пешеходный", "Автомобильный"]             
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/DriverPass'
-                - $ref: '#/components/schemas/PersonaPass'
-      responses:
-        '201':
-          description: Пропуск успешно создан
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+    # post:
+    #   tags:
+    #     - Пропуска
+    #   summary: Создать пропуск
+    #   description: Создает новый пропуск.
+    #   parameters:
+    #     - name: passType
+    #       in: query
+    #       description: Тип заявки (пешеходный или автомобильный)
+    #       required: true
+    #       schema:
+    #         type: string
+    #         enum: ["Пешеходный", "Автомобильный"]             
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           oneOf:
+    #             - $ref: '#/components/schemas/DriverPass'
+    #             - $ref: '#/components/schemas/PersonaPass'
+    #   responses:
+    #     '201':
+    #       description: Пропуск успешно создан
+    #       content:
+    #         application/json:
+    #           schema:
+    #             oneOf:
+    #               - $ref: '#/components/schemas/DriverPass'
+    #               - $ref: '#/components/schemas/PersonaPass'
+    #     '400':
+    #       description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/ErrorResponse'
   
   /passes/{guid}:
     get:
@@ -2007,69 +2007,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-    put:
-      tags:
-        - Пропуска
-      summary: Обновить пропуск
-      description: Обновляет данные существующего пропуска.
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор пропуска
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/DriverPass'
-                - $ref: '#/components/schemas/PersonaPass'
-      responses:
-        '200':
-          description: Пропуск успешно обновлен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '400':
-          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  
-    delete:
-      tags:
-        - Пропуска
-      summary: Удалить пропуск
-      description: Удаляет пропуск по его уникальному идентификатору.
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор пропуска
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Пропуск успешно удален
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+    # put:
+    #   tags:
+    #     - Пропуска
+    #   summary: Обновить пропуск
+    #   description: Обновляет данные существующего пропуска.
+    #   parameters:
+    #     - name: guid
+    #       in: path
+    #       description: Уникальный идентификатор пропуска
+    #       required: true
+    #       schema:
+    #         type: string
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           oneOf:
+    #             - $ref: '#/components/schemas/DriverPass'
+    #             - $ref: '#/components/schemas/PersonaPass'
+    #   responses:
+    #     '200':
+    #       description: Пропуск успешно обновлен
+    #       content:
+    #         application/json:
+    #           schema:
+    #             oneOf:
+    #               - $ref: '#/components/schemas/DriverPass'
+    #               - $ref: '#/components/schemas/PersonaPass'
+    #     '400':
+    #       description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/ErrorResponse'
+    #     '404':
+    #       description: Пропуск не найден
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/ErrorResponse'
+    # delete:
+    #   tags:
+    #     - Пропуска
+    #   summary: Удалить пропуск
+    #   description: Удаляет пропуск по его уникальному идентификатору.
+    #   parameters:
+    #     - name: guid
+    #       in: path
+    #       description: Уникальный идентификатор пропуска
+    #       required: true
+    #       schema:
+    #         type: string
+    #   responses:
+    #     '204':
+    #       description: Пропуск успешно удален
+    #     '404':
+    #       description: Пропуск не найден
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/ErrorResponse'
 
 
 
