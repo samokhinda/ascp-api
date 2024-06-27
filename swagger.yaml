@@ -2303,11 +2303,10 @@ paths:
                 properties:
                   photos:
                     type: array
-                    description: Список URL-адресов фотографий груза
+                    description: Список фотографий груза
                     items:
                       type: string
-                      format: uri
-                      example: "https://example.com/photos/photo1.jpg"
+                      format: binary
                 required:
                   - photos
         '404':
