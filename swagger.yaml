@@ -2025,3 +2025,253 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /vesselcalls:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить судозаходы за период
+      description: Возвращает список судозаходов за указанный период с возможностью фильтрации по судам и пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Начальная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-01"
+        - name: endDate
+          in: query
+          required: false
+          description: Конечная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-31"
+        - name: vesselName
+          in: query
+          required: false
+          description: Название судна для фильтрации
+          schema:
+            type: string
+            example: "MSC Zoe"
+        - name: status
+          in: query
+          required: false
+          description: Статус
+          schema:
+            type: string
+            example: "Ожидается"        
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество судозаходов на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список судозаходов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество судозаходов
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество судозаходов на странице
+                  vesselCalls:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselCall'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - vesselCalls
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+  /vesselcalls/{callId}:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить данные по судозаходу
+      description: Возвращает данные по указанному идентификатору судозахода.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: callId
+          in: path
+          required: true
+          description: Уникальный идентификатор судозахода
+          schema:
+            type: string
+            example: "VC123456"
+      responses:
+        '200':
+          description: Данные по судозаходу успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VesselCall'
+        '404':
+          description: Судозаход не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Судозаход не найден"
+
+  /cargoes:
+    get:
+      tags:
+        - Грузы
+      summary: Получить информацию о наличии груза клиента на складских комплексах порта
+      description: Возвращает информацию о наличии груза клиента на складских комплексах и складских зонах порта на указанную дату с пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: Дата проверки наличия груза (по умолчанию текущая дата)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-01"
+            default: "Текущая дата"
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: "Складской комплекс 1"            
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество записей на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Информация о наличии груза успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  cargoAvailability:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        warehouse:
+                          type: string
+                          description: Складской комплекс
+                          example: "Складской комплекс 1"
+                        warehouseZone:
+                          type: string
+                          description: Складская зона
+                          example: "Зона A"
+                        cargoes:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Cargo'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - cargoAvailability
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+
+  /cargoes/{guid}:
+    get:
+      tags:
+        - Грузы
+      summary: Получить информацию о единице груза
+      description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Информация о грузе успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cargo'
+        '404':
+          description: Груз не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден"
