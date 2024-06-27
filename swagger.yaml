@@ -235,7 +235,7 @@ components:
     VesselCall:
       type: object
       properties:
-        callId:
+        guid:
           type: string
           description: Уникальный идентификатор судозахода
           readOnly: true            
@@ -1645,7 +1645,7 @@ paths:
       tags:
         - Заявки на погрузку / выгрузку грузов
       summary: Получить заявку по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+      description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -1793,7 +1793,7 @@ paths:
       tags:
         - Заявки на пропуск
       summary: Получить заявку по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
+      description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -1939,8 +1939,8 @@ paths:
     get:
       tags:
         - Пропуска
-      summary: Получить пропуск по ID
-      description: Возвращает данные пропуска по его уникальному идентификатору.
+      summary: Получить пропуск по уникальному идентификатору
+      description: Возвращает данные пропуска по его уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -2116,12 +2116,12 @@ paths:
                   message:
                     type: string
                     example: "Неверные параметры запроса"
-  /vesselcalls/{callId}:
+  /vesselcalls/{guid}:
     get:
       tags:
         - Судозаходы
       summary: Получить данные по судозаходу
-      description: Возвращает данные по указанному идентификатору судозахода.
+      description: Возвращает данные по указанному идентификатору судозахода  `guid`.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
