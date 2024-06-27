@@ -2275,3 +2275,48 @@ paths:
                   message:
                     type: string
                     example: "Груз не найден"
+
+  /cargoes/{guid}/photos:
+    get:
+      tags:
+        - Грузы
+      summary: Получить фотографии груза
+      description: Возвращает список фотографий, приложенных к указанной единице груза.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Фотографии груза успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    description: Список URL-адресов фотографий груза
+                    items:
+                      type: string
+                      format: uri
+                      example: "https://example.com/photos/photo1.jpg"
+                required:
+                  - photos
+        '404':
+          description: Груз не найден или фотографии не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден или фотографии не найдены"
