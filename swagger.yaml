@@ -373,7 +373,7 @@ components:
         - manager
         - signer
         - status
-    ### Полиморфная схема заявки (Request)
+    ### Полиморфная схема заявок на погрузку / выгрузку
     CargoRequest:
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
@@ -393,10 +393,23 @@ components:
           required:
             - requestType
             - operation
+    ### Полиморфная схема заявки на пропуск
+    PassRequest:    
+      allOf:
+        - $ref: '#/components/schemas/RequestCommon'
+        - type: object
+          properties:
+            requestType:
+              $ref: '#/components/schemas/RequestType' 
+          oneOf:
+            - $ref: '#/components/schemas/DriverPassRequest'
+            - $ref: '#/components/schemas/PersonaPassRequest'
+          required:
+            - requestType
     ### Схема для заявки на пропуск для водителя
     DriverPassRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        # - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             guid:
@@ -448,7 +461,7 @@ components:
     ### Схема для заявок на пеший пропуск
     PersonaPassRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        # - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             guid:
@@ -588,7 +601,7 @@ components:
     ### Схема заявки на ввоз или вывоз груза автомобилем
     CarCargoRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        # - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             # guid:
@@ -638,7 +651,7 @@ components:
     ### Схема заявки на погрузку или выгрузку судна
     VesselCargoRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        # - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             vesselCall:
@@ -662,7 +675,7 @@ components:
     ### Схема заявки на погрузку или выгрузку ЖД
     RailCargoRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        # - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
             # guid:
@@ -1051,6 +1064,7 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "01-10-2024"
                       description: Дата
                     terminals:
                       type: array
@@ -2127,7 +2141,7 @@ paths:
         - ApiKeyAuth: []
         - bearerAuth: []
       parameters:
-        - name: callId
+        - name: guid
           in: path
           required: true
           description: Уникальный идентификатор судозахода
