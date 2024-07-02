@@ -256,12 +256,14 @@ components:
           type: string
           format: date-time
           description: Дата и время прибытия судна
-          example: "2023-10-01T12:00:00Z"
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"
         departureDate:
           type: string
           format: date-time
           description: Дата и время отправления судна
-          example: "2023-10-03T18:00:00Z"
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"
         berth:
           type: string
           description: Номер причала
@@ -364,6 +366,8 @@ components:
         createdDate:
           type: string
           format: date-time
+          example: "07-02-2024T06:32:49Z"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
           readOnly: true
           description: Дата и время создания заявки
       required:
@@ -526,12 +530,14 @@ components:
                   type: string
                   format: date
                   description: Дата начала аккредитации
-                  example: "2023-11-01"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                 endDate:
                   type: string
                   format: date
                   description: Дата окончания аккредитации
-                  example: "2023-11-30"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
               required:
                 - startDate
                 - endDate
@@ -576,12 +582,14 @@ components:
                   type: string
                   format: date
                   description: Дата начала аккредитации
-                  example: "2023-11-01"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                 endDate:
                   type: string
                   format: date
                   description: Дата окончания аккредитации
-                  example: "2023-11-30"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
               required:
                 - startDate
                 - endDate
@@ -622,12 +630,14 @@ components:
                   type: string
                   format: date
                   description: Дата прибытия
-                  example: "2023-11-01"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                 endDate:
                   type: string
                   format: date
                   description: Дата убытия
-                  example: "2023-11-30"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
               required:
                 - startDate
                 - endDate            
@@ -1044,6 +1054,8 @@ paths:
           schema:
             type: string
             format: date
+            example: "10-01-2024"
+            pattern: "^\\d{2}-\\d{2}-\\d{4}$"            
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -1064,7 +1076,8 @@ paths:
                     date:
                       type: string
                       format: date
-                      example: "01-10-2024"
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                       description: Дата
                     terminals:
                       type: array
@@ -1142,6 +1155,8 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"                         
                       description: Дата
                     terminals:
                       type: array
@@ -1200,7 +1215,7 @@ paths:
           required: true
           schema:
             type: string
-            format: date
+            format: date            
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -1221,6 +1236,8 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"                         
                       description: Дата
                     terminals:
                       type: array
@@ -1461,6 +1478,8 @@ paths:
                         createdDate:
                           type: string
                           format: date-time
+                          example: "07-02-2024T06:32:49Z"
+                          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
                           description: Дата и время создания заявки
                 required:
                   - total
