@@ -512,210 +512,190 @@ components:
             - persons
     ### Схема для пропуска на водителя
     DriverPass:
-      allOf:
-        - type: object
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор пропуска
+          readOnly: true
+        passType:
+          type: string
+          description: Тип пропуска
+          enum: ["Автомобильный", "Пешеходный"]
+        accessPeriod:
+          type: object
           properties:
-            guid:
+            startDate:
               type: string
-              description: Уникальный идентификатор пропуска
-              readOnly: true
-            passType:
+              format: date
+              description: Дата начала аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
               type: string
-              description: Тип пропуска
-              enum: ["Автомобильный", "Пешеходный"]                
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала аккредитации
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания аккредитации
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            driver:
-              type: object
-              properties:
-                persona:
-                  $ref: '#/components/schemas/Person'
-                auto:
-                  $ref: '#/components/schemas/Auto'
-              required:
-                - persona
-                - auto
+              format: date
+              description: Дата окончания аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
           required:
-            - accessPeriod
-            - location
-            - driver
-    ### Схема для пропуска на пешехода
-    PersonaPass:
-      allOf:
-        - type: object
+            - startDate
+            - endDate
+        location:
+          type: string
+          description: Терминал, на который разрешен проезд
+          enum: ["Экономия", "Бакарица"]
+          example: "Экономия"
+        driver:
+          type: object
           properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор пропуска
-              readOnly: true
-            passType:
-              type: string
-              description: Тип пропуска
-              enum: ["Пешеходный", "Автомобильный"]                  
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала аккредитации
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания аккредитации
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
             persona:
               $ref: '#/components/schemas/Person'
+            auto:
+              $ref: '#/components/schemas/Auto'
           required:
-            - accessPeriod
-            - location
-            - persona            
+            - persona
+            - auto
+      required:
+        - accessPeriod
+        - location
+        - driver
+    ### Схема для пропуска на пешехода
+    PersonaPass:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор пропуска
+          readOnly: true
+        passType:
+          type: string
+          description: Тип пропуска
+          enum: ["Пешеходный", "Автомобильный"]                  
+        accessPeriod:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              description: Дата начала аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
+              type: string
+              format: date
+              description: Дата окончания аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+          required:
+            - startDate
+            - endDate
+        location:
+          type: string
+          description: Терминал, на который разрешен проезд
+          enum:
+            - "Экономия"
+            - "Бакарица"
+          example: "Экономия"
+        persona:
+          $ref: '#/components/schemas/Person'
+      required:
+        - accessPeriod
+        - location
+        - persona            
     ### Схема заявки на ввоз или вывоз груза автомобилем
     CarCargoRequest:
-      allOf:
-        # - $ref: '#/components/schemas/RequestCommon'
-        - type: object
+      type: object
+      properties:
+        # guid:
+        #   type: string
+        #   description: Уникальный идентификатор заявки
+        #   readOnly: true
+        # requestType:
+        #   $ref: '#/components/schemas/RequestType'                  
+        # operation:
+        #   type: string
+        #   description: Вид операции по заявке
+        #   example: "Погрузка"
+        period:
+          type: object
+          description: Дата автовизита
           properties:
-            # guid:
-            #   type: string
-            #   description: Уникальный идентификатор заявки
-            #   readOnly: true
-            # requestType:
-            #   $ref: '#/components/schemas/RequestType'                  
-            # operation:
-            #   type: string
-            #   description: Вид операции по заявке
-            #   example: "Погрузка"
-            period:
-              type: object
-              description: Дата автовизита
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата прибытия
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата убытия
-                  example: "10-01-2024"
-                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
-              required:
-                - startDate
-                - endDate            
-            drivertList:
-              type: array
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/DriverPass'            
-            cargoList:
-              type: array
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/Cargo'
+            startDate:
+              type: string
+              format: date
+              description: Дата прибытия
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
+              type: string
+              format: date
+              description: Дата убытия
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
           required:
-            - guid
-            - requestType
-            - operation
-            - period
-            - drivertList
-            - cargoList
+            - startDate
+            - endDate            
+        drivertList:
+          type: array
+          description: Табличная часть со списком водителей
+          items:
+            $ref: '#/components/schemas/DriverPass'            
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - requestType
+        - operation
+        - period
+        - drivertList
+        - cargoList
     ### Схема заявки на погрузку или выгрузку судна
     VesselCargoRequest:
-      allOf:
-        # - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            vesselCall:
-              $ref: '#/components/schemas/VesselCall'                
-            # requestType:
-            #   $ref: '#/components/schemas/RequestType'                  
-            # operation:
-            #   type: string
-            #   description: Вид операции по заявке
-            #   example: "Погрузка"
-            cargoList:
-              type: array  
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/Cargo'
-          required:
-            - guid
-            - requestType
-            - operation
-            - cargoList
+      type: object
+      properties:
+        vesselCall:
+          $ref: '#/components/schemas/VesselCall'                
+        # requestType:
+        #   $ref: '#/components/schemas/RequestType'                  
+        # operation:
+        #   type: string
+        #   description: Вид операции по заявке
+        #   example: "Погрузка"
+        cargoList:
+          type: array  
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - requestType
+        - operation
+        - cargoList
     ### Схема заявки на погрузку или выгрузку ЖД
     RailCargoRequest:
-      allOf:
-        # - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            # guid:
-            #   type: string
-            #   description: Уникальный идентификатор заявки
-            #   readOnly: true
-            # requestType:
-            #   $ref: '#/components/schemas/RequestType'                      
-            # operation:
-            #   type: string
-            #   description: Вид операции по заявке
-            #   example: "Погрузка"
-            departureStation:
-              type: string
-              description: Станция отправления
-              example: "СОЛОМБАЛКА"
-            wagons:
-              type: integer
-              description: Количество вагонов
-              example: 2
-            cargoList:
-              type: array  
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/Cargo'
-          required:
-            - guid
-            - requestType
-            - operation
-            - cargoList
+      type: object
+      properties:
+        departureStation:
+          type: string
+          description: Станция отправления
+          example: "СОЛОМБАЛКА"
+        wagons:
+          type: integer
+          description: Количество вагонов
+          example: 2
+        cargoList:
+          type: array  
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - requestType
+        - operation
+        - cargoList
 
 paths:
   /auth/login:
@@ -1104,12 +1084,17 @@ paths:
                             type: number
                             format: float
                             description: Фрахтовые единицы выгрузки
-
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
@@ -1188,6 +1173,12 @@ paths:
                             description: Количество обработанных вагонов
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1273,6 +1264,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
           content:
@@ -1329,6 +1326,12 @@ paths:
                             description: Фрахтовые единицы груза
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1394,6 +1397,12 @@ paths:
                             description: Количество растаренных контейнеров
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1492,6 +1501,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Документы не найдены
           content:
@@ -1551,6 +1566,12 @@ paths:
                   - requestTypes
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1635,6 +1656,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Заявки не найдены
           content:
@@ -1672,6 +1699,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /requests/{guid}:
     get:
@@ -1695,6 +1728,12 @@ paths:
                 $ref: '#/components/schemas/CargoRequest'
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1782,6 +1821,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Заявки не найдены
           content:
@@ -1820,6 +1865,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
   /passes/requests/{guid}:
     get:
@@ -1845,6 +1897,12 @@ paths:
                   - $ref: '#/components/schemas/DriverPass'
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1932,6 +1990,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     # post:
     #   tags:
     #     - Пропуска
@@ -1990,6 +2055,12 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/DriverPass'
                   - $ref: '#/components/schemas/PersonaPass'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Пропуск не найден
           content:
@@ -2149,6 +2220,12 @@ paths:
                   message:
                     type: string
                     example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /vesselcalls/{guid}:
     get:
@@ -2174,6 +2251,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/VesselCall'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Судозаход не найден
           content:
@@ -2202,7 +2285,7 @@ paths:
           schema:
             type: string
             format: date
-            example: "2023-10-01"
+            example: "10-01-2023"
             default: "Текущая дата"
         - name: warehouse
           in: query
@@ -2274,6 +2357,12 @@ paths:
                   message:
                     type: string
                     example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /cargoes/{guid}:
     get:
@@ -2299,6 +2388,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cargo'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Груз не найден
           content:
@@ -2343,6 +2438,12 @@ paths:
                       format: binary
                 required:
                   - photos
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Груз не найден или фотографии не найдены
           content:
