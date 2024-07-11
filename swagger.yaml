@@ -329,6 +329,10 @@ components:
           type: string
           description: Уникальный идентификатор заявки
           readOnly: true      
+        documentId:
+          type: string
+          description: Номер документа
+          readOnly: true      
         client:
           type: string
           description: Клиент порта
