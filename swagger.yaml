@@ -222,10 +222,10 @@ components:
           type: string
           description: Статус грузового места
           enum: ["Погружен", "На складе", "Запланирован"]
-        docNumber:
+        documentId:
           type: string
           description: Номер приемного акта порта 
-          example: "000002134-НН"
+          example: "0000041334"
 
       required:
         - name
@@ -309,17 +309,17 @@ components:
         - name
         - cost
     ### Схема для получения типов заявок      
-    RequestType:
+    RequestName:
       type: string
       description: Тип заявки
       enum:
         - "Погрузка/выгрузка судна"
         - "Погрузка/выгрузка автомобиля"
-        - "Погрузка/выгрузка ЖД"        
-        - "Пешеходный пропуск"
-        - "Автомобильны пропуск"
-        - "Услуги буксира"
-        - "Складские Операции"
+        - "Погрузка/выгрузка ЖД"   
+        # - "Пешеходный пропуск"
+        # - "Автомобильны пропуск"
+        # - "Услуги буксира"
+        - "Складская операция"
       example: "Заявка на операцию"
     ### Общие реквизиты заявки 
     RequestCommon:
@@ -329,10 +329,12 @@ components:
           type: string
           description: Уникальный идентификатор заявки
           readOnly: true      
+          example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
         documentId:
           type: string
           description: Номер документа
           readOnly: true      
+          example: "000078945"
         client:
           type: string
           description: Клиент порта
@@ -387,9 +389,9 @@ components:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            requestType:
-              $ref: '#/components/schemas/RequestType'    
-            operation:
+            requestName:
+              $ref: '#/components/schemas/RequestName'
+            operationType:
               type: string
               description: Вид операции по заявке
               enum: ["Погрузка", "Разгрузка"]
@@ -399,21 +401,52 @@ components:
             - $ref: '#/components/schemas/VesselCargoRequest'
             - $ref: '#/components/schemas/RailCargoRequest'    
           required:
-            - requestType
+            - RequestName
             - operation
+
+    # CargoRequest:
+    #     allOf:
+    #       - $ref: '#/components/schemas/RequestCommon'
+    #       - type: object
+    #         properties:
+    #           RequestName:
+    #             $ref: '#/components/schemas/RequestName'
+    #           operation:
+    #             type: string
+    #             description: Вид операции по заявке
+    #             enum: ["Погрузка", "Разгрузка"]
+    #             example: "Погрузка"
+    #           cargoList:
+    #             oneOf:
+    #               - type: array
+    #                 description: Табличная часть со списком грузов к погрузке в заявке
+    #                 items:
+    #                   $ref: '#/components/schemas/Cargo'
+    #               - type: array
+    #                 description: Табличная часть со списком грузов к разгрузке в заявке (строковые значения)
+    #                 items:
+    #                   type: string
+    #         required:
+    #           - RequestName
+    #           - operation
+
+
+
+
+
     ### Полиморфная схема заявки на пропуск
     PassRequest:    
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            requestType:
-              $ref: '#/components/schemas/RequestType' 
+            RequestName:
+              $ref: '#/components/schemas/RequestName' 
           oneOf:
             - $ref: '#/components/schemas/DriverPassRequest'
             - $ref: '#/components/schemas/PersonaPassRequest'
           required:
-            - requestType
+            - RequestName
     ### Схема для заявки на пропуск для водителя
     DriverPassRequest:
       allOf:
@@ -424,8 +457,8 @@ components:
               type: string
               description: Уникальный идентификатор заявки
               readOnly: true
-            requestType:
-              $ref: '#/components/schemas/RequestType'    
+            RequestName:
+              $ref: '#/components/schemas/RequestName'    
             accessPeriod:
               type: object
               properties:
@@ -462,7 +495,7 @@ components:
                   - driver
                   - auto
           required:
-            - requestType
+            - RequestName
             - accessPeriod
             - location
             - drivers
@@ -476,8 +509,8 @@ components:
               type: string
               description: Уникальный идентификатор заявки
               readOnly: true
-            requestType:
-              $ref: '#/components/schemas/RequestType'                  
+            RequestName:
+              $ref: '#/components/schemas/RequestName'                  
             accessPeriod:
               type: object
               properties:
@@ -610,16 +643,6 @@ components:
     CarCargoRequest:
       type: object
       properties:
-        # guid:
-        #   type: string
-        #   description: Уникальный идентификатор заявки
-        #   readOnly: true
-        # requestType:
-        #   $ref: '#/components/schemas/RequestType'                  
-        # operation:
-        #   type: string
-        #   description: Вид операции по заявке
-        #   example: "Погрузка"
         period:
           type: object
           description: Дата автовизита
@@ -644,14 +667,27 @@ components:
           description: Табличная часть со списком водителей
           items:
             $ref: '#/components/schemas/DriverPass'            
+
         cargoList:
-          type: array
-          description: Табличная часть со списком грузов к погрузке в заявке
-          items:
-            $ref: '#/components/schemas/Cargo'
+          oneOf:
+            - type: array
+              description: Табличная часть со списком грузов к погрузке в заявке
+              items:
+                $ref: '#/components/schemas/Cargo'
+            - type: array
+              description: Табличная часть со списком грузов к разгрузке в заявке (строковые значения)
+              items:
+                type: string
+
+
+        # cargoList:
+        #   type: array
+        #   description: Табличная часть со списком грузов к погрузке в заявке
+        #   items:
+        #     $ref: '#/components/schemas/Cargo'
       required:
         - guid
-        - requestType
+        - RequestName
         - operation
         - period
         - drivertList
@@ -662,8 +698,8 @@ components:
       properties:
         vesselCall:
           $ref: '#/components/schemas/VesselCall'                
-        # requestType:
-        #   $ref: '#/components/schemas/RequestType'                  
+        # RequestName:
+        #   $ref: '#/components/schemas/RequestName'                  
         # operation:
         #   type: string
         #   description: Вид операции по заявке
@@ -675,7 +711,7 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - guid
-        - requestType
+        - RequestName
         - operation
         - cargoList
     ### Схема заявки на погрузку или выгрузку ЖД
@@ -697,7 +733,7 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - guid
-        - requestType
+        - RequestName
         - operation
         - cargoList
 
@@ -1518,7 +1554,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /requests/types:
+  /requests/name:
     get:
       tags:
         - Заявки на погрузку / выгрузку грузов
@@ -1559,15 +1595,15 @@ paths:
                   pageSize:
                     type: integer
                     description: Количество типов заявок на странице
-                  requestTypes:
+                  RequestNames:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestType'
+                      $ref: '#/components/schemas/RequestName'
                 required:
                   - total
                   - page
                   - pageSize
-                  - requestTypes
+                  - RequestNames
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -1622,12 +1658,20 @@ paths:
           schema:
             type: integer
             default: 10
-        - name: requestType
+        - name: requestName
           in: query
           description: Тип заявки
           required: false
           schema:
-            type: string           
+            type: string  
+        - name: operationType
+          in: query
+          description: Вид операции по заявке
+          required: false
+          schema:
+            type: string            
+            enum: ["Погрузка", "Разгрузка"]
+
       responses:
         '200':
           description: Список заявок успешно получен
