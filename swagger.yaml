@@ -13,7 +13,7 @@ info:
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/   
+  - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/ 
 
 tags:
   - name: Авторизация 
@@ -403,50 +403,45 @@ components:
           required:
             - RequestName
             - operation
-
-    # CargoRequest:
-    #     allOf:
-    #       - $ref: '#/components/schemas/RequestCommon'
-    #       - type: object
-    #         properties:
-    #           RequestName:
-    #             $ref: '#/components/schemas/RequestName'
-    #           operation:
-    #             type: string
-    #             description: Вид операции по заявке
-    #             enum: ["Погрузка", "Разгрузка"]
-    #             example: "Погрузка"
-    #           cargoList:
-    #             oneOf:
-    #               - type: array
-    #                 description: Табличная часть со списком грузов к погрузке в заявке
-    #                 items:
-    #                   $ref: '#/components/schemas/Cargo'
-    #               - type: array
-    #                 description: Табличная часть со списком грузов к разгрузке в заявке (строковые значения)
-    #                 items:
-    #                   type: string
-    #         required:
-    #           - RequestName
-    #           - operation
-
-
-
-
-
     ### Полиморфная схема заявки на пропуск
     PassRequest:    
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            RequestName:
-              $ref: '#/components/schemas/RequestName' 
+            createdDate:
+              type: string
+              format: date-time
+              description: Дата и время создания заявки
+              example: "2023-11-01T12:00:00Z"
+            documentId:
+              type: string
+              description: Номер документа
+              example: "000012345"          
+            requestName:
+              type: string
+              enum:
+                - "Пешеходный пропуск"
+                - "Автомобильный пропуск"
+              description: Тип заявки на пропуск
+            status:
+              type: string
+              description: Статус заявки
+              enum:
+                - "Черновик"
+                - "Создана"
+                - "В обработке"
+                - "Одобрена"
+                - "Отклонена"
+              example: "В обработке"              
           oneOf:
             - $ref: '#/components/schemas/DriverPassRequest'
             - $ref: '#/components/schemas/PersonaPassRequest'
           required:
-            - RequestName
+            - requestName
+            - createdDate
+            - documentId 
+            - status                       
     ### Схема для заявки на пропуск для водителя
     DriverPassRequest:
       allOf:
@@ -457,8 +452,8 @@ components:
               type: string
               description: Уникальный идентификатор заявки
               readOnly: true
-            RequestName:
-              $ref: '#/components/schemas/RequestName'    
+            # RequestName:
+            #   $ref: '#/components/schemas/RequestName'    
             accessPeriod:
               type: object
               properties:
@@ -495,7 +490,7 @@ components:
                   - driver
                   - auto
           required:
-            - RequestName
+            # - RequestName
             - accessPeriod
             - location
             - drivers
@@ -509,8 +504,8 @@ components:
               type: string
               description: Уникальный идентификатор заявки
               readOnly: true
-            RequestName:
-              $ref: '#/components/schemas/RequestName'                  
+            # RequestName:
+            #   $ref: '#/components/schemas/RequestName'                  
             accessPeriod:
               type: object
               properties:
@@ -1055,7 +1050,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /dashboard/ship:
     get:
       tags:
@@ -1800,6 +1794,20 @@ paths:
       summary: Получить список заявок
       description: Возвращает список заявок на пропуск с возможностью фильтрации по периоду и типу.
       parameters:
+        - name: sortBy
+          in: query
+          description: Поле для сортировки (createdDate, fullName)
+          required: false
+          schema:
+            type: string
+            enum: [createdDate, fullName]
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки (asc для возрастания, desc для убывания)
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]      
         - name: startDate
           in: query
           description: Дата начала периода
@@ -1814,13 +1822,20 @@ paths:
           schema:
             type: string
             format: date
-        - name: passType
+        # - name: passType
+        #   in: query
+        #   description: Тип заявки (пешеходный или автомобильный)
+        #   required: false
+        #   schema:
+        #     type: string
+        #     enum: [persona, driver]
+        - name: requestName
           in: query
           description: Тип заявки (пешеходный или автомобильный)
           required: false
           schema:
             type: string
-            enum: [persona, driver]
+            enum: ["Пешеходный пропуск", "Автомобильный пропуск"]
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -1855,9 +1870,7 @@ paths:
                   requests:
                     type: array
                     items:
-                      oneOf:
-                        - $ref: '#/components/schemas/PersonaPassRequest'
-                        - $ref: '#/components/schemas/DriverPassRequest'
+                      $ref: '#/components/schemas/PassRequest'
                 required:
                   - total
                   - page
@@ -1891,9 +1904,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/PersonaPassRequest'
-                - $ref: '#/components/schemas/DriverPassRequest'
+              $ref: '#/components/schemas/PassRequest'
       responses:
         '201':
           description: Заявка успешно создана
@@ -1920,6 +1931,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+                
   /passes/requests/{guid}:
     get:
       tags:
@@ -1960,7 +1972,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+    put:
+      tags:
+        - Заявки на пропуск
+      summary: Обновить заявку на пропуск
+      description: Обновляет данные существующей заявки на пропуск.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PassRequest'
+      responses:
+        '200':
+          description: Заявка успешно обновлена
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PersonaPass'
+                  - $ref: '#/components/schemas/DriverPass'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /passes:
     get:
       tags:
