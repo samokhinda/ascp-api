@@ -328,7 +328,7 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор заявки
-          readOnly: true      
+          # readOnly: true      
           example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
         documentId:
           type: string
@@ -549,7 +549,19 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор пропуска
-          readOnly: true
+          # readOnly: true
+        status:
+          type: string
+          description: Статус пропуска
+          enum:
+            - "Черновик"
+            - "Полготовлен"
+            - "Действителен"
+            - "Приостановлен"
+            - "Просрочен"
+            - "Изъят"
+            - "Отклонен"                        
+          example: "В обработке"             
         passType:
           type: string
           description: Тип пропуска
@@ -598,7 +610,18 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор пропуска
-          readOnly: true
+          # readOnly: true
+        status:
+          type: string
+          description: Статус пропуска
+          enum:
+            - "Черновик"
+            - "Полготовлен"
+            - "Действителен"
+            - "Приостановлен"
+            - "Просрочен"
+            - "Изъят"
+            - "Отклонен"           
         passType:
           type: string
           description: Тип пропуска
@@ -1951,9 +1974,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
+                $ref: '#/components/schemas/PassRequest'
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
