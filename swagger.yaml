@@ -754,6 +754,33 @@ components:
         - RequestName
         - operation
         - cargoList
+    ### Схема для сканов документов
+    Document:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор документа
+        personGuid:
+          type: string
+          description: Уникальный идентификатор физического лица
+        documentType:
+          type: string
+          description: Тип документа
+          enum: ["Паспорт", "Водительское удостоверение", "Иностранный паспорт"]
+          example: "Паспорт"
+        documentFiles:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Массив сканов документа
+
+      required:
+        - personGuid
+        - documentType
+        - documentFiles
+
 
 paths:
   /auth/login:
@@ -2584,3 +2611,342 @@ paths:
                   message:
                     type: string
                     example: "Груз не найден или фотографии не найдены"
+
+  /persons:
+    get:
+      tags:
+        - Физические лица
+      summary: Получить список физических лиц
+      description: Возвращает список физических лиц клиента с возможностью фильтрации.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: fullName
+          in: query
+          description: ФИО физического лица
+          required: false
+          schema:
+            type: string
+        - name: position
+          in: query
+          description: Должность физического лица
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список физических лиц успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  persons:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Person'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - persons
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Физические лица
+      summary: Добавить новое физическое лицо
+      description: Добавляет новое физическое лицо в справочник клиента.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: Новое физическое лицо успешно добавлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор физического лица
+                  message:
+                    type: string
+                    description: Сообщение об успешном добавлении физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /persons/{guid}:
+    get:
+      tags:
+        - Физические лица
+      summary: Получить данные физического лица
+      description: Возвращает данные физического лица по его уникальному идентификатору.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      responses:
+        '200':
+          description: Данные физического лица успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      tags:
+        - Физические лица
+      summary: Обновить данные физического лица
+      description: Обновляет данные физического лица в справочнике.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: Данные физического лица успешно обновлены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор физического лица
+                  message:
+                    type: string
+                    description: Сообщение об успешном обновлении данных физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Физические лица
+      summary: Удалить физическое лицо
+      description: Удаляет физическое лицо из справочника по его уникальному идентификатору.
+      security:
+            - ApiKeyAuth: []
+            - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      responses:
+        '200':
+          description: Физическое лицо успешно удалено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном удалении физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /persons/{guid}/documents:
+    parameters:
+      - in: path
+        name: guid
+        required: true
+        schema:
+          type: string
+        description: Уникальный идентификатор физического лица
+    get:
+      tags:
+        - Документы физических лиц
+      summary: Получить список документов физического лица
+      description: Возвращает список всех документов, прикрепленных к указанному физическому лицу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документы не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Документы физических лиц
+      summary: Добавить новый документ физического лица
+      description: Добавляет новый документ (сканы) к указанному физическому лицу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          description: Документ успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
