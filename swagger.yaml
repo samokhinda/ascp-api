@@ -2232,6 +2232,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /passes/search:
+    get:
+      tags:
+        - Справочник "Пропуска"
+      summary: Поиск пропуска по ФИО
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: fio
+          required: true
+          schema:
+            type: string
+            description: Полное имя физического лица
+      responses:
+        '200':
+          description: Поиск прошел успешно
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DriverPass'
+                  - $ref: '#/components/schemas/PersonaPass'
+
 
   /vesselcalls:
     get:
@@ -2720,7 +2745,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-    
     put:
       tags:
         - Справочник "Физические лица"
@@ -2774,7 +2798,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
     delete:
       tags:
         - Справочник "Физические лица"
@@ -2819,6 +2842,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /persons/search:
+    get:
+      tags:
+        - Справочник "Физические лица"
+      summary: Поиск физического лица по ФИО
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: fio
+          required: true
+          schema:
+            type: string
+            description: Полное имя физического лица
+      responses:
+        '200':
+          description: Поиск прошел успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
 
   /persons/{guid}/documents:
     parameters:
