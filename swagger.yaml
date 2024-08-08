@@ -115,7 +115,8 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор авто
-          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"        
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"    
+          readOnly: true    
         number:
           type: string
           description: Гос. номер автомобиля
@@ -471,9 +472,6 @@ components:
                 - "Одобрена"
                 - "Отклонена"
               example: "В обработке"              
-          # oneOf:
-          #   - $ref: '#/components/schemas/DriverPass'
-          #   - $ref: '#/components/schemas/PersonaPass'
           required:
             - requestName
             - createdDate
@@ -2052,9 +2050,6 @@ paths:
                             items:                
                               $ref: '#/components/schemas/Driver'
                         required: ["drivers"]
-
-
-
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
@@ -2092,7 +2087,6 @@ paths:
           application/json:
             schema:
               allOf:
-                # - $ref: '#/components/schemas/RequestCommon'
                 - $ref: '#/components/schemas/PassRequest'
                 - oneOf:
                     - type: object
@@ -3083,3 +3077,212 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Contract'
+
+
+  /autos:
+    get:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Получить список автотранспортных средств
+      description: Возвращает список всех автотранспортных средств с поддержкой пагинации.
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество автотранспортных средств на странице
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список автотранспортных средств успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество транспортных средств
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество транспортных средств на странице
+                  autos:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Auto'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - autos
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Добавить новое автотранспортное средство
+      description: Добавляет новое автотранспортное средство в справочник.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auto'
+      responses:
+        '201':
+          description: Новое автотранспортное средство успешно добавлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор автотранспортного средства
+                  message:
+                    type: string
+                    description: Сообщение об успешном добавлении автотранспортного средства
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /autos/{guid}:
+    get:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Получить автотранспортное средство по уникальному идентификатору
+      description: Возвращает данные автотранспортного средства по его уникальному идентификатору `guid`.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор автотранспортного средства
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные автотранспортного средства успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auto'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автотранспортное средство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Обновить данные автотранспортного средства
+      description: Обновляет данные существующего автотранспортного средства.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор автотранспортного средства
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auto'
+      responses:
+        '200':
+          description: Автотранспортное средство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auto'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автотранспортное средство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Удалить автотранспортное средство
+      description: Удаляет автотранспортное средство из справочника.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор автотранспортного средства
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Автотранспортное средство успешно удалено
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автотранспортное средство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
