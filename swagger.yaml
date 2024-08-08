@@ -49,14 +49,15 @@ components:
         message:
           type: string
           description: Сообщение об ошибке
-    ### Схема для получения типов заявок   
+    ### Схема для физического лица   
     Person:
       type: object
       properties:
         guid:
           type: string
           description: Уникальный идентификатор физлица
-          readOnly: true      
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"          
+          readOnly: false      
         fullName:
           type: string
           description: ФИО физического лица
@@ -111,6 +112,10 @@ components:
     Auto:
       type: object
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор авто
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"        
         number:
           type: string
           description: Гос. номер автомобиля
@@ -164,6 +169,14 @@ components:
         - licensePlate
         - make
         - owner
+    ### Схема для водителя
+    Driver:
+      allOf:
+        - $ref: '#/components/schemas/Person'
+        - type: object
+          properties:
+            auto:
+              $ref: '#/components/schemas/Auto'    
     ### Схема для грузового места
     Cargo:
       type: object
@@ -332,7 +345,7 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор заявки
-          # readOnly: true      
+          readOnly: true      
           example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
         documentId:
           type: string
@@ -417,7 +430,8 @@ components:
               type: string
               format: date-time
               description: Дата и время создания заявки
-              example: "2023-11-01T12:00:00Z"
+              example: "01-11-2023 12:00:00"
+              pattern: "^\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}$"
             documentId:
               type: string
               description: Номер документа
@@ -447,7 +461,7 @@ components:
                 - "Пешеходный пропуск"
                 - "Автомобильный пропуск"
               description: Тип заявки на пропуск
-            status:
+            requestStatus:
               type: string
               description: Статус заявки
               enum:
@@ -457,14 +471,15 @@ components:
                 - "Одобрена"
                 - "Отклонена"
               example: "В обработке"              
-          oneOf:
-            - $ref: '#/components/schemas/DriverPass'
-            - $ref: '#/components/schemas/PersonaPass'
+          # oneOf:
+          #   - $ref: '#/components/schemas/DriverPass'
+          #   - $ref: '#/components/schemas/PersonaPass'
           required:
             - requestName
             - createdDate
-            - documentId 
-            - status                       
+            - status     
+            - requestStatus
+            - accessPeriod            
     ### Схема для пропуска на водителя
     DriverPass:
       type: object
@@ -1958,7 +1973,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PassRequest'
+              allOf:
+                # - $ref: '#/components/schemas/RequestCommon'
+                - $ref: '#/components/schemas/PassRequest'
+                - oneOf:
+                    - type: object
+                      properties:
+                        guests:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Person'
+                      required: ["guests"]
+                    - type: object
+                      properties:
+                        drivers:
+                          type: array
+                          items:                
+                            $ref: '#/components/schemas/Driver'
+                      required: ["drivers"]
       responses:
         '201':
           description: Заявка успешно создана
@@ -1984,7 +2016,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-               
   /passes/requests/{guid}:
     get:
       tags:
@@ -2004,7 +2035,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PassRequest'
+                allOf:
+                  - $ref: '#/components/schemas/PassRequest'              
+                  - oneOf:
+                      - type: object
+                        properties:
+                          guests:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Person'
+                        required: ["guests"]
+                      - type: object
+                        properties:
+                          drivers:
+                            type: array
+                            items:                
+                              $ref: '#/components/schemas/Driver'
+                        required: ["drivers"]
+
+
+
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
@@ -2035,12 +2085,30 @@ paths:
           required: true
           schema:
             type: string
+      
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PassRequest'
+              allOf:
+                # - $ref: '#/components/schemas/RequestCommon'
+                - $ref: '#/components/schemas/PassRequest'
+                - oneOf:
+                    - type: object
+                      properties:
+                        guests:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Person'
+                      required: ["guests"]
+                    - type: object
+                      properties:
+                        drivers:
+                          type: array
+                          items:                
+                            $ref: '#/components/schemas/Driver'
+                      required: ["drivers"]
       responses:
         '200':
           description: Заявка успешно обновлена
