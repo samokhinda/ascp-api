@@ -421,7 +421,26 @@ components:
             documentId:
               type: string
               description: Номер документа
-              example: "000012345"          
+              example: "000012345"
+              readOnly: true          
+            accessPeriod:
+              type: object
+              properties:
+                startDate:
+                  type: string
+                  format: date
+                  description: Дата начала аккредитации
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+                endDate:
+                  type: string
+                  format: date
+                  description: Дата окончания аккредитации
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+              required:
+                - startDate
+                - endDate              
             requestName:
               type: string
               enum:
@@ -439,113 +458,13 @@ components:
                 - "Отклонена"
               example: "В обработке"              
           oneOf:
-            - $ref: '#/components/schemas/DriverPassRequest'
-            - $ref: '#/components/schemas/PersonaPassRequest'
+            - $ref: '#/components/schemas/DriverPass'
+            - $ref: '#/components/schemas/PersonaPass'
           required:
             - requestName
             - createdDate
             - documentId 
             - status                       
-    ### Схема для заявки на пропуск для водителя
-    DriverPassRequest:
-      allOf:
-        # - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            # RequestName:
-            #   $ref: '#/components/schemas/RequestName'    
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала аккредитации
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания аккредитации
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            drivers:
-              type: array
-              items:
-                type: object
-                properties:
-                  driver:
-                    $ref: '#/components/schemas/Person'
-                  auto:
-                    $ref: '#/components/schemas/Auto'
-                required:
-                  - driver
-                  - auto
-          required:
-            # - RequestName
-            - accessPeriod
-            - location
-            - drivers
-    ### Схема для заявок на пеший пропуск
-    PersonaPassRequest:
-      allOf:
-        # - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            # RequestName:
-            #   $ref: '#/components/schemas/RequestName'                  
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала пропуска
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания пропуска
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            persons:
-              type: array
-              items:
-                type: object
-                properties:
-                  person:
-                    $ref: '#/components/schemas/Person'
-                required:
-                  - person
-          required:
-            - accessPeriod
-            - location
-            - persons
     ### Схема для пропуска на водителя
     DriverPass:
       type: object
@@ -2050,8 +1969,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/PersonaPass'
-                  - $ref: '#/components/schemas/DriverPass'
+                  - $ref: '#/components/schemas/PassRequest'
         '400':
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
@@ -2073,7 +1991,7 @@ paths:
   /passes:
     get:
       tags:
-        - Пропуска
+        - Справочник "Пропуска"
       summary: Получить список пропусков
       description: Возвращает список всех пропусков с поддержкой пагинации.
       parameters:
@@ -2156,7 +2074,7 @@ paths:
   /passes/{guid}:
     get:
       tags:
-        - Пропуска
+        - Справочник "Пропуска"
       summary: Получить пропуск по уникальному идентификатору
       description: Возвращает данные пропуска по его уникальному идентификатору `guid`.
       parameters:
@@ -2257,7 +2175,7 @@ paths:
     #             $ref: '#/components/schemas/ErrorResponse'
     put:
       tags:
-        - Пропуска
+        - Справочник "Пропуска"
       summary: Обновить данные пропуска
       description: Обновляет данные существующего пропуска.
       parameters:
@@ -2444,7 +2362,7 @@ paths:
   /cargoes:
     get:
       tags:
-        - Грузы
+        - Справочник "Грузы"
       summary: Получить информацию о наличии груза клиента на складских комплексах порта
       description: Возвращает информацию о наличии груза клиента на складских комплексах и складских зонах порта на указанную дату с пагинацией.
       security:
@@ -2540,7 +2458,7 @@ paths:
   /cargoes/{guid}:
     get:
       tags:
-        - Грузы
+        - Справочник "Грузы"
       summary: Получить информацию о единице груза
       description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
       security:
@@ -2581,7 +2499,7 @@ paths:
   /cargoes/{guid}/photos:
     get:
       tags:
-        - Грузы
+        - Справочник "Грузы"
       summary: Получить фотографии груза
       description: Возвращает список фотографий, приложенных к указанной единице груза.
       security:
@@ -2631,7 +2549,7 @@ paths:
   /persons:
     get:
       tags:
-        - Физические лица
+        - Справочник "Физические лица"
       summary: Получить список физических лиц
       description: Возвращает список физических лиц клиента с возможностью фильтрации.
       security:
@@ -2710,7 +2628,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
-        - Физические лица
+        - Справочник "Физические лица"
       summary: Добавить новое физическое лицо
       description: Добавляет новое физическое лицо в справочник клиента.
       security:
@@ -2752,7 +2670,7 @@ paths:
   /persons/{guid}:
     get:
       tags:
-        - Физические лица
+        - Справочник "Физические лица"
       summary: Получить данные физического лица
       description: Возвращает данные физического лица по его уникальному идентификатору.
       security:
@@ -2793,7 +2711,7 @@ paths:
     
     put:
       tags:
-        - Физические лица
+        - Справочник "Физические лица"
       summary: Обновить данные физического лица
       description: Обновляет данные физического лица в справочнике.
       security:
@@ -2847,7 +2765,7 @@ paths:
 
     delete:
       tags:
-        - Физические лица
+        - Справочник "Физические лица"
       summary: Удалить физическое лицо
       description: Удаляет физическое лицо из справочника по его уникальному идентификатору.
       security:
@@ -2900,7 +2818,7 @@ paths:
         description: Уникальный идентификатор физического лица
     get:
       tags:
-        - Документы физических лиц
+        - Справочник "Физические лица"
       summary: Получить список документов физического лица
       description: Возвращает список всех документов, прикрепленных к указанному физическому лицу.
       security:
@@ -2935,7 +2853,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
-        - Документы физических лиц
+        - Справочник "Физические лица"
       summary: Добавить новый документ физического лица
       description: Добавляет новый документ (сканы) к указанному физическому лицу.
       security:
