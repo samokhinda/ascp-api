@@ -2167,11 +2167,13 @@ paths:
             format: date
         - name: passType
           in: query
-          description: Тип пропуска (Пешеходный или Автомобильный)
+          description: Тип пропуска 
           required: false
           schema:
             type: string
-            enum: ["Пешеходный пропуск", "Автомобильный пропуск"]     
+            enum: 
+              - "Пешеходный пропуск"
+              - "Автомобильный пропуск"
       responses:
         '200':
           description: Список пропусков успешно получен
