@@ -1515,6 +1515,143 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /vesselcalls:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить судозаходы за период
+      description: Возвращает список судозаходов за указанный период с возможностью фильтрации по судам и пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Начальная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-01"
+        - name: endDate
+          in: query
+          required: false
+          description: Конечная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-31"
+        - name: vesselName
+          in: query
+          required: false
+          description: Название судна для фильтрации
+          schema:
+            type: string
+            example: "MSC Zoe"
+        - name: status
+          in: query
+          required: false
+          description: Статус
+          schema:
+            type: string
+            example: "Ожидается"        
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество судозаходов на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список судозаходов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество судозаходов
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество судозаходов на странице
+                  vesselCalls:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselCall'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - vesselCalls
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /vesselcalls/{guid}:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить данные по судозаходу
+      description: Возвращает данные по указанному идентификатору судозахода  `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор судозахода
+          schema:
+            type: string
+            example: "VC123456"
+      responses:
+        '200':
+          description: Данные по судозаходу успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VesselCall'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Судозаход не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Судозаход не найден"
+
   /documents:
     get:
       tags:
@@ -2320,145 +2457,6 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/DriverPass'
                   - $ref: '#/components/schemas/PersonaPass'
-
-
-  /vesselcalls:
-    get:
-      tags:
-        - Судозаходы
-      summary: Получить судозаходы за период
-      description: Возвращает список судозаходов за указанный период с возможностью фильтрации по судам и пагинацией.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: startDate
-          in: query
-          required: false
-          description: Начальная дата периода (включительно)
-          schema:
-            type: string
-            format: date
-            example: "2023-10-01"
-        - name: endDate
-          in: query
-          required: false
-          description: Конечная дата периода (включительно)
-          schema:
-            type: string
-            format: date
-            example: "2023-10-31"
-        - name: vesselName
-          in: query
-          required: false
-          description: Название судна для фильтрации
-          schema:
-            type: string
-            example: "MSC Zoe"
-        - name: status
-          in: query
-          required: false
-          description: Статус
-          schema:
-            type: string
-            example: "Ожидается"        
-        - name: page
-          in: query
-          required: true
-          description: Номер страницы для пагинации
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          required: true
-          description: Количество судозаходов на странице
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Список судозаходов успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество судозаходов
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество судозаходов на странице
-                  vesselCalls:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/VesselCall'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - vesselCalls
-        '400':
-          description: Неверный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Неверные параметры запроса"
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /vesselcalls/{guid}:
-    get:
-      tags:
-        - Судозаходы
-      summary: Получить данные по судозаходу
-      description: Возвращает данные по указанному идентификатору судозахода  `guid`.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор судозахода
-          schema:
-            type: string
-            example: "VC123456"
-      responses:
-        '200':
-          description: Данные по судозаходу успешно получены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VesselCall'
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Судозаход не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Судозаход не найден"
 
   /cargoes:
     get:
