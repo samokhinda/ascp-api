@@ -13,7 +13,7 @@ info:
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/ 
+  - url: http://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
 
 tags:
   - name: Авторизация 
