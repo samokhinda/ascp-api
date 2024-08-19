@@ -798,6 +798,26 @@ components:
           pattern: "^\\d{2}-\\d{2}-\\d{4}$"          
         status:
           type: string
+    
+    Warehouse:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор склада
+          readOnly: true
+        name:
+          type: string
+          description: Название склада
+        zones:
+          type: array
+          description: Список складских зон
+          items:
+            $ref: '#/components/schemas/WarehouseZone'
+      required:
+        - guid
+        - name
+        - zones
     ### Схема для описания склада
     WarehouseZone:
       type: object
@@ -809,9 +829,27 @@ components:
         name:
           type: string
           description: Название складской зоны
+        description:
+          type: string
+          description: Описание складской зоны
+        coordinates:
+          type: array
+          description: Координаты складской зоны
+          items:
+            type: object
+            properties:
+              x:
+                type: integer
+                description: Координата X
+              y:
+                type: integer
+                description: Координата Y
       required:
         - guid
-        - name          
+        - name
+        - coordinates
+
+
     ### Схема для описания терминала порта
     Terminal:
       type: object
@@ -829,6 +867,105 @@ components:
       required:
         - guid
         - name          
+
+    ReceivingAct:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: GUID Приемного акта
+        documentType:
+          type: string
+          example: "Приемный акт"
+          description: Тип документа
+        documentNumber:
+          type: string
+          example: "614294"
+          description: Номер документа
+        creationDate:
+          type: string
+          format: date-time
+          example: "2024-06-24T10:23:57Z"
+          description: Дата создания
+        warehouse:
+          type: string
+          example: "СКК"
+          description: Складской комплекс
+        client:
+          type: string
+          example: "ООО ЛОГИСТИК-ЦЕНТР"
+          description: Клиент
+        contractor:
+          type: string
+          example: "Региональный переработчик"
+          description: Контрагент
+        cargoList:
+          allOf:
+            - $ref: '#/components/schemas/Cargo'
+            - type: object
+              properties:
+                warehouseZone:
+                  type: string
+                  description: Наименование складской зоны
+                  example: "Зона A"
+          description: Массив грузов
+        operator:
+          type: string
+          example: "Пшенникова Наталья Петровна"
+          description: Оператор
+        responsiblePerson:
+          type: string
+          example: "Жаренова Юлия Есафьевна"
+          description: Ответственное лицо
+      required:
+        - guid
+        - documentNumber
+        - creationDate
+        - warehouse
+        - client
+        - contractor
+        - cargoList
+        - operator
+        - responsiblePerson
+
+    BillOfLading:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор документа
+        documentType:
+          type: string
+          example: "Коносамент"
+        documentNumber:
+          type: string
+          description: Номер коносамента
+        shipmentDate:
+          type: string
+          format: date-time
+          description: Дата отправки
+        # Специфические поля для коносамента
+    Invoice:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор документа
+        documentType:
+          type: string
+          example: "Счет"
+        invoiceNumber:
+          type: string
+          description: Номер счета
+        billingDate:
+          type: string
+          format: date-time
+          description: Дата выставления счета
+        totalAmount:
+          type: number
+          format: float
+          description: Общая сумма счета
+        # Специфические поля для счета
 
 
 paths:
@@ -1779,6 +1916,48 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Документы не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /documents/{guid}:
+    get:
+      summary: Получить данные документа по GUID
+      description: Возвращает данные документа по его уникальному идентификатору (GUID), с учетом типа документа.
+      tags:
+        - Журнал документов
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор документа
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные документа успешно получены
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ReceivingAct'
+                  - $ref: '#/components/schemas/BillOfLading'
+                  - $ref: '#/components/schemas/Invoice'
+        '400':
+          description: Неверный запрос. Проверить параметры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ. Проверьте токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документ не найден
           content:
             application/json:
               schema:
@@ -3380,7 +3559,7 @@ paths:
       description: Возвращает изображение карты и координаты складских зон для указанного терминала.
       security:
         - ApiKeyAuth: []
-        - bearerAuth: []      
+        - bearerAuth: []
       parameters:
         - name: guid
           in: path
@@ -3390,40 +3569,25 @@ paths:
             type: string
       responses:
         '200':
-          description: Успешный ответ. Картинка карты терминала и коориданты складских зон.
+          description: Успешный ответ. Картинка карты терминала и координаты складских зон.
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  terminal:
+                    type: object
+                    description: Параметры терминала
+                    $ref: '#/components/schemas/Terminal'                
                   mapImage:
                     type: string
                     format: binary
                     description: Изображение карты терминала
-                  zones:
+                  warehouses:
                     type: array
-                    description: Координаты складских зон
+                    description: Склады и координаты складских зон
                     items:
-                      type: object
-                      properties:
-                        zoneId:
-                          type: string
-                          description: Идентификатор складской зоны
-                        coordinates:
-                          type: array
-                          description: Список координат, определяющих полигон складской зоны
-                          items:
-                            type: object
-                            properties:
-                              x:
-                                type: integer
-                                description: Координата X
-                              y:
-                                type: integer
-                                description: Координата Y
-                        warehouseZoneGuid:
-                          type: string
-                          description: GUID складской зоны из справочника Складская зона
+                      $ref: '#/components/schemas/Warehouse'
         '400':
           description: Неверный запрос. Проверьте передаваемые данные
           content:
