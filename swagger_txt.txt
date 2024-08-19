@@ -1,19 +1,19 @@
 openapi: 3.0.1
 info:
-  title: API ООО "Архангельский морской торговый порт"
+  title: Документация API ООО "АМТП"
   description: |-
     ООО "Архангельский морской торговый порт" предоставляет API для запроса и получения информации о различных аспектах портовой деятельности. API позволяет получить характеристики судов, информацию о прибытии и отправлении в порт, данные по грузам, положения судов флота, а также финансовую информацию.
     Ссылки:
     - [Сайт ООО "АМТП"](https://амтп.рф)
     - [Личный кабинет клиента ООО "АМТП"](https://амтп.рф/#modal-auth-form)
-    - [API документация ООО "АМТП"](https://амтп.рф/doc/openapi.yaml)
+    - [API документация ООО "АМТП"](https://амтп.рф/api/openapi.yaml)
   
   termsOfService: https://ascp.ru/upload/documents/privacy-policy.pdf
   contact:    
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: http://1c-srv.corp.ascp.ru/ugt-dev-7/hs/v2/   
+  - url: http://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
 
 tags:
   - name: Авторизация 
@@ -49,22 +49,15 @@ components:
         message:
           type: string
           description: Сообщение об ошибке
-    ### Схема для получения типов заявок   
-    RequestType:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Название типа заявки
-        description:
-          type: string
-          description: Описание типа заявки
-      required:
-        - name
-    ### Схема для физического лица 
+    ### Схема для физического лица   
     Person:
       type: object
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор физлица
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"          
+          readOnly: false      
         fullName:
           type: string
           description: ФИО физического лица
@@ -119,6 +112,11 @@ components:
     Auto:
       type: object
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор авто
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"    
+          readOnly: true    
         number:
           type: string
           description: Гос. номер автомобиля
@@ -172,6 +170,14 @@ components:
         - licensePlate
         - make
         - owner
+    ### Схема для водителя
+    Driver:
+      allOf:
+        - $ref: '#/components/schemas/Person'
+        - type: object
+          properties:
+            auto:
+              $ref: '#/components/schemas/Auto'    
     ### Схема для грузового места
     Cargo:
       type: object
@@ -182,7 +188,10 @@ components:
           readOnly: true          
         name:
           type: string
-          description: Наименование груза
+          description: Наименование грузового места
+        nomenklatura:
+          type: string
+          description: Номенклатура груза
         weight:
           type: number
           description: Вес груза
@@ -204,6 +213,7 @@ components:
         cargoType:
           type: string
           description: Тип груза
+          enum: ["Генеральный груз", "Контейнер", "Насыпной/Навальный"]
         packaging:
           type: string
           description: Род упаковки
@@ -213,9 +223,94 @@ components:
         hazardClass:
           type: string
           description: Класс опасности
+        container:
+          type: object
+          description: Данные о контейнере
+          properties:
+            number:
+              type: string
+              description: Номер контейнера
+            isEmpty:
+              type: boolean
+              description: Признак порожнего контейнера
+          required:
+            - number
+            - isEmpty
+        status:
+          type: string
+          description: Статус грузового места
+          enum: ["Погружен", "На складе", "Запланирован"]
+        documentId:
+          type: string
+          description: Номер приемного акта порта 
+          example: "0000041334"
+
       required:
         - name
-        - quantity
+        - nomenklatura
+        - cargoType
+    ### Пример схемы данных для представления судозахода в порт 
+    VesselCall:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор судозахода
+          readOnly: true            
+          example: "VC123456"          
+        vesselName:
+          type: string
+          description: Название судна
+          example: "MSC Zoe"
+        imoNumber:
+          type: string
+          description: IMO номер судна
+          example: "9703316"
+        callSign:
+          type: string
+          description: Позывной судна
+          example: "D5QF7"
+        arrivalDate:
+          type: string
+          format: date-time
+          description: Дата и время прибытия судна
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+        departureDate:
+          type: string
+          format: date-time
+          description: Дата и время отправления судна
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+        berth:
+          type: string
+          description: Номер причала
+          example: "5A"
+        agent:
+          type: string
+          description: Агент судна
+          example: "ООО Морской Агент"
+        cargo:
+          type: array
+          description: Список грузов на судне
+          items:
+            $ref: '#/components/schemas/Cargo'
+        status:
+          type: string
+          description: Статус судозахода
+          enum:
+            - "Ожидается"
+            - "В процессе"
+            - "Завершен"
+            - "Отменен"
+          example: "Ожидается"
+      required:
+        - callId
+        - vesselName
+        - arrivalDate
+        - departureDate
+        - berth
+        - status
     ### Схема для услуги
     Service:
       type: object
@@ -231,10 +326,33 @@ components:
       required:
         - name
         - cost
+    ### Схема для получения типов заявок      
+    RequestName:
+      type: string
+      description: Тип заявки
+      enum:
+        - "Погрузка/выгрузка судна"
+        - "Погрузка/выгрузка автомобиля"
+        - "Погрузка/выгрузка ЖД"   
+        # - "Пешеходный пропуск"
+        # - "Автомобильны пропуск"
+        # - "Услуги буксира"
+        - "Складская операция"
+      example: "Заявка на операцию"
     ### Общие реквизиты заявки 
     RequestCommon:
       type: object
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор заявки
+          readOnly: true      
+          example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
+        documentId:
+          type: string
+          description: Номер документа
+          readOnly: true      
+          example: "000078945"
         client:
           type: string
           description: Клиент порта
@@ -258,6 +376,7 @@ components:
         status:
           type: string
           description: Статус заявки
+          readOnly: true
           enum:
             - "Создана"
             - "В обработке"
@@ -271,34 +390,54 @@ components:
         createdDate:
           type: string
           format: date-time
+          example: "07-02-2024T06:32:49Z"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
+          readOnly: true
           description: Дата и время создания заявки
-    ### Полиморфная схема заявки (Request)
+      required:
+        - client
+        - contract
+        - location
+        - manager
+        - signer
+        - status
+    ### Полиморфная схема заявок на погрузку / выгрузку
     CargoRequest:
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            requestType:
+            requestName:
+              $ref: '#/components/schemas/RequestName'
+            operationType:
               type: string
               description: Вид операции по заявке
-              example: "Обработка судна"              
-            requestOperation:
-              type: string
-              description: Вид операции по заявке
-              example: "Погрузка"              
+              enum: ["Погрузка", "Разгрузка"]
+              example: "Погрузка" 
           oneOf:
-            - $ref: '#/components/schemas/VesselCargoRequest'
             - $ref: '#/components/schemas/CarCargoRequest'
-    ### Схема для заявки на пропуск для водителя
-    AutoPassRequest:
+            - $ref: '#/components/schemas/VesselCargoRequest'
+            - $ref: '#/components/schemas/RailCargoRequest'    
+          required:
+            - RequestName
+            - operation
+    ### Полиморфная схема заявки на пропуск
+    PassRequest:    
       allOf:
         - $ref: '#/components/schemas/RequestCommon'
         - type: object
           properties:
-            guid:
+            createdDate:
               type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
+              format: date-time
+              description: Дата и время создания заявки
+              example: "01-11-2023 12:00:00"
+              pattern: "^\\d{2}-\\d{2}-\\d{4} \\d{2}:\\d{2}:\\d{2}$"
+            documentId:
+              type: string
+              description: Номер документа
+              example: "000012345"
+              readOnly: true          
             accessPeriod:
               type: object
               properties:
@@ -306,269 +445,359 @@ components:
                   type: string
                   format: date
                   description: Дата начала аккредитации
-                  example: "2023-11-01"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                 endDate:
                   type: string
                   format: date
                   description: Дата окончания аккредитации
-                  example: "2023-11-30"
+                  example: "10-01-2024"
+                  pattern: "^\\d{2}-\\d{2}-\\d{4}$"
               required:
                 - startDate
-                - endDate
-            location:
+                - endDate              
+            requestName:
               type: string
-              description: Терминал, на который разрешен проезд
               enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            drivers:
-              type: array
-              items:
-                type: object
-                properties:
-                  driver:
-                    $ref: '#/components/schemas/Person'
-                  auto:
-                    $ref: '#/components/schemas/Auto'
-                required:
-                  - driver
-                  - auto
-          required:
-            - accessPeriod
-            - location
-            - drivers
-    ### Схема для заявок на пеший пропуск
-    PersonaPassRequest:
-      allOf:
-        - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            guid:
+                - "Пешеходный пропуск"
+                - "Автомобильный пропуск"
+              description: Тип заявки на пропуск
+            requestStatus:
               type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала пропуска
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания пропуска
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
+              description: Статус заявки
               enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            persons:
-              type: array
-              items:
-                type: object
-                properties:
-                  person:
-                    $ref: '#/components/schemas/Person'
-                required:
-                  - person
+                - "Черновик"
+                - "Создана"
+                - "В обработке"
+                - "Одобрена"
+                - "Отклонена"
+              example: "В обработке"              
           required:
-            - accessPeriod
-            - location
-            - persons
+            - requestName
+            - createdDate
+            - status     
+            - requestStatus
+            - accessPeriod            
     ### Схема для пропуска на водителя
-    AutoPass:
-      allOf:
-        - type: object
+    DriverPass:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор пропуска
+          readOnly: true
+        status:
+          type: string
+          description: Статус пропуска
+          enum:
+            - "Черновик"
+            - "Полготовлен"
+            - "Действителен"
+            - "Приостановлен"
+            - "Просрочен"
+            - "Изъят"
+            - "Отклонен"                        
+          example: "В обработке"             
+        passType:
+          type: string
+          description: Тип пропуска
+          enum: ["Автомобильный", "Пешеходный"]
+        accessPeriod:
+          type: object
           properties:
-            guid:
+            startDate:
               type: string
-              description: Уникальный идентификатор пропуска
-              readOnly: true
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала аккредитации
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания аккредитации
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate
-            location:
+              format: date
+              description: Дата начала аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
               type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
-            driver:
-              type: object
-              properties:
-                persona:
-                  $ref: '#/components/schemas/Person'
-                auto:
-                  $ref: '#/components/schemas/Auto'
-              required:
-                - persona
-                - auto
+              format: date
+              description: Дата окончания аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
           required:
-            - accessPeriod
-            - location
-            - driver
-    ### Схема для пропуска на пешехода
-    PersonaPass:
-      allOf:
-        - type: object
+            - startDate
+            - endDate
+        location:
+          type: string
+          description: Терминал, на который разрешен проезд
+          enum: ["Экономия", "Бакарица"]
+          example: "Экономия"
+        driver:
+          type: object
           properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор пропуска
-              readOnly: true
-            accessPeriod:
-              type: object
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата начала аккредитации
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата окончания аккредитации
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate
-            location:
-              type: string
-              description: Терминал, на который разрешен проезд
-              enum:
-                - "Экономия"
-                - "Бакарица"
-              example: "Экономия"
             persona:
               $ref: '#/components/schemas/Person'
+            auto:
+              $ref: '#/components/schemas/Auto'
           required:
-            - accessPeriod
-            - location
-            - persona            
+            - persona
+            - auto
+      required:
+        - accessPeriod
+        - location
+        - driver
+    ### Схема для пропуска на пешехода
+    PersonaPass:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор пропуска
+          readOnly: true
+        status:
+          type: string
+          description: Статус пропуска
+          enum:
+            - "Черновик"
+            - "Полготовлен"
+            - "Действителен"
+            - "Приостановлен"
+            - "Просрочен"
+            - "Изъят"
+            - "Отклонен"           
+        passType:
+          type: string
+          description: Тип пропуска
+          enum: ["Пешеходный", "Автомобильный"]                  
+        accessPeriod:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+              description: Дата начала аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
+              type: string
+              format: date
+              description: Дата окончания аккредитации
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+          required:
+            - startDate
+            - endDate
+        location:
+          type: string
+          description: Терминал, на который разрешен проезд
+          enum:
+            - "Экономия"
+            - "Бакарица"
+          example: "Экономия"
+        persona:
+          $ref: '#/components/schemas/Person'
+      required:
+        - accessPeriod
+        - location
+        - persona            
     ### Схема заявки на ввоз или вывоз груза автомобилем
     CarCargoRequest:
-      allOf:
-        - $ref: '#/components/schemas/RequestCommon'
-        - type: object
+      type: object
+      properties:
+        period:
+          type: object
+          description: Дата автовизита
           properties:
-            guid:
+            startDate:
               type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            operation:
+              format: date
+              description: Дата прибытия
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+            endDate:
               type: string
-              description: Вид операции по заявке
-              example: "Погрузка"
-            period:
-              type: object
-              description: Дата автовизита
-              properties:
-                startDate:
-                  type: string
-                  format: date
-                  description: Дата прибытия
-                  example: "2023-11-01"
-                endDate:
-                  type: string
-                  format: date
-                  description: Дата убытия
-                  example: "2023-11-30"
-              required:
-                - startDate
-                - endDate            
-            drivertList:
-              type: array
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/AutoPass'            
-            cargoList:
-              type: array
+              format: date
+              description: Дата убытия
+              example: "10-01-2024"
+              pattern: "^\\d{2}-\\d{2}-\\d{4}$"
+          required:
+            - startDate
+            - endDate            
+        drivertList:
+          type: array
+          description: Табличная часть со списком водителей
+          items:
+            $ref: '#/components/schemas/DriverPass'            
+
+        cargoList:
+          oneOf:
+            - type: array
               description: Табличная часть со списком грузов к погрузке в заявке
               items:
                 $ref: '#/components/schemas/Cargo'
-          required:
-            - guid
-            - operation
-            - period
-            - drivertList
-            - cargoList
+            - type: array
+              description: Табличная часть со списком грузов к разгрузке в заявке (строковые значения)
+              items:
+                type: string
+
+
+        # cargoList:
+        #   type: array
+        #   description: Табличная часть со списком грузов к погрузке в заявке
+        #   items:
+        #     $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - RequestName
+        - operation
+        - period
+        - drivertList
+        - cargoList
     ### Схема заявки на погрузку или выгрузку судна
     VesselCargoRequest:
-      allOf:
-        - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            guid:
-              type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            operation:
-              type: string
-              description: Вид операции по заявке
-              example: "Погрузка"
-            cargoList:
-              type: array  
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/Cargo'
-          required:
-            - guid
-            - operation
-            - cargoList
+      type: object
+      properties:
+        vesselCall:
+          $ref: '#/components/schemas/VesselCall'                
+        # RequestName:
+        #   $ref: '#/components/schemas/RequestName'                  
+        # operation:
+        #   type: string
+        #   description: Вид операции по заявке
+        #   example: "Погрузка"
+        cargoList:
+          type: array  
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - RequestName
+        - operation
+        - cargoList
     ### Схема заявки на погрузку или выгрузку ЖД
     RailCargoRequest:
-      allOf:
-        - $ref: '#/components/schemas/RequestCommon'
-        - type: object
+      type: object
+      properties:
+        departureStation:
+          type: string
+          description: Станция отправления
+          example: "СОЛОМБАЛКА"
+        wagons:
+          type: integer
+          description: Количество вагонов
+          example: 2
+        cargoList:
+          type: array  
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - guid
+        - RequestName
+        - operation
+        - cargoList
+    ### Схема для сканов документов
+    Document:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор документа
+          readOnly: true
+        personGuid:
+          type: string
+          description: Уникальный идентификатор физического лица
+        documentType:
+          type: string
+          description: Тип документа
+          enum: ["Паспорт", "Водительское удостоверение", "Иностранный паспорт"]
+          example: "Паспорт"
+        documentFiles:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Массив сканов документа
+
+      required:
+        - personGuid
+        - documentType
+        - documentFiles
+    ### Схема для профиля клиентов
+    ClientProfile:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Уникальный идентификатор организации
+        basicInfo:
+          type: object
           properties:
-            guid:
+            name:
               type: string
-              description: Уникальный идентификатор заявки
-              readOnly: true
-            operation:
+              description: Наименование
+              example: "АТФ ПАО ГМК Норильский"
+            inn:
               type: string
-              description: Вид операции по заявке
-              example: "Погрузка"
-            departureStation:
+              description: ИНН
+              example: "8401005730"
+            kpp:
               type: string
-              description: Станция отправления
-              example: "СОЛОМБАЛКА"
-            wagons:
-              type: integer
-              description: Количество вагонов
-              example: 2
-            cargoList:
-              type: array  
-              description: Табличная часть со списком грузов к погрузке в заявке
-              items:
-                $ref: '#/components/schemas/Cargo'
-          required:
-            - guid
-            - operation
-            - cargoList
+              description: КПП
+              example: "290102001"
+        contactInfo:
+          type: object        
+          properties:
+            email:
+              type: string
+              format: email
+              description: Email
+              example: "example@example.com"
+            legalAddress:
+              type: string
+              description: Адрес юридический
+              example: "123456, г. Москва, ул. Примерная, д. 5"
+            phone:
+              type: string
+              description: Контактный телефон
+              example: "+7 123 456 7890"
+            actualAddress:
+              type: string
+              description: Адрес фактический
+              example: "654321, г. Санкт-Петербург, ул. Примерная, д. 10"
+        contracts:
+          readOnly: true
+          type: array
+          items:
+            $ref: '#/components/schemas/Contract'
+        responsiblePersons:
+          type: array
+          items:
+            type: object
+            properties:
+              roleType:
+                type: string
+                enum: [Главный бухгалтер, Начальник участка, Подписант, Представитель, Руководитель]
+                description: Тип ответственного лица
+                example: "Главный бухгалтер"
+              person:
+                $ref: '#/components/schemas/Person'
+    ### Схема для договоров клиента
+    Contract:
+      type: object
+      properties:
+        contractId:
+          type: string
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"          
+        endDate:
+          type: string
+          format: date
+          example: "10-01-2024"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}$"          
+        status:
+          type: string
 
 paths:
   /auth/login:
@@ -888,7 +1117,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /dashboard/ship:
     get:
       tags:
@@ -907,6 +1135,8 @@ paths:
           schema:
             type: string
             format: date
+            example: "10-01-2024"
+            pattern: "^\\d{2}-\\d{2}-\\d{4}$"            
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -927,6 +1157,8 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"
                       description: Дата
                     terminals:
                       type: array
@@ -953,12 +1185,17 @@ paths:
                             type: number
                             format: float
                             description: Фрахтовые единицы выгрузки
-
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema: 
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
@@ -1004,6 +1241,8 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"                         
                       description: Дата
                     terminals:
                       type: array
@@ -1039,6 +1278,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
           content:
@@ -1062,7 +1307,7 @@ paths:
           required: true
           schema:
             type: string
-            format: date
+            format: date            
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -1083,6 +1328,8 @@ paths:
                     date:
                       type: string
                       format: date
+                      example: "10-01-2024"
+                      pattern: "^\\d{2}-\\d{2}-\\d{4}$"                         
                       description: Дата
                     terminals:
                       type: array
@@ -1114,6 +1361,12 @@ paths:
                             description: Количество обработанных автомобилей
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1174,6 +1427,12 @@ paths:
                             description: Фрахтовые единицы груза
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1243,6 +1502,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
           content:
@@ -1250,7 +1515,144 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /documents/getClientDocuments:
+  /vesselcalls:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить судозаходы за период
+      description: Возвращает список судозаходов за указанный период с возможностью фильтрации по судам и пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: false
+          description: Начальная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-01"
+        - name: endDate
+          in: query
+          required: false
+          description: Конечная дата периода (включительно)
+          schema:
+            type: string
+            format: date
+            example: "2023-10-31"
+        - name: vesselName
+          in: query
+          required: false
+          description: Название судна для фильтрации
+          schema:
+            type: string
+            example: "MSC Zoe"
+        - name: status
+          in: query
+          required: false
+          description: Статус
+          schema:
+            type: string
+            example: "Ожидается"        
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество судозаходов на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список судозаходов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество судозаходов
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество судозаходов на странице
+                  vesselCalls:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselCall'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - vesselCalls
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /vesselcalls/{guid}:
+    get:
+      tags:
+        - Судозаходы
+      summary: Получить данные по судозаходу
+      description: Возвращает данные по указанному идентификатору судозахода  `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор судозахода
+          schema:
+            type: string
+            example: "VC123456"
+      responses:
+        '200':
+          description: Данные по судозаходу успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VesselCall'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Судозаход не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Судозаход не найден"
+
+  /documents:
     get:
       tags:
         - Журнал документов
@@ -1323,6 +1725,8 @@ paths:
                         createdDate:
                           type: string
                           format: date-time
+                          example: "07-02-2024T06:32:49Z"
+                          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
                           description: Дата и время создания заявки
                 required:
                   - total
@@ -1335,93 +1739,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Документы не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /journal/documents:
-    get:
-      tags:
-        - Журнал документов
-      summary: Получить список документов клиента
-      description: Возвращает список документов клиента из журнала БД с поддержкой пагинации.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []  
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: false
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество документов на странице
-          required: false
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Список документов успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество документов
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество документов на странице
-                  documents:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        guid:
-                          type: string
-                          description: Уникальный идентификатор документа в БД
-                          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
-                        documentId:
-                          type: string
-                          description: Регистрационный номер документа
-                          example: "0000098212"                          
-                        documentName:
-                          type: string
-                          description: Название документа
-                          example: "Приемный акт" 
-                        documentType:
-                          type: string
-                          description: Тип операции
-                          example: "Затарка" 
-                        comment:
-                          type: string
-                          description: Комментарий к документу
-                          example: "Стандартный груз"
-                        attached:
-                          type: boolean
-                          description: Наличие прикрепленных файлов в документе 
-                          example: true                         
-                        createdDate:
-                          type: string
-                          format: date-time
-                          description: Дата и время создания заявки
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - requests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1432,15 +1751,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /requests/types:
+
+  /requests/name:
     get:
       tags:
-        - Журнал заявок
+        - Заявки на погрузку / выгрузку грузов
       summary: Получить все типы заявок
       description: Возвращает список всех типов заявок клиента из базы данных.
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество типов заявок на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
           description: Список типов заявок успешно получен
@@ -1452,15 +1787,29 @@ paths:
                   total:
                     type: integer
                     description: Общее количество типов заявок
-                  requestTypes:
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество типов заявок на странице
+                  RequestNames:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestType'
+                      $ref: '#/components/schemas/RequestName'
                 required:
                   - total
-                  - requestTypes
+                  - page
+                  - pageSize
+                  - RequestNames
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1472,16 +1821,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /requests/vessel:
+  /requests:
     get:
       tags:
-        - Журнал заявок
-      summary: Получить список заявок на погрузку/выгрузку судна
-      description: Возвращает список заявок на погрузку/выгрузку судна.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Заявки на погрузку / выгрузку грузов
+      summary: Получить список заявок
+      description: Возвращает список заявок на погрузку или разгрузку грузов с возможностью фильтрации по периоду и типу.
       parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: false
+          schema:
+            type: string
+            format: date
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -1496,6 +1856,20 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: requestName
+          in: query
+          description: Тип заявки
+          required: false
+          schema:
+            type: string  
+        - name: operationType
+          in: query
+          description: Вид операции по заявке
+          required: false
+          schema:
+            type: string            
+            enum: ["Погрузка", "Разгрузка"]
+
       responses:
         '200':
           description: Список заявок успешно получен
@@ -1516,14 +1890,20 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/VesselCargoRequest'
+                      $ref: '#/components/schemas/CargoRequest'
                 required:
                   - total
                   - page
                   - pageSize
                   - requests
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1536,27 +1916,16 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
-        - Журнал заявок
-      summary: Создать новую заявку на погрузку/выгрузку судна
-      description: Создает новую заявку на погрузку/выгрузку судна.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: operation
-          in: query
-          description: Вид операции
-          required: true
-          schema:
-            type: string
-            enum: ["Погрузка", "Выгрузка"]
+        - Заявки на погрузку / выгрузку грузов
+      summary: Создать новую заявку на погрузку/разгрузку
+      description: Создает новую заявку на погрузку или разгрузку грузов автомобиля или судна.
       requestBody:
         description: Данные для создания новой заявки
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VesselCargoRequest'
+              $ref: '#/components/schemas/CargoRequest'
       responses:
         '201':
           description: Заявка успешно создана
@@ -1571,20 +1940,24 @@ paths:
                 required:
                   - guid
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /requests/vessel/{guid}:
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /requests/{guid}:
     get:
       tags:
-        - Журнал заявок
-      summary: Получить заявку на погрузку / выгрузку судна по идентификатору
-      description: Возвращает заявку по указанному идентификатору
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Заявки на погрузку / выгрузку грузов
+      summary: Получить заявку по GUID
+      description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -1594,13 +1967,19 @@ paths:
             type: string
       responses:
         '200':
-          description: Заявка успешно получена
+          description: Данные заявки успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VesselCargoRequest'
+                $ref: '#/components/schemas/CargoRequest'
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1612,16 +1991,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /requests/auto:
+  /passes/requests:
     get:
       tags:
-        - Журнал заявок
-      summary: Получить список заявок на погрузку/выгрузку автомобиля
-      description: Возвращает список заявок на погрузку/выгрузку автомобиля.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Заявки на пропуск
+      summary: Получить список заявок
+      description: Возвращает список заявок на пропуск с возможностью фильтрации по периоду и типу.
       parameters:
+        - name: sortBy
+          in: query
+          description: Поле для сортировки (createdDate, fullName)
+          required: false
+          schema:
+            type: string
+            enum: [createdDate, fullName]
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки (asc для возрастания, desc для убывания)
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]      
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: false
+          schema:
+            type: string
+            format: date
+        # - name: passType
+        #   in: query
+        #   description: Тип заявки (пешеходный или автомобильный)
+        #   required: false
+        #   schema:
+        #     type: string
+        #     enum: [persona, driver]
+        - name: requestName
+          in: query
+          description: Тип заявки (пешеходный или автомобильный)
+          required: false
+          schema:
+            type: string
+            enum: ["Пешеходный пропуск", "Автомобильный пропуск"]
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -1656,14 +2074,20 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CarCargoRequest'
+                      $ref: '#/components/schemas/PassRequest'
                 required:
                   - total
                   - page
                   - pageSize
                   - requests
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1676,27 +2100,32 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
       tags:
-        - Журнал заявок
-      summary: Создать новую заявку на погрузку/выгрузку судна
-      description: Создает новую заявку на погрузку/выгрузку судна.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: operation
-          in: query
-          description: Вид операции
-          required: true
-          schema:
-            type: string
-            enum: ["Погрузка", "Выгрузка"]
+        - Заявки на пропуск
+      summary: Создать заявку на пропуск в порт
+      description: Создает новую заявку на пропуск в порт, как для пешеходов (гостей), так и для водителей на автомобиле.
       requestBody:
-        description: Данные для создания новой заявки
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CarCargoRequest'
+              allOf:
+                # - $ref: '#/components/schemas/RequestCommon'
+                - $ref: '#/components/schemas/PassRequest'
+                - oneOf:
+                    - type: object
+                      properties:
+                        guests:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Person'
+                      required: ["guests"]
+                    - type: object
+                      properties:
+                        drivers:
+                          type: array
+                          items:                
+                            $ref: '#/components/schemas/Driver'
+                      required: ["drivers"]
       responses:
         '201':
           description: Заявка успешно создана
@@ -1711,20 +2140,23 @@ paths:
                 required:
                   - guid
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /requests/auto/{guid}:
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /passes/requests/{guid}:
     get:
       tags:
-        - Журнал заявок
-      summary: Получить заявку на погрузку / выгрузку автомобиля по идентификатору
-      description: Возвращает заявку по указанному идентификатору
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Заявки на пропуск
+      summary: Получить заявку по GUID
+      description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -1734,13 +2166,96 @@ paths:
             type: string
       responses:
         '200':
-          description: Заявка успешно получена
+          description: Данные заявки успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CarCargoRequest'
+                allOf:
+                  - $ref: '#/components/schemas/PassRequest'              
+                  - oneOf:
+                      - type: object
+                        properties:
+                          guests:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Person'
+                        required: ["guests"]
+                      - type: object
+                        properties:
+                          drivers:
+                            type: array
+                            items:                
+                              $ref: '#/components/schemas/Driver'
+                        required: ["drivers"]
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявка не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Заявки на пропуск
+      summary: Обновить заявку на пропуск
+      description: Обновляет данные существующей заявки на пропуск.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор заявки
+          required: true
+          schema:
+            type: string
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PassRequest'
+                - oneOf:
+                    - type: object
+                      properties:
+                        guests:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Person'
+                      required: ["guests"]
+                    - type: object
+                      properties:
+                        drivers:
+                          type: array
+                          items:                
+                            $ref: '#/components/schemas/Driver'
+                      required: ["drivers"]
+      responses:
+        '200':
+          description: Заявка успешно обновлена
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/PassRequest'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -1752,382 +2267,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /requests/rail:
+  /passes:
     get:
       tags:
-        - Журнал заявок
-      summary: Получить список заявок на погрузку/выгрузку ЖД
-      description: Возвращает список заявок на погрузку/выгрузку ЖД.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: true
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество заявок на странице
-          required: true
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Список заявок успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество заявок
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество заявок на странице
-                  requests:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/RailCargoRequest'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - requests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявки не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /requests/rail/{guid}:
-    get:
-      tags:
-        - Журнал заявок
-      summary: Получить заявку на погрузку / выгрузку ЖД по идентификатору
-      description: Возвращает заявку по указанному идентификатору
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Заявка успешно получена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RailCargoRequest'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявка не найдена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/requests/autopass:
-    post:
-      tags:
-        - Пропуска
-      summary: Создать заявку на автомобильный пропуск в порт
-      description: Создает заявку на получение автомобильного пропуска в порт на определенный период.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      requestBody:
-        description: Данные для создания заявки на пропуск
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AutoPassRequest'
-
-      responses:
-        '201':
-          description: Заявка успешно создана
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  guid:
-                    type: string
-                    description: Уникальный идентификатор созданной заявки
-                required:
-                  - guid
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    get:
-      tags:
-        - Пропуска
-      summary: Получить список заявок на автомобильный пропуск
-      description: Возвращает список заявок на получение автомобильного пропуска в порт.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: true
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество заявок на странице
-          required: true
-          schema:
-            type: integer
-            default: 10
-
-      responses:
-        '200':
-          description: Список заявок успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество заявок
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество заявок на странице
-                  requests:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AutoPassRequest'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - requests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявки не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/requests/autopass/{guid}:
-    get:
-      tags:
-        - Пропуска
-      summary: Получить данные заявки по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Данные пропуска успешно получены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AutoPassRequest'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/requests/personapass:
-    post:
-      tags:
-        - Пропуска
-      summary: Создать заявку на пеший пропуск в порт
-      description: Создает заявку на получение пешего пропуска в порт на определенный период.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      requestBody:
-        description: Данные для создания заявки на пропуск
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PersonaPassRequest'
-      responses:
-        '201':
-          description: Заявка успешно создана
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  guid:
-                    type: string
-                    description: Уникальный идентификатор созданной заявки
-                required:
-                  - guid
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-    get:
-      tags:
-        - Пропуска
-      summary: Получить список заявок на пеший пропуск
-      description: Возвращает список заявок на получение пешего пропуска в порт.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: page
-          in: query
-          description: Номер страницы для пагинации
-          required: true
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          description: Количество заявок на странице
-          required: true
-          schema:
-            type: integer
-            default: 10
-
-      responses:
-        '200':
-          description: Список заявок успешно получен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество заявок
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество заявок на странице
-                  requests:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/PersonaPassRequest'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - requests
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Заявки не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/requests/personapass/{guid}:
-    get:
-      tags:
-        - Пропуска
-      summary: Получить данные заявки по GUID
-      description: Возвращает данные заявки по ее уникальному идентификатору (GUID).
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор заявки
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Данные пропуска успешно получены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PersonaPassRequest'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуск не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/autopass:
-    get:
-      tags:
-        - Пропуска
-      summary: Получить список автомобильных пропусков
-      description: Возвращает автомобильных пропусков
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Справочник "Пропуска"
+      summary: Получить список пропусков
+      description: Возвращает список всех пропусков с поддержкой пагинации.
       parameters:
         - name: page
           in: query
@@ -2143,6 +2288,29 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: passType
+          in: query
+          description: Тип пропуска 
+          required: false
+          schema:
+            type: string
+            enum: 
+              - "Пешеходный пропуск"
+              - "Автомобильный пропуск"
       responses:
         '200':
           description: Список пропусков успешно получен
@@ -2153,43 +2321,43 @@ paths:
                 properties:
                   total:
                     type: integer
-                    description: Общее пропусков водителей
+                    description: Общее количество пропусков
                   page:
                     type: integer
                     description: Текущая страница
                   pageSize:
                     type: integer
                     description: Количество пропусков на странице
-                  pass:
+                  passes:
                     type: array
                     items:
-                      $ref: '#/components/schemas/AutoPass'
+                      oneOf:
+                        - $ref: '#/components/schemas/DriverPass'
+                        - $ref: '#/components/schemas/PersonaPass'
                 required:
                   - total
                   - page
                   - pageSize
-                  - drivers
+                  - passes
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуска не найдены
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /passes/autopass/{guid}:
+
+  /passes/{guid}:
     get:
       tags:
-        - Пропуска
-      summary: Получить автомобильный пропуск по GUID
-      description: Возвращает автомобильный пропуск по его уникальному идентификатору (GUID).
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Справочник "Пропуска"
+      summary: Получить пропуск по уникальному идентификатору
+      description: Возвращает данные пропуска по его уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
@@ -2199,13 +2367,15 @@ paths:
             type: string
       responses:
         '200':
-          description: Пропуск успешно получен
+          description: Данные пропуска успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AutoPass'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+                oneOf:
+                  - $ref: '#/components/schemas/DriverPass'
+                  - $ref: '#/components/schemas/PersonaPass'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
@@ -2216,16 +2386,705 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /passes/personapass:
+    put:
+      tags:
+        - Справочник "Пропуска"
+      summary: Обновить данные пропуска
+      description: Обновляет данные существующего пропуска.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор пропуска
+          required: true
+          schema:
+            type: string      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/DriverPass'
+                - $ref: '#/components/schemas/PersonaPass'
+      responses:
+        '200':
+          description: Пропуск успешно обновлен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DriverPass'
+                  - $ref: '#/components/schemas/PersonaPass'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пропуск не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /passes/search:
     get:
       tags:
-        - Пропуска
-      summary: Получить список пешеходных пропусков
-      description: Возвращает пешеходных пропусков
+        - Справочник "Пропуска"
+      summary: Поиск пропуска по ФИО
       security:
         - ApiKeyAuth: []
         - bearerAuth: []
+      parameters:
+        - in: query
+          name: fio
+          required: true
+          schema:
+            type: string
+            description: Полное имя физического лица
+      responses:
+        '200':
+          description: Поиск прошел успешно
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/DriverPass'
+                  - $ref: '#/components/schemas/PersonaPass'
+
+  /cargoes:
+    get:
+      tags:
+        - Справочник "Грузы"
+      summary: Получить информацию о наличии груза клиента на складских комплексах порта
+      description: Возвращает информацию о наличии груза клиента на складских комплексах и складских зонах порта на указанную дату с пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: Дата проверки наличия груза (по умолчанию текущая дата)
+          schema:
+            type: string
+            format: date
+            example: "10-01-2023"
+            default: "Текущая дата"
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: "Складской комплекс 1"            
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество записей на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Информация о наличии груза успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  cargoAvailability:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        warehouse:
+                          type: string
+                          description: Складской комплекс
+                          example: "Складской комплекс 1"
+                        warehouseZone:
+                          type: string
+                          description: Складская зона
+                          example: "Зона A"
+                        cargoes:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Cargo'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - cargoAvailability
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cargoes/{guid}:
+    get:
+      tags:
+        - Справочник "Грузы"
+      summary: Получить информацию о единице груза
+      description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Информация о грузе успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cargo'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден"
+
+  /cargoes/{guid}/photos:
+    get:
+      tags:
+        - Справочник "Грузы"
+      summary: Получить фотографии груза
+      description: Возвращает список фотографий, приложенных к указанной единице груза.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Фотографии груза успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    description: Список фотографий груза
+                    items:
+                      type: string
+                      format: binary
+                required:
+                  - photos
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден или фотографии не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден или фотографии не найдены"
+
+  /persons:
+    get:
+      tags:
+        - Справочник "Физические лица"
+      summary: Получить список физических лиц
+      description: Возвращает список физических лиц клиента с возможностью фильтрации.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: fullName
+          in: query
+          description: ФИО физического лица
+          required: false
+          schema:
+            type: string
+        - name: position
+          in: query
+          description: Должность физического лица
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список физических лиц успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  persons:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Person'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - persons
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Физические лица"
+      summary: Добавить новое физическое лицо
+      description: Добавляет новое физическое лицо в справочник клиента.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '201':
+          description: Новое физическое лицо успешно добавлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор физического лица
+                  message:
+                    type: string
+                    description: Сообщение об успешном добавлении физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /persons/{guid}:
+    get:
+      tags:
+        - Справочник "Физические лица"
+      summary: Получить данные физического лица
+      description: Возвращает данные физического лица по его уникальному идентификатору.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      responses:
+        '200':
+          description: Данные физического лица успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Справочник "Физические лица"
+      summary: Обновить данные физического лица
+      description: Обновляет данные физического лица в справочнике.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        '200':
+          description: Данные физического лица успешно обновлены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор физического лица
+                  message:
+                    type: string
+                    description: Сообщение об успешном обновлении данных физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Справочник "Физические лица"
+      summary: Удалить физическое лицо
+      description: Удаляет физическое лицо из справочника по его уникальному идентификатору.
+      security:
+            - ApiKeyAuth: []
+            - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор физического лица
+      responses:
+        '200':
+          description: Физическое лицо успешно удалено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Сообщение об успешном удалении физического лица
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /persons/search:
+    get:
+      tags:
+        - Справочник "Физические лица"
+      summary: Поиск физического лица по ФИО
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: fio
+          required: true
+          schema:
+            type: string
+            description: Полное имя физического лица
+      responses:
+        '200':
+          description: Поиск прошел успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+
+  /persons/{guid}/documents:
+    parameters:
+      - in: path
+        name: guid
+        required: true
+        schema:
+          type: string
+        description: Уникальный идентификатор физического лица
+    get:
+      tags:
+        - Справочник "Физические лица"
+      summary: Получить список документов физического лица
+      description: Возвращает список всех документов, прикрепленных к указанному физическому лицу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документы не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Физические лица"
+      summary: Добавить новый документ физического лица
+      description: Добавляет новый документ (сканы) к указанному физическому лицу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Document'
+      responses:
+        '201':
+          description: Документ успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /profile:
+    get:
+      tags:
+        - Справочник "Профиль клиента"
+      summary: Получить данные профиля организации
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []      
+      responses:
+        '200':
+          description: Данные профиля успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientProfile'
+
+  /profile/{guid}:
+    put:
+      tags:
+        - Справочник "Профиль клиента"
+      summary: Обновить данные профиля организации
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []            
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор организации
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientProfile'
+      responses:
+        '200':
+          description: Данные профиля организации обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientProfile'
+
+  /profile/{guid}/contracts:
+    get:
+      tags:
+        - Справочник "Профиль клиента"
+      summary: Получить список договоров организации
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор организации
+      responses:
+        '200':
+          description: Список договоров успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contract'
+
+
+  /autos:
+    get:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Получить список автотранспортных средств
+      description: Возвращает список всех автотранспортных средств с поддержкой пагинации.
       parameters:
         - name: page
           in: query
@@ -2236,14 +3095,14 @@ paths:
             default: 1
         - name: pageSize
           in: query
-          description: Количество пропусков на странице
+          description: Количество автотранспортных средств на странице
           required: true
           schema:
             type: integer
             default: 10
       responses:
         '200':
-          description: Список пропусков успешно получен
+          description: Список автотранспортных средств успешно получен
           content:
             application/json:
               schema:
@@ -2251,71 +3110,179 @@ paths:
                 properties:
                   total:
                     type: integer
-                    description: Общее пропусков 
+                    description: Общее количество транспортных средств
                   page:
                     type: integer
                     description: Текущая страница
                   pageSize:
                     type: integer
-                    description: Количество пропусков на странице
-                  pass:
+                    description: Количество транспортных средств на странице
+                  autos:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PersonaPass'
+                      $ref: '#/components/schemas/Auto'
                 required:
                   - total
                   - page
                   - pageSize
-                  - drivers
+                  - autos
         '400':
-          description: Неверный запрос, отсутствуют необходимые данные
+          description: Неверный запрос. Отсутствуют необходимые данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Пропуска не найдены
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /passes/personapass/{guid}:
+    post:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Добавить новое автотранспортное средство
+      description: Добавляет новое автотранспортное средство в справочник.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auto'
+      responses:
+        '201':
+          description: Новое автотранспортное средство успешно добавлено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор автотранспортного средства
+                  message:
+                    type: string
+                    description: Сообщение об успешном добавлении автотранспортного средства
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /autos/{guid}:
     get:
       tags:
-        - Пропуска
-      summary: Получить пешеходный пропуск по GUID
-      description: Возвращает пешеходный пропуск по его уникальному идентификатору (GUID).
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
+        - Справочник "Автотранспорт"
+      summary: Получить автотранспортное средство по уникальному идентификатору
+      description: Возвращает данные автотранспортного средства по его уникальному идентификатору `guid`.
       parameters:
         - name: guid
           in: path
-          description: Уникальный идентификатор пропуска
+          description: Уникальный идентификатор автотранспортного средства
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Пропуск успешно получен
+          description: Данные автотранспортного средства успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PersonaPass'
-        '400':
-          description: Неверный запрос, отсутствуют необходимые данные или данные некорректны
+                $ref: '#/components/schemas/Auto'
+        '401':
+          description: Истек токен сессии
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Пропуск не найден
+          description: Автотранспортное средство не найдено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+    put:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Обновить данные автотранспортного средства
+      description: Обновляет данные существующего автотранспортного средства.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор автотранспортного средства
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Auto'
+      responses:
+        '200':
+          description: Автотранспортное средство успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Auto'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автотранспортное средство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-
-
-
+    delete:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Удалить автотранспортное средство
+      description: Удаляет автотранспортное средство из справочника.
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор автотранспортного средства
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Автотранспортное средство успешно удалено
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автотранспортное средство не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
