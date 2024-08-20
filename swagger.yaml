@@ -798,7 +798,7 @@ components:
           pattern: "^\\d{2}-\\d{2}-\\d{4}$"          
         status:
           type: string
-    
+    ### Схема для описания склада
     Warehouse:
       type: object
       properties:
@@ -818,7 +818,7 @@ components:
         - guid
         - name
         - zones
-    ### Схема для описания склада
+    ### Схема для описания складских зон
     WarehouseZone:
       type: object
       properties:
@@ -848,8 +848,6 @@ components:
         - guid
         - name
         - coordinates
-
-
     ### Схема для описания терминала порта
     Terminal:
       type: object
@@ -874,31 +872,61 @@ components:
         guid:
           type: string
           description: GUID Приемного акта
-        documentType:
-          type: string
-          example: "Приемный акт"
-          description: Тип документа
+          readOnly: true
         documentNumber:
           type: string
-          example: "614294"
+          example: "000014294"
           description: Номер документа
-        creationDate:
+        createdDate:
           type: string
           format: date-time
-          example: "2024-06-24T10:23:57Z"
-          description: Дата создания
+          example: "07-02-2024T06:32:49Z"
+          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
+          description: Дата и время создания                                                 
+        documentType:
+          type: string
+          description: Название документа
+          example: "Приемный акт" 
+        operationType:
+          type: string
+          description: Тип операции
+          example: "Затарка" 
         warehouse:
           type: string
-          example: "СКК"
+          example: "СК1"
           description: Складской комплекс
+        team:
+          type: string
+          example: "8"
+          description: Бригада
         client:
           type: string
           example: "ООО ЛОГИСТИК-ЦЕНТР"
           description: Клиент
-        contractor:
+        shipper:
           type: string
-          example: "Региональный переработчик"
-          description: Контрагент
+          example: "Баренц Контейнер Менеджмент ООО"
+          description: Грузоотправитель
+        addressee:
+          type: string
+          example: "ООО АМТП для АО ЛОГИСТИК-ЦЕНТР"
+          description: Грузополучатель
+        addresseeAtPort:
+          type: string
+          example: "ООО ЛОГИСТИК-ЦЕНТР"
+          description: Грузополучатель в порту назначения
+        manager:
+          type: string
+          description: Ответственный за подготовку документа
+          example: "Иванов Иван Иванович"
+        responsibleForData:
+          type: string
+          description: Ответственный за внесение данных
+          example: "Сидоров Дмитрий Иванович"       
+        responsibleForCargo:
+          type: string
+          description: Ответственный за приёмку груза на складе
+          example: "Козенкова Наталья Петровна"           
         cargoList:
           allOf:
             - $ref: '#/components/schemas/Cargo'
@@ -909,24 +937,19 @@ components:
                   description: Наименование складской зоны
                   example: "Зона A"
           description: Массив грузов
-        operator:
-          type: string
-          example: "Пшенникова Наталья Петровна"
-          description: Оператор
-        responsiblePerson:
-          type: string
-          example: "Жаренова Юлия Есафьевна"
-          description: Ответственное лицо
       required:
         - guid
         - documentNumber
-        - creationDate
+        - createdDate	
+        - documentType
+        - operationType
         - warehouse
         - client
-        - contractor
+        - team
         - cargoList
-        - operator
-        - responsiblePerson
+        - manager
+        - responsibleForData
+        - responsibleForCargo
 
     BillOfLading:
       type: object
@@ -1834,17 +1857,38 @@ paths:
         - name: page
           in: query
           description: Номер страницы для пагинации
-          required: false
+          required: true
           schema:
             type: integer
             default: 1
         - name: pageSize
           in: query
           description: Количество документов на странице
-          required: false
+          required: true
           schema:
             type: integer
             default: 10
+        - name: sortBy
+          in: query
+          description: Поле для сортировки (createdDate, documentId)
+          required: false
+          schema:
+            type: string
+            enum: [createdDate, documentId]
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки (asc для возрастания, desc для убывания)
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: documentType
+          in: query
+          description: Фильтр по типу документа
+          required: false
+          schema:
+            type: string
+            example: "Приемный акт"
       responses:
         '200':
           description: Список документов успешно получен
@@ -1874,12 +1918,18 @@ paths:
                         documentId:
                           type: string
                           description: Регистрационный номер документа
-                          example: "0000098212"                          
-                        documentName:
+                          example: "0000098212"    
+                        createdDate:
+                          type: string
+                          format: date-time
+                          example: "07-02-2024T06:32:49Z"
+                          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
+                          description: Дата и время создания заявки                                                
+                        documentType:
                           type: string
                           description: Название документа
                           example: "Приемный акт" 
-                        documentType:
+                        operationType:
                           type: string
                           description: Тип операции
                           example: "Затарка" 
@@ -1891,12 +1941,6 @@ paths:
                           type: boolean
                           description: Наличие прикрепленных файлов в документе 
                           example: true                         
-                        createdDate:
-                          type: string
-                          format: date-time
-                          example: "07-02-2024T06:32:49Z"
-                          pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
-                          description: Дата и время создания заявки
                 required:
                   - total
                   - page
@@ -1920,6 +1964,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /documents/types:
+    get:
+      tags:
+        - Журнал документов
+      summary: Получить список используемых типов документов
+      description: Возвращает список используемых типов документов из журнала БД.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список типов документов успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "Приемный акт"
+        '400':
+          description: Неверный запрос, отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Типы документов не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'                
 
   /documents/{guid}:
     get:
@@ -2478,6 +2560,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /passes/requests/visits:
+    get:
+      tags:
+        - Заявки на пропуск
+      summary: Получить список целей визитов
+      description: Возвращает полный список целей визитов.
+      responses:
+        '200':
+          description: Список целей визитов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visitPurposes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        guid:
+                          type: string
+                          description: Уникальный идентификатор цели визита
+                          example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
+                        group:
+                          type: string
+                          description: Группа цели визита
+                          example: "Обслуживание"
+                        name:
+                          type: string
+                          description: Наименование цели визита
+                          example: "Перечень работ по обслуживанию судов"
+                required:
+                  - visitPurposes
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /passes:
     get:
       tags:
