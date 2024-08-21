@@ -2638,6 +2638,324 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /cargoes:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Получить информацию о наличии груза клиента на складских комплексах порта
+      description: Возвращает информацию о наличии груза клиента на складских комплексах и складских зонах порта на указанную дату с пагинацией.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: Дата проверки наличия груза (по умолчанию текущая дата)
+          schema:
+            type: string
+            format: date
+            example: "10-01-2023"
+            default: "Текущая дата"
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: "Складской комплекс 1"            
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество записей на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Информация о наличии груза успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  cargoAvailability:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        warehouse:
+                          type: string
+                          description: Складской комплекс
+                          example: "Складской комплекс 1"
+                        warehouseZone:
+                          type: string
+                          description: Складская зона
+                          example: "Зона A"
+                        cargoes:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/Cargo'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - cargoAvailability
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cargoes/acts:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Получить информацию об остатках грузов клиента по Приемным актам.
+      description: Возвращает информацию об остатках груза клиента на складских комплексах и складских зонах порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: terminal
+          in: query
+          required: false
+          description: Терминал порта
+          schema:
+            type: string
+            example: "Экономия" 
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: "СК1"
+        - name: warehouseZone
+          in: query
+          required: false
+          description: Складская зона
+          schema:
+            type: string
+            example: "А25"
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество записей на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Информация о наличии груза успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReceivingCommon'                        
+                required:
+                  - total
+                  - page
+                  - pageSize
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cargoes/{guid}/acts:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Получить документ приемный акт со списком грузов.
+      description: Возвращает документ приемный акт порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор 
+          required: true
+          schema:
+            type: string        
+      responses:
+        '200':
+          description: Информация о приемном акте успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document:
+                      $ref: '#/components/schemas/ReceivingDocument'
+                required:
+                  - total
+                  - page
+                  - pageSize
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /cargoes/{guid}:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Получить информацию о единице груза
+      description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Информация о грузе успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cargo'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден"
+  /cargoes/{guid}/photos:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Получить фотографии груза
+      description: Возвращает список фотографий, приложенных к указанной единице груза.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "cargo123456"
+      responses:
+        '200':
+          description: Фотографии груза успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    description: Список фотографий груза
+                    items:
+                      type: string
+                      format: binary
+                required:
+                  - photos
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден или фотографии не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден или фотографии не найдены"
+
   /passes:
     get:
       tags:
@@ -2830,326 +3148,6 @@ paths:
                   - $ref: '#/components/schemas/DriverPass'
                   - $ref: '#/components/schemas/PersonaPass'
 
-  /cargoes:
-    get:
-      tags:
-        - Справочник "Грузы"
-      summary: Получить информацию о наличии груза клиента на складских комплексах порта
-      description: Возвращает информацию о наличии груза клиента на складских комплексах и складских зонах порта на указанную дату с пагинацией.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: date
-          in: query
-          required: false
-          description: Дата проверки наличия груза (по умолчанию текущая дата)
-          schema:
-            type: string
-            format: date
-            example: "10-01-2023"
-            default: "Текущая дата"
-        - name: warehouse
-          in: query
-          required: false
-          description: Складской комплекс
-          schema:
-            type: string
-            example: "Складской комплекс 1"            
-        - name: page
-          in: query
-          required: true
-          description: Номер страницы для пагинации
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          required: true
-          description: Количество записей на странице
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Информация о наличии груза успешно получена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество записей
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество записей на странице
-                  cargoAvailability:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        warehouse:
-                          type: string
-                          description: Складской комплекс
-                          example: "Складской комплекс 1"
-                        warehouseZone:
-                          type: string
-                          description: Складская зона
-                          example: "Зона A"
-                        cargoes:
-                          type: array
-                          items:
-                            $ref: '#/components/schemas/Cargo'
-                required:
-                  - total
-                  - page
-                  - pageSize
-                  - cargoAvailability
-        '400':
-          description: Неверный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Неверные параметры запроса"
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  
-  /cargoes/acts:
-    get:
-      tags:
-        - Справочник "Грузы"
-      summary: Получить информацию об остатках грузов клиента по Приемным актам.
-      description: Возвращает информацию об остатках груза клиента на складских комплексах и складских зонах порта.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: terminal
-          in: query
-          required: false
-          description: Терминал порта
-          schema:
-            type: string
-            example: "Экономия" 
-        - name: warehouse
-          in: query
-          required: false
-          description: Складской комплекс
-          schema:
-            type: string
-            example: "СК1"
-        - name: warehouseZone
-          in: query
-          required: false
-          description: Складская зона
-          schema:
-            type: string
-            example: "А25"
-        - name: page
-          in: query
-          required: true
-          description: Номер страницы для пагинации
-          schema:
-            type: integer
-            default: 1
-        - name: pageSize
-          in: query
-          required: true
-          description: Количество записей на странице
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Информация о наличии груза успешно получена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  total:
-                    type: integer
-                    description: Общее количество записей
-                  page:
-                    type: integer
-                    description: Текущая страница
-                  pageSize:
-                    type: integer
-                    description: Количество записей на странице
-                  documents:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ReceivingCommon'                        
-                required:
-                  - total
-                  - page
-                  - pageSize
-        '400':
-          description: Неверный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Неверные параметры запроса"
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /cargoes/{guid}/acts:
-    get:
-      tags:
-        - Справочник "Грузы"
-      summary: Получить документ приемный акт со списком грузов.
-      description: Возвращает документ приемный акт порта.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          description: Уникальный идентификатор 
-          required: true
-          schema:
-            type: string        
-      responses:
-        '200':
-          description: Информация о приемном акте успешно получена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  document:
-                      $ref: '#/components/schemas/ReceivingDocument'
-                required:
-                  - total
-                  - page
-                  - pageSize
-        '400':
-          description: Неверный запрос
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Неверные параметры запроса"
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /cargoes/{guid}:
-    get:
-      tags:
-        - Справочник "Грузы"
-      summary: Получить информацию о единице груза
-      description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор груза
-          schema:
-            type: string
-            example: "cargo123456"
-      responses:
-        '200':
-          description: Информация о грузе успешно получена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cargo'
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Груз не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Груз не найден"
-
-  /cargoes/{guid}/photos:
-    get:
-      tags:
-        - Справочник "Грузы"
-      summary: Получить фотографии груза
-      description: Возвращает список фотографий, приложенных к указанной единице груза.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор груза
-          schema:
-            type: string
-            example: "cargo123456"
-      responses:
-        '200':
-          description: Фотографии груза успешно получены
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  photos:
-                    type: array
-                    description: Список фотографий груза
-                    items:
-                      type: string
-                      format: binary
-                required:
-                  - photos
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Груз не найден или фотографии не найдены
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Груз не найден или фотографии не найдены"
 
   /persons:
     get:
