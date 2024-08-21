@@ -1967,7 +1967,7 @@ paths:
                         attached:
                           type: boolean
                           description: Наличие прикрепленных файлов в документе 
-                          example: true                         
+                          example: true 
                 required:
                   - total
                   - page
@@ -3107,8 +3107,17 @@ paths:
                     type: array
                     description: Список фотографий груза
                     items:
-                      type: string
-                      format: binary
+                      type: object
+                      properties:
+                        fileName:
+                          type: string
+                          description: Название файла
+                          example: "photo-11-20-2024.jpeg"
+                        fileContent:
+                          type: string
+                          format: binary
+                          description: Содержимое файла
+
                 required:
                   - photos
         '401':
