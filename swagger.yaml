@@ -223,6 +223,7 @@ components:
           type: string
           description: Тип груза
           enum: ["Генеральный груз", "Контейнер", "Насыпной/Навальный"]
+          example: "Контейнер"
         packaging:
           type: string
           description: Род упаковки
@@ -2042,6 +2043,13 @@ paths:
           description: Уникальный идентификатор документа
           schema:
             type: string
+        - name: documentType
+          in: query
+          description: Тип документа
+          required: true
+          schema:
+            type: string
+            example: "Приемный акт"                  
       responses:
         '200':
           description: Данные документа успешно получены
@@ -2070,6 +2078,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /documents/{guid}/attachments:
+    get:
+      tags:
+        - Журнал документов
+      summary: Получить сканы приложенные к документу
+      description: Возвращает список сканов, прикрепленных к документу.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор документа
+          schema:
+            type: string
+            example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
+        - name: documentType
+          in: query
+          description: Тип документа
+          required: true
+          schema:
+            type: string
+            example: "Приемный акт"            
+      responses:
+        '200':
+          description: Документы успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    description: Список документов 
+                    items:
+                      type: object
+                      properties:
+                        fileName:
+                          type: string
+                          description: Название файла
+                          example: "document_scan_01.pdf"
+                        fileContent:
+                          type: string
+                          format: binary
+                          description: Содержимое файла
+                required:
+                  - documents
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документ не найден 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Документ не найдены"
+
+
 
   /requests/name:
     get:
@@ -2832,7 +2907,7 @@ paths:
       parameters:
         - name: guid
           in: path
-          description: Уникальный идентификатор 
+          description: Уникальный идентификатор Приемного акта порта
           required: true
           schema:
             type: string        
@@ -2866,6 +2941,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  # /cargoes/{guid}/photos:
+
+
   /cargoes/{guid}:
     get:
       tags:
@@ -2922,7 +3002,7 @@ paths:
           description: Уникальный идентификатор груза
           schema:
             type: string
-            example: "cargo123456"
+            example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
       responses:
         '200':
           description: Фотографии груза успешно получены
@@ -2955,6 +3035,99 @@ paths:
                   message:
                     type: string
                     example: "Груз не найден или фотографии не найдены"
+
+
+
+  /cargo/{guid}:
+    get:
+      tags:
+        - Справочник "Грузы клиента"
+      summary: Получить информацию о единице груза
+      description: Возвращает информацию о единице груза по указанному идентификатору `guid`.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241"
+      responses:
+        '200':
+          description: Информация о грузе успешно получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cargo'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден"
+  /cargo/{guid}/photos:
+    get:
+      tags:
+        - Справочник "Грузы клиента"
+      summary: Получить фотографии груза
+      description: Возвращает список фотографий, приложенных к указанной единице груза.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор груза
+          schema:
+            type: string
+            example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
+      responses:
+        '200':
+          description: Фотографии груза успешно получены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  photos:
+                    type: array
+                    description: Список фотографий груза
+                    items:
+                      type: string
+                      format: binary
+                required:
+                  - photos
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Груз не найден или фотографии не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Груз не найден или фотографии не найдены"
+
 
   /passes:
     get:
@@ -3842,7 +4015,6 @@ paths:
                   error:
                     type: string
                     example: "Внутренняя ошибка сервера"                
-
   /terminals/{guid}/map:
     get:
       tags:
@@ -3868,9 +4040,9 @@ paths:
                 type: object
                 properties:
                   terminal:
-                    type: object
-                    description: Параметры терминала
-                    $ref: '#/components/schemas/Terminal'                
+                    allOf:
+                      - $ref: '#/components/schemas/Terminal'
+                    description: Параметры терминала         
                   mapImage:
                     type: string
                     format: binary
