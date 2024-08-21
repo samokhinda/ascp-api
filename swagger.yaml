@@ -185,31 +185,40 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор груза
-          readOnly: true          
+          readOnly: true        
+          example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241  
         name:
           type: string
           description: Наименование грузового места
+          example: Контейнер CAXU 6600984
         nomenklatura:
           type: string
           description: Номенклатура груза
+          example: Контейнер CAXU
         weight:
           type: number
           description: Вес груза
+          example: 38000
         volume:
           type: number
           description: Объем груза
+          example: 67.7
         length:
           type: number
           description: Длина груза
+          example: 13.716
         width:
           type: number
           description: Ширина груза
+          example: 2.438
         height:
           type: number
           description: Высота груза
+          example: 2.896
         quantity:
           type: integer
           description: Количество мест
+          example: 1
         cargoType:
           type: string
           description: Тип груза
@@ -217,12 +226,15 @@ components:
         packaging:
           type: string
           description: Род упаковки
+          example: "Отсутствует"
         storageConditions:
           type: string
           description: Условия хранения
+          example: "Открытое"
         hazardClass:
           type: string
           description: Класс опасности
+          example: "Не опасный"
         container:
           type: object
           description: Данные о контейнере
@@ -865,15 +877,16 @@ components:
       required:
         - guid
         - name          
-
-    ReceivingAct:
+    ### Общие реквизиты приемного акта 
+    ReceivingCommon:
       type: object
       properties:
         guid:
           type: string
           description: GUID Приемного акта
+          example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
           readOnly: true
-        documentNumber:
+        documentID:
           type: string
           example: "000014294"
           description: Номер документа
@@ -883,14 +896,14 @@ components:
           example: "07-02-2024T06:32:49Z"
           pattern: "^\\d{2}-\\d{2}-\\d{4}T\\d{2}:\\d{2}:\\d{2}Z$"
           description: Дата и время создания                                                 
-        documentType:
-          type: string
-          description: Название документа
-          example: "Приемный акт" 
         operationType:
           type: string
           description: Тип операции
           example: "Затарка" 
+        terminal:
+          type: string
+          description: Название терминала порта
+          example: "Экономия"           
         warehouse:
           type: string
           example: "СК1"
@@ -926,16 +939,31 @@ components:
         responsibleForCargo:
           type: string
           description: Ответственный за приёмку груза на складе
-          example: "Козенкова Наталья Петровна"           
+          example: "Козенкова Наталья Петровна"   
+      required:
+        - guid
+        - documentID
+        - createdDate
+        - operationType
+        - terminal
+        - warehouse          
+    ### Схема для описания документа приемный акт
+    ReceivingDocument:
+      type: object
+      properties:
+        receivingCommon:
+          $ref: '#/components/schemas/ReceivingCommon'
         cargoList:
-          allOf:
-            - $ref: '#/components/schemas/Cargo'
-            - type: object
-              properties:
-                warehouseZone:
-                  type: string
-                  description: Наименование складской зоны
-                  example: "Зона A"
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/Cargo'
+              - type: object
+                properties:
+                  warehouseZone:
+                    type: string
+                    description: Наименование складской зоны
+                    example: "Зона A"
           description: Массив грузов
       required:
         - guid
@@ -947,9 +975,7 @@ components:
         - client
         - team
         - cargoList
-        - manager
-        - responsibleForData
-        - responsibleForCargo
+ 
 
     BillOfLading:
       type: object
@@ -2023,7 +2049,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/ReceivingAct'
+                  # - $ref: '#/components/schemas/ReceivingAct'
                   - $ref: '#/components/schemas/BillOfLading'
                   - $ref: '#/components/schemas/Invoice'
         '400':
@@ -2574,7 +2600,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  visitPurposes:
+                  purposes:
                     type: array
                     items:
                       type: object
@@ -2591,8 +2617,15 @@ paths:
                           type: string
                           description: Наименование цели визита
                           example: "Перечень работ по обслуживанию судов"
-                required:
-                  - visitPurposes
+                        isGroup:
+                          type: boolean
+                          description: Группа или элемент 
+                          example: false
+                      required:
+                        - guid
+                        - group
+                        - name
+                        - isGroup
         '400':
           description: Неверный запрос
           content:
@@ -2876,6 +2909,140 @@ paths:
                   - page
                   - pageSize
                   - cargoAvailability
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  
+  /cargoes/documents:
+    get:
+      tags:
+        - Справочник "Грузы"
+      summary: Получить информацию об остатках грузов клиента.
+      description: Возвращает информацию об остатках груза клиента на складских комплексах и складских зонах порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: terminal
+          in: query
+          required: false
+          description: Терминал порта
+          schema:
+            type: string
+            example: "Экономия" 
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: "СК1"
+        - name: warehouseZone
+          in: query
+          required: false
+          description: Складская зона
+          schema:
+            type: string
+            example: "А25"
+        - name: page
+          in: query
+          required: true
+          description: Номер страницы для пагинации
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          required: true
+          description: Количество записей на странице
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Информация о наличии груза успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReceivingCommon'                        
+                required:
+                  - total
+                  - page
+                  - pageSize
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Неверные параметры запроса"
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cargoes/{guid}/documents:
+    get:
+      tags:
+        - Справочник "Грузы"
+      summary: Получить документ приемный акт со списком грузов.
+      description: Возвращает документ приемный акт порта.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          description: Уникальный идентификатор 
+          required: true
+          schema:
+            type: string        
+      responses:
+        '200':
+          description: Информация о приемном акте успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document:
+                      $ref: '#/components/schemas/ReceivingDocument'
+                required:
+                  - total
+                  - page
+                  - pageSize
         '400':
           description: Неверный запрос
           content:
