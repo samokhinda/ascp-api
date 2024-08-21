@@ -2926,11 +2926,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   
-  /cargoes/documents:
+  /cargoes/acts:
     get:
       tags:
         - Справочник "Грузы"
-      summary: Получить информацию об остатках грузов клиента.
+      summary: Получить информацию об остатках грузов клиента по Приемным актам.
       description: Возвращает информацию об остатках груза клиента на складских комплексах и складских зонах порта.
       security:
         - ApiKeyAuth: []
@@ -3013,7 +3013,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /cargoes/{guid}/documents:
+  /cargoes/{guid}/acts:
     get:
       tags:
         - Справочник "Грузы"
