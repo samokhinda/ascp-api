@@ -4120,7 +4120,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /sender:
+  /senders:
     get:
       tags:
         - Справочник "Грузоотправитель"
@@ -4440,6 +4440,169 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /final-recipients:
+    get:
+      tags:
+        - Справочник "Конечный грузополучатель"
+      summary: Получить данные о всех грузополучателях
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список грузополучателей успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Конечный грузополучатель"
+      summary: Создать нового грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '201':
+          description: Грузополучатель успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /final-recipients/{guid}:
+    get:
+      tags:
+        - Справочник "Конечный грузополучатель"
+      summary: Получить данные конкретного грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузополучателя
+      responses:
+        '200':
+          description: Данные грузополучателя успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузополучатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Справочник "Конечный грузополучатель"
+      summary: Обновить данные грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузополучателя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '200':
+          description: Данные грузополучателя успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузополучатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   /autos:
     get:
       tags:
