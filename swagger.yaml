@@ -797,6 +797,76 @@ components:
                 example: "Главный бухгалтер"
               person:
                 $ref: '#/components/schemas/Person'
+    ### Схема для контрагента
+    Contractor:
+      type: object
+      properties:
+        guid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Уникальный идентификатор контрагента
+        basicInfo:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Наименование контрагента
+              example: "ООО Контрагент"
+            inn:
+              type: string
+              description: ИНН контрагента
+              example: "7723456789"
+            kpp:
+              type: string
+              description: КПП контрагента
+              example: "770101001"
+            okpo:
+              type: string
+              description: ОКПО контрагента
+              example: "101001"              
+          required:
+            - name              
+        contactInfo:
+          type: object
+          properties:
+            email:
+              type: string
+              format: email
+              description: Электронная почта
+              example: "contact@example.com"
+            legalAddress:
+              type: string
+              description: Юридический адрес
+              example: "г. Москва, ул. Примерная, д. 1"
+            phone:
+              type: string
+              description: Телефон
+              example: "+7 495 123 4567"
+            actualAddress:
+              type: string
+              description: Фактический адрес
+              example: "г. Санкт-Петербург, ул. Пушкина, д. 10"
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contract'
+        responsiblePersons:
+          type: array
+          items:
+            type: object
+            properties:
+              roleType:
+                type: string
+                enum: [Главный бухгалтер, Начальник участка, Подписант, Представитель, Руководитель]
+                description: Тип ответственного лица
+                example: "Главный бухгалтер"
+              person:
+                type: string
+                description: ФИО ответственного лица
+                example: "Иванов Иван Иванович"
+      required:
+        - basicInfo
     ### Схема для договоров клиента
     Contract:
       type: object
@@ -3581,7 +3651,6 @@ paths:
                   - $ref: '#/components/schemas/DriverPass'
                   - $ref: '#/components/schemas/PersonaPass'
 
-
   /persons:
     get:
       tags:
@@ -4015,6 +4084,383 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Contract'
+  /profile/fns/{inn}:
+    get:
+      tags:
+        - Справочник "Профиль клиента"
+      summary: Получить данные контрагента по ИНН с сайта ФНС
+      description: Позволяет получить информацию о контрагенте, используя его ИНН
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: inn
+          required: true
+          schema:
+            type: string
+            description: ИНН контрагента
+      responses:
+        '200':
+          description: Данные контрагента успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Контрагент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /sender:
+    get:
+      tags:
+        - Справочник "Грузоотправитель"
+      summary: Получить данные о всех грузополучателях
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список грузоотправителей успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Грузоотправитель"
+      summary: Создать нового грузоотправителя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '201':
+          description: Грузоотправитель успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /senders/{guid}:
+    get:
+      tags:
+        - Справочник "Грузоотправитель"
+      summary: Получить данные конкретного грузоотправителя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузоотправителя
+      responses:
+        '200':
+          description: Данные грузополучателя успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузоотправитель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Справочник "Грузоотправитель"
+      summary: Обновить данные грузоотправителя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузоотправителя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '200':
+          description: Данные грузополучателя успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузополучатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /recipients:
+    get:
+      tags:
+        - Справочник "Грузополучатель"
+      summary: Получить данные о всех грузополучателях
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список грузополучателей успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Справочник "Грузополучатель"
+      summary: Создать нового грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '201':
+          description: Грузополучатель успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /recipients/{guid}:
+    get:
+      tags:
+        - Справочник "Грузополучатель"
+      summary: Получить данные конкретного грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузополучателя
+      responses:
+        '200':
+          description: Данные грузополучателя успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузополучатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Справочник "Грузополучатель"
+      summary: Обновить данные грузополучателя
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: guid
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор грузополучателя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contractor'
+      responses:
+        '200':
+          description: Данные грузополучателя успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contractor'
+        '400':
+          description: Неверный запрос. Некорректные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Грузополучатель не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
+
+
 
   /autos:
     get:
