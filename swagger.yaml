@@ -190,7 +190,7 @@ components:
         name:
           type: string
           description: Наименование грузового места
-          example: Контейнер CAXU 6600984
+          example: Контейнер CAXU6600984
         nomenklatura:
           type: string
           description: Номенклатура груза
@@ -251,6 +251,7 @@ components:
             isEmpty:
               type: boolean
               description: Признак порожнего контейнера
+              example: false 
           required:
             - number
             - isEmpty
