@@ -3155,7 +3155,7 @@ paths:
                 properties:
                   reportName:
                     type: string
-                    example: "Отчет по поступлению груза"
+                    example: "Поступление грузов"
                     description: Отчет по поступлению груза в порт
                   total:
                     type: integer
