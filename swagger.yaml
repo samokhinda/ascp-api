@@ -22,8 +22,6 @@ info:
 servers:
   - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
     description: Сервер УГТ
-  - url: https://gate.ascp.ru:8443/ka-dev-7/v1/
-    description: Сервер КА
 tags:
   - name: Авторизация
     description: Авторизация
