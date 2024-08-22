@@ -215,10 +215,6 @@ components:
           type: number
           description: Высота груза
           example: 2.896
-        quantity:
-          type: integer
-          description: Количество мест
-          example: 1
         cargoType:
           type: string
           description: Тип груза
@@ -235,7 +231,11 @@ components:
         hazardClass:
           type: string
           description: Класс опасности
-          example: "Не опасный"
+          example: "1.2"
+        marka:
+          type: string
+          description: Марка груза
+          example: "EE3421-RU"
         container:
           type: object
           description: Данные о контейнере
@@ -243,6 +243,11 @@ components:
             number:
               type: string
               description: Номер контейнера
+              example: "MAEU5388370"
+            cargoes:
+              type: string
+              description: Груз в контейнере
+              example: "ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76, 100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200"
             isEmpty:
               type: boolean
               description: Признак порожнего контейнера
@@ -253,7 +258,7 @@ components:
           type: string
           description: Статус грузового места
           enum: ["Погружен", "На складе", "Запланирован"]
-        documentId:
+        documentID:
           type: string
           description: Номер приемного акта порта 
           example: "0000041334"
@@ -3036,7 +3041,239 @@ paths:
                     type: string
                     example: "Груз не найден или фотографии не найдены"
 
+  /reports:
+    get:
+      tags:
+        - Отчеты
+      summary: Получить список доступных отчетов
+      description: Возвращает список отчетов, доступных клиенту.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список отчетов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reports:
+                    type: array
+                    description: Список доступных отчетов
+                    items:
+                      type: object
+                      properties:
+                        reportId:
+                          type: string
+                          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
+                          description: Уникальный идентификатор отчета
+                        reportName:
+                          type: string
+                          description: Название отчета
+                          example: "Поступление грузов"
+                        description:
+                          type: string
+                          description: Описание отчета
+                          example: "Отчет содержит информацию о всех поступивших грузах за указанный период."
+                        filters:
+                          type: array
+                          description: Доступные фильтры для отчета
+                          items:
+                            type: string
+                required:
+                  - reports
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Отчеты не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Отчеты не найдены"
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
+  /reports/incoming-cargo:
+    get:
+      tags:
+        - Отчеты
+      summary: Получить отчет по поступлению груза в порт
+      description: Возвращает отчет по поступлению груза в порт за указанный период.
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          description: Дата начала периода
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "01-01-2023"
+        - name: endDate
+          in: query
+          description: Дата окончания периода
+          required: false
+          schema:
+            type: string
+            format: date
+            example: "01-01-2024"
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: pageSize
+          in: query
+          description: Количество записей на странице
+          required: false
+          schema:
+            type: integer
+            example: 20
+      responses:
+        '200':
+          description: Отчет успешно сформирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reportName:
+                    type: string
+                    example: "Отчет по поступлению груза"
+                    description: Отчет по поступлению груза в порт
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Номер текущей страницы
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  client:
+                    type: string
+                    example: "ЛОГИСТИК-ЦЕНТР ООО"
+                    description: Данные о клиенте                  
+                  data:
+                    type: array
+                    description: Список записей
+                    items:
+                      type: object
+                      properties:
+                        documentID:
+                          type: string
+                          example: "000030159"
+                          description: Номер приемного акта
+                        date:
+                          type: string
+                          format: date
+                          example: "01-01-2024"
+                          description: Дата приема груза
+                        applicationID:
+                          type: string
+                          example: "00005488"
+                          description: Номер заявки клиента
+                        transportType:
+                          type: string
+                          enum:
+                            - "Автомобиль"
+                            - "Вагон"
+                            - "Судно"
+                          example: "Судно"
+                          description: Вид сообщения
+                        transportName:
+                          type: string
+                          example: "М902СХ29 СКАНИЯ"
+                          description: Номер транспортного средства
+                        transportDocument:
+                          type: string
+                          example: "ПЭ3713/2"
+                          description: Номер транспортного документа, накладной
+                        cargo:
+                          $ref: '#/components/schemas/Cargo'
+                        quantity:
+                          type: integer
+                          example: 1
+                          description: Количество мест
+                        weightNetto:
+                          type: number
+                          format: float
+                          example: 2.6
+                          description: Вес нетто груза
+                        weightTara:
+                          type: number
+                          format: float
+                          example: 2.55
+                          description: Вес тары
+                        weightBrutto:
+                          type: number
+                          format: float
+                          example: 5.15
+                          description: Вес брутто груза                 
+                  totals:
+                    type: object
+                    description: Общие итоги по отчету
+                    properties:
+                      totalQuantity:
+                        type: integer
+                        description: Общее количество мест
+                        example: 100
+                      totalWeightNetto:
+                        type: number
+                        format: float
+                        description: Общий вес нетто
+                        example: 260.0
+                      totalWeightTara:
+                        type: number
+                        format: float
+                        description: Общий вес тары
+                        example: 255.0
+                      totalWeightBrutto:
+                        type: number
+                        format: float
+                        description: Общий вес брутто
+                        example: 515.0
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - data
+                  - totals
+        '400':
+          description: Неверный запрос. Проверьте параметры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /cargo/{guid}:
     get:
