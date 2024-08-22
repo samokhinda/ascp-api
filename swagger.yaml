@@ -998,10 +998,6 @@ components:
           type: string
           example: ООО ЛОГИСТИК-ЦЕНТР
           description: Грузополучатель в порту назначения
-        manager:
-          type: string
-          description: Ответственный за подготовку документа
-          example: Иванов Иван Иванович
         responsibleForData:
           type: string
           description: Ответственный за внесение данных
