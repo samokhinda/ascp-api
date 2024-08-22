@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: Документация API ООО "АМТП"
   description: >-
@@ -20,7 +20,10 @@ info:
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: http://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
+  - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
+    description: Сервер УГТ
+  - url: https://gate.ascp.ru:8443/ka-dev-7/v1/
+    description: Сервер КА
 tags:
   - name: Авторизация
     description: Авторизация
@@ -4761,3 +4764,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /invoices/{guid}:
+    get:
+      tags:
+        - Финансовые документы
+      summary: Получение выставленного счета-фактуры
+      servers:
+        - url: http://gate.ascp.ru:8443/ka-dev-7/v1/
+          description: Сервер КА      
+      parameters:
+        - name: guid
+          in: path
+          description: Идентификатор счета-фактуры
+          required: true
+          schema:
+            type: string
+            format: uuid
+            description: Уникальный идентификатор
+      responses:
+        '200':
+          description: Успешное получение счета-фактуры
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invoiceId:
+                    type: string
+                    description: Идентификатор счета-фактуры
+                    example: '12345'
+                  amount:
+                    type: number
+                    description: Сумма счета
+                    example: 1500.75
+                  dueDate:
+                    type: string
+                    description: Дата оплаты
+                    example: '2023-12-31'
+                required:
+                  - invoiceId
+                  - amount
+                  - dueDate
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Invalid invoice ID
+        '404':
+          description: Счет-фактура не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 404
+                message: Invoice not found
