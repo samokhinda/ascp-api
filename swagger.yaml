@@ -22,7 +22,7 @@ info:
 servers:
   - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
     description: Сервер для разработчиков
-  - url: https://gate.ascp.ru:8443/ugt-test/hs/v2/
+  - url: https://gate.ascp.ru:8443/Ugt-test/hs/v2/
     description: Сервер для тестирования
 tags:
   - name: Авторизация
