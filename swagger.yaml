@@ -21,7 +21,9 @@ info:
   version: 1.0.2
 servers:
   - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
-    description: Сервер УГТ
+    description: Сервер для разработчиков
+  - url: https://gate.ascp.ru:8443/ugt-test/hs/v2/
+    description: Сервер для тестирования
 tags:
   - name: Авторизация
     description: Авторизация
@@ -2212,6 +2214,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /documents/{guid}/print:
+    get:
+      tags:
+        - Журнал документов
+      summary: Получить печатную форму документа в PDF
+      description: >-
+        Возвращает печатную форму документа в формате PDF по его уникальному
+        идентификатору (GUID)
+      security:
+        - ApiKeyAuth: []
+        - bearerAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор документа
+          schema:
+            type: string
+        - name: documentType
+          in: query
+          required: true
+          description: Тип документа
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Печатная форма документа успешно получена
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Неверный запрос. Проверить параметры
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ. Проверьте токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Документ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                
   /requests/name:
     get:
       tags:
@@ -4069,7 +4122,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Contract'
-  /profile/fns/{inn}:
+  /profile/fns:
     get:
       tags:
         - Справочник "Профиль клиента"
@@ -4079,7 +4132,7 @@ paths:
         - ApiKeyAuth: []
         - bearerAuth: []
       parameters:
-        - in: path
+        - in: query
           name: inn
           required: true
           schema:
