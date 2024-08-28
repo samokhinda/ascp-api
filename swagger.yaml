@@ -330,10 +330,10 @@ components:
           type: string
           description: Статус судозахода
           enum:
-            - Ожидается
-            - В процессе
-            - Завершен
+            - Планируется
+            - Прибыл
             - Отменен
+            - Убыл
           example: Ожидается
       required:
         - callId
@@ -4489,7 +4489,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
   /final-recipients:
     get:
       tags:
