@@ -321,11 +321,6 @@ components:
           type: string
           description: Агент судна
           example: ООО Морской Агент
-        cargo:
-          type: array
-          description: Список грузов на судне
-          items:
-            $ref: '#/components/schemas/Cargo'
         status:
           type: string
           description: Статус судозахода
@@ -334,7 +329,7 @@ components:
             - Прибыл
             - Отменен
             - Убыл
-          example: Ожидается
+          example: Прибыл
       required:
         - callId
         - vesselName
