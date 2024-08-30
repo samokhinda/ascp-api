@@ -1033,6 +1033,28 @@ components:
         - client
         - team
         - cargoList
+    Attachment:
+      type: object
+      properties:
+        fileName:
+          type: string
+          example: file_02022024
+        fileType:
+          type: string
+          example: pdf
+        fileDate:
+          type: string
+          format: date
+          example: 10-01-2024
+          pattern: ^\d{2}-\d{2}-\d{4}$
+        fileContent:
+          type: string
+          format: binary
+      required:
+        - fileName
+        - fileType
+        - fileDate
+        - fileContent
     BillOfLading:
       type: object
       properties:
@@ -1069,6 +1091,8 @@ components:
           type: number
           format: float
           description: Общая сумма счета
+
+
 paths:
   /auth/login:
     post:
@@ -1240,7 +1264,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /user/{userId}:
+  /users/{guid}:
     delete:
       tags:
         - Управление пользователями
@@ -1251,7 +1275,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: guid
           required: true
           schema:
             type: string
@@ -1293,7 +1317,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: guid
           required: true
           schema:
             type: string
@@ -1306,7 +1330,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  userId:
+                  guid:
                     type: string
                     description: Уникальный идентификатор пользователя
                   fullname:
@@ -1350,7 +1374,7 @@ paths:
         - bearerAuth: []
       parameters:
         - in: path
-          name: userId
+          name: guid
           required: true
           schema:
             type: string
@@ -2009,7 +2033,6 @@ paths:
                   - total
                   - page
                   - pageSize
-                  - requests
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -2080,22 +2103,40 @@ paths:
           description: Уникальный идентификатор документа
           schema:
             type: string
-        - name: documentType
-          in: query
-          description: Тип документа
-          required: true
-          schema:
-            type: string
-            example: Приемный акт
+            example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
       responses:
         '200':
           description: Данные документа успешно получены
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/BillOfLading'
-                  - $ref: '#/components/schemas/Invoice'
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    example: a583b637-5570-488e-a322-fece4d202ff7
+                  documentId:
+                    type: string
+                    example: "00503788"
+                  createdDate:
+                    type: string
+                    format: date-time
+                    example: "2024-08-11T19:12:04"
+                  documentType:
+                    type: string
+                    example: "Приемный акт"
+                  operationType:
+                    type: string
+                    example: "Разгрузка вагона"
+                  comment:
+                    type: string
+                    example: ""
+                  attached:
+                    type: boolean
+                    example: true
+                  pdfFileContent:
+                    type: string
+                    format: binary                  
         '400':
           description: Неверный запрос. Проверить параметры
           content:
@@ -2134,7 +2175,7 @@ paths:
         - name: documentType
           in: query
           description: Тип документа
-          required: true
+          # required: true
           schema:
             type: string
             example: Приемный акт
@@ -2146,74 +2187,25 @@ paths:
               schema:
                 type: object
                 properties:
-                  documents:
+                  attachments:
                     type: array
                     description: Список документов
                     items:
-                      type: object
-                      properties:
-                        fileName:
-                          type: string
-                          description: Название файла
-                          example: document_scan_01.pdf
-                        fileContent:
-                          type: string
-                          format: binary
-                          description: Содержимое файла
+                      $ref: '#/components/schemas/Attachment'
+                      # type: object
+                      # properties:
+                      #   fileName:
+                      #     type: string
+                      #     description: Название файла
+                      #     example: document_scan_01.pdf
+                      #   fileContent:
+                      #     type: string
+                      #     format: binary
+                      #     description: Содержимое файла
                 required:
                   - documents
         '401':
           description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Документ не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /documents/{guid}/print:
-    get:
-      tags:
-        - Журнал документов
-      summary: Получить печатную форму документа в PDF
-      description: >-
-        Возвращает печатную форму документа в формате PDF по его уникальному
-        идентификатору (GUID)
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор документа
-          schema:
-            type: string
-        - name: documentType
-          in: query
-          required: true
-          description: Тип документа
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Печатная форма документа успешно получена
-          content:
-            application/pdf:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Неверный запрос. Проверить параметры
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Неавторизованный доступ. Проверьте токен
           content:
             application/json:
               schema:
