@@ -2990,7 +2990,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /cargoes/{guid}/acts:
+  /cargoes/acts/{guid}:
     get:
       tags:
         - Грузы клиента
@@ -3353,97 +3353,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Данные не найдены
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /cargo/{guid}:
-    get:
-      tags:
-        - Справочник "Грузы клиента"
-      summary: Получить информацию о единице груза
-      description: >-
-        Возвращает информацию о единице груза по указанному идентификатору
-        `guid`.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор груза
-          schema:
-            type: string
-            example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
-      responses:
-        '200':
-          description: Информация о грузе успешно получена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Cargo'
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Груз не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /cargo/{guid}/photos:
-    get:
-      tags:
-        - Справочник "Грузы клиента"
-      summary: Получить фотографии груза
-      description: Возвращает список фотографий, приложенных к указанной единице груза.
-      security:
-        - ApiKeyAuth: []
-        - bearerAuth: []
-      parameters:
-        - name: guid
-          in: path
-          required: true
-          description: Уникальный идентификатор груза
-          schema:
-            type: string
-            example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
-      responses:
-        '200':
-          description: Фотографии груза успешно получены
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  photos:
-                    type: array
-                    description: Список фотографий груза
-                    items:
-                      type: object
-                      properties:
-                        fileName:
-                          type: string
-                          description: Название файла
-                          example: photo-11-20-2024.jpeg
-                        fileContent:
-                          type: string
-                          format: binary
-                          description: Содержимое файла
-                required:
-                  - photos
-        '401':
-          description: Истек токен сессии
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Груз не найден или фотографии не найдены
           content:
             application/json:
               schema:
