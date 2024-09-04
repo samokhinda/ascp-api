@@ -277,7 +277,7 @@ components:
             - Погружен
             - На складе
             - Запланирован
-        documentID:
+        docNumber:
           type: string
           description: Номер приемного акта порта
           example: '0000041334'
@@ -360,7 +360,7 @@ components:
         - Погрузка/выгрузка ЖД
         - Складская операция
       example: Заявка на операцию
-    RequestCommon:
+    PassRequestCommon:
       type: object
       properties:
         guid:
@@ -372,7 +372,7 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'
+          example: '000078945'             
         client:
           type: string
           description: Клиент порта
@@ -421,30 +421,85 @@ components:
         - manager
         - signer
         - status
-    CargoRequest:
-      allOf:
-        - $ref: '#/components/schemas/RequestCommon'
-        - type: object
-          properties:
-            requestName:
-              $ref: '#/components/schemas/RequestName'
-            operationType:
-              type: string
-              description: Вид операции по заявке
-              enum:
-                - Погрузка
-                - Разгрузка
-              example: Погрузка
-          oneOf:
-            - $ref: '#/components/schemas/CarCargoRequest'
-            - $ref: '#/components/schemas/VesselCargoRequest'
-            - $ref: '#/components/schemas/RailCargoRequest'
-          required:
-            - RequestName
-            - operation
+    CargoRequestCommon:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор заявки
+          readOnly: true
+          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+        documentID:
+          type: string
+          description: Номер документа
+          readOnly: true
+          example: '000078945'     
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: true
+          description: Дата и время создания заявки          
+        requestName:
+          type: string
+          readOnly: true
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка автомобиля
+        operationType:
+          type: string
+          readOnly: true          
+          description: Вид операции по заявке
+          example: Погрузка  
+        client:
+          type: string
+          description: Клиент порта
+          example: ООО Транс логистика
+        contract:
+          type: string
+          description: Договор с клиентом порта
+          example: Договор перевалки №455-24
+        location:
+          type: string
+          description: Место оказания услуги
+          example: Экономия
+        manager:
+          type: string
+          description: Ответственный за подготовку документа
+          example: Иванов Иван Иванович
+        signer:
+          type: string
+          description: Подписант заявки со стороны клиента
+          example: Сидоров Дмитрий Иванович
+        status:
+          type: string
+          description: Статус заявки
+          readOnly: true
+          enum:
+            - Создана
+            - В обработке
+            - Одобрена
+            - Отклонена
+          example: В обработке
+        comment:
+          type: string
+          description: Комментарий к заявке
+          example: Добавьте сканы документов
+      required:
+        - guid
+        - documentID
+        - createdDate        
+        - requestName
+        - operationType
+        - client
+        - contract
+        - location
+        - manager
+        - signer
+        - status
     PassRequest:
       allOf:
-        - $ref: '#/components/schemas/RequestCommon'
+        - $ref: '#/components/schemas/PassRequestCommon'
         - type: object
           properties:
             createdDate:
@@ -617,9 +672,21 @@ components:
         - accessPeriod
         - location
         - persona
-    CarCargoRequest:
+    CargoRequestAuto:
       type: object
-      properties:
+      allOf:
+          - $ref: '#/components/schemas/CargoRequestCommon'
+      properties:        
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка автомобиля
+        operationType:
+          type: string
+          readOnly: false         
+          description: Вид операции по заявке
+          example: Погрузка      
         period:
           type: object
           description: Дата автовизита
@@ -663,9 +730,21 @@ components:
         - period
         - drivertList
         - cargoList
-    VesselCargoRequest:
+    CargoRequestShip:
       type: object
-      properties:
+      allOf:
+          - $ref: '#/components/schemas/CargoRequestCommon'      
+      properties:     
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка судно
+        operationType:
+          type: string
+          readOnly: false        
+          description: Вид операции по заявке
+          example: Погрузка            
         vesselCall:
           $ref: '#/components/schemas/VesselCall'
         cargoList:
@@ -678,9 +757,21 @@ components:
         - RequestName
         - operation
         - cargoList
-    RailCargoRequest:
+    CargoRequestRail:
       type: object
-      properties:
+      allOf:
+          - $ref: '#/components/schemas/CargoRequestCommon'      
+      properties:    
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка ЖД
+        operationType:
+          type: string
+          readOnly: false         
+          description: Вид операции по заявке
+          example: Погрузка            
         departureStation:
           type: string
           description: Станция отправления
@@ -2331,6 +2422,10 @@ paths:
           required: false
           schema:
             type: string
+            enum:
+              - Погрузка/выгрузка автомобиля
+              - Погрузка/выгрузка судно
+              - Погрузка/выгрузка ЖД
         - name: operationType
           in: query
           description: Вид операции по заявке
@@ -2360,7 +2455,7 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CargoRequest'
+                      $ref: '#/components/schemas/CargoRequestCommon'
                 required:
                   - total
                   - page
@@ -2399,7 +2494,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CargoRequest'
+              oneOf:
+                - $ref: '#/components/schemas/CargoRequestAuto'
+                - $ref: '#/components/schemas/CargoRequestShip'
+                - $ref: '#/components/schemas/CargoRequestRail' 
       responses:
         '201':
           description: Заявка успешно создана
@@ -2451,7 +2549,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CargoRequest'
+                oneOf:
+                  - $ref: '#/components/schemas/CargoRequestAuto'
+                  - $ref: '#/components/schemas/CargoRequestShip'
+                  - $ref: '#/components/schemas/CargoRequestRail' 
         '400':
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
