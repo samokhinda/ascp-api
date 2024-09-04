@@ -317,6 +317,13 @@ components:
           description: Дата и время отправления судна
           example: 10-01-2024
           pattern: ^\d{2}-\d{2}-\d{4}$
+        terminal:
+          type: string
+          description: Терминал, на который прибыло судно
+          enum:
+            - Экономия
+            - Бакарица
+          example: Экономия          
         berth:
           type: string
           description: Номер причала
@@ -1186,7 +1193,6 @@ components:
           type: number
           format: float
           description: Общая сумма счета
-
 
 paths:
   /auth/login:
@@ -4614,7 +4620,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
 
   /autos:
     get:
