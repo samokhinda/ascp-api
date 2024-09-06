@@ -2295,6 +2295,9 @@ paths:
       description: >-
         Возвращает данные документа по его уникальному идентификатору (GUID), с
         учетом типа документа.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       tags:
         - Журнал документов
       parameters:
@@ -2493,6 +2496,9 @@ paths:
       description: >-
         Возвращает список заявок на погрузку или разгрузку грузов с возможностью
         фильтрации по периоду и типу.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: startDate
           in: query
@@ -2642,6 +2648,9 @@ paths:
         - Заявки на погрузку / выгрузку грузов
       summary: Получить заявку по GUID
       description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: guid
           in: path
@@ -2685,6 +2694,9 @@ paths:
       tags:
         - Заявки на погрузку / выгрузку грузов
       summary: Создать новую заявку на погрузку/разгрузку
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       description: >-
         Создает новую заявку на погрузку или разгрузку грузов автомобиля или
         судна.
@@ -2812,6 +2824,9 @@ paths:
         - Заявки на погрузку / выгрузку грузов
       summary: Создать новую заявку на погрузку/разгрузку автомобиля
       description: Создает новую заявку на погрузку или разгрузку грузов автомобиля.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       requestBody:
         description: Данные для создания новой заявки
         required: true
@@ -2909,6 +2924,9 @@ paths:
       description: >-
         Возвращает список заявок на пропуск с возможностью фильтрации по периоду
         и типу.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: sortBy
           in: query
@@ -3075,6 +3093,9 @@ paths:
         - Заявки на пропуск
       summary: Получить заявку по GUID
       description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: guid
           in: path
@@ -3197,6 +3218,9 @@ paths:
         - Заявки на пропуск
       summary: Получить список целей визитов
       description: Возвращает полный список целей визитов.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       responses:
         '200':
           description: Список целей визитов успешно получен
@@ -3795,6 +3819,9 @@ paths:
         - Справочник "Пропуска"
       summary: Получить список пропусков
       description: Возвращает список всех пропусков с поддержкой пагинации.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: page
           in: query
@@ -3879,6 +3906,9 @@ paths:
         - Справочник "Пропуска"
       summary: Получить пропуск по уникальному идентификатору
       description: Возвращает данные пропуска по его уникальному идентификатору `guid`.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []      
       parameters:
         - name: guid
           in: path
