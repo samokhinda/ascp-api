@@ -29,21 +29,22 @@ tags:
     description: Авторизация
   - name: Управление пользователями
     description: Операции по управлению пользователями системы.
-security:
-  - ApiKeyAuth: []
+# security:
+#   - bearerAuth: []
 components:
   securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT
+      bearerFormat: JWT # Общий API токен сайта
     BasicAuth:
-      type: http
-      scheme: basic
+      type: apiKey
+      in: header
+      name: BasicAuth  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
+    sessionAuth:
+      type: apiKey
+      in: header
+      name: bearerAuth # Сессионный JWT токен который возвращает сервер      
   schemas:
     ErrorResponse:
       type: object
@@ -432,6 +433,7 @@ components:
         - manager
         - signer
         - status
+
     CargoRequestCommon:
       type: object
       properties:
@@ -508,7 +510,6 @@ components:
         - manager
         - signer
         - status
-
     CargoRequestShipCommon:
       type: object
       allOf:
@@ -532,7 +533,6 @@ components:
           # $ref: '#/components/schemas/VesselCall'
       required:
         - vesselGuid
-
     CargoRequestShipLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
@@ -546,7 +546,6 @@ components:
 
       required:
         - cargoList
-
     CargoRequestShipUnload:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
@@ -558,7 +557,6 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
-
     CargoRequestAutoCommon:
       type: object
       allOf:
@@ -581,7 +579,6 @@ components:
             type: string
       required:
         - autoVisitGuids
-
     CargoRequestAutoLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestAutoCommon'
@@ -1307,7 +1304,7 @@ paths:
         логин и пароль, для получения JWT токена.
       security:
         - BasicAuth: []
-        - ApiKeyAuth: []
+        - bearerAuth: []
       responses:
         '200':
           description: Аутентификация прошла успешно. Возвращает JWT токен.
@@ -1340,6 +1337,7 @@ paths:
       description: Позволяет пользователю завершить сессию и выйти из системы.
       security:
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Успешный выход из системы
@@ -1364,8 +1362,8 @@ paths:
       summary: Создание нового пользователя
       description: Позволяет администратору создать нового пользователя в системе.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -1425,8 +1423,8 @@ paths:
         Позволяет получить список всех пользователей, принадлежащих указанной
         организации.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список пользователей организации успешно получен
@@ -1474,8 +1472,8 @@ paths:
       summary: Удаление пользователя
       description: Позволяет администратору удалить пользователя из системы.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -1516,8 +1514,8 @@ paths:
         Позволяет получить данные пользователя по его уникальному
         идентификатору.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -1573,8 +1571,8 @@ paths:
       summary: Обновление данных пользователя
       description: Позволяет пользователю обновить свои личные данные.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
