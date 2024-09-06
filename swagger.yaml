@@ -2600,6 +2600,9 @@ paths:
       description: >-
         Создает новую заявку на погрузку или разгрузку грузов автомобиля или
         судна.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []           
       requestBody:
         description: Данные для создания новой заявки
         required: true
@@ -3036,6 +3039,9 @@ paths:
       description: >-
         Создает новую заявку на пропуск в порт, как для пешеходов (гостей), так
         и для водителей на автомобиле.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []           
       requestBody:
         required: true
         content:
@@ -3153,6 +3159,9 @@ paths:
         - Заявки на пропуск
       summary: Обновить заявку на пропуск
       description: Обновляет данные существующей заявки на пропуск.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []           
       parameters:
         - name: guid
           in: path
@@ -3942,6 +3951,9 @@ paths:
         - Справочник "Пропуска"
       summary: Обновить данные пропуска
       description: Обновляет данные существующего пропуска.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []           
       parameters:
         - name: guid
           in: path
