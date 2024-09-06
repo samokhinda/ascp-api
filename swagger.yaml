@@ -1625,8 +1625,8 @@ paths:
       description: |
         Эндпоинт для формирования дашборда по отгрузке судна с грузами клиента.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -1714,8 +1714,8 @@ paths:
         Эндпоинт для формирования дашборда по отгрузке и погрузке ЖД вагонов с
         грузами клиента в разрезе терминалов порта.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -1804,8 +1804,8 @@ paths:
         Эндпоинт для формирования дашборда по отгрузке и погрузке автомобилей с
         грузами клиента в разрезе терминалов порта.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -1895,8 +1895,8 @@ paths:
         груза клиента на складских комплексах терминалов порта на определенную
         дату в виде гистограммы.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: date
           in: query
@@ -1963,8 +1963,8 @@ paths:
         и растаренных контейнеров клиента за период в разрезе терминалов и
         складских зон порта.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -2037,8 +2037,8 @@ paths:
         Возвращает список судозаходов за указанный период с возможностью
         фильтрации по судам и пагинацией.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -2098,8 +2098,8 @@ paths:
       summary: Получить данные по судозаходу
       description: Возвращает данные по указанному идентификатору судозахода  `guid`.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -2136,8 +2136,8 @@ paths:
         Возвращает список документов клиента из журнала БД с поддержкой
         пагинации.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -2259,8 +2259,8 @@ paths:
       summary: Получить список используемых типов документов
       description: Возвращает список используемых типов документов из журнала БД.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список типов документов успешно получен
@@ -2363,8 +2363,8 @@ paths:
       summary: Получить сканы приложенные к документу
       description: Возвращает список сканов, прикрепленных к документу.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -2424,8 +2424,8 @@ paths:
       summary: Получить все типы заявок
       description: Возвращает список всех типов заявок клиента из базы данных.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -3254,8 +3254,8 @@ paths:
         Возвращает информацию о наличии груза клиента на складских комплексах и
         складских зонах порта на указанную дату с пагинацией.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: date
           in: query
@@ -3347,8 +3347,8 @@ paths:
         Возвращает информацию об остатках груза клиента на складских комплексах
         и складских зонах порта.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: terminal
           in: query
@@ -3429,8 +3429,8 @@ paths:
       summary: Получить документ приемный акт со списком грузов.
       description: Возвращает документ приемный акт порта.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -3473,8 +3473,8 @@ paths:
         Возвращает информацию о единице груза по указанному идентификатору
         `guid`.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -3509,8 +3509,8 @@ paths:
       summary: Получить фотографии груза
       description: Возвращает список фотографий, приложенных к указанной единице груза.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -3554,8 +3554,8 @@ paths:
       summary: Получить список доступных отчетов
       description: Возвращает список отчетов, доступных клиенту.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список отчетов успешно получен
@@ -3616,8 +3616,8 @@ paths:
       summary: Получить отчет по поступлению груза в порт
       description: Возвращает отчет по поступлению груза в порт за указанный период.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -3962,8 +3962,8 @@ paths:
         - Справочник "Пропуска"
       summary: Поиск пропуска по ФИО
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: query
           name: fio
@@ -3987,8 +3987,8 @@ paths:
       summary: Получить список физических лиц
       description: Возвращает список физических лиц клиента с возможностью фильтрации.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -4058,8 +4058,8 @@ paths:
       summary: Добавить новое физическое лицо
       description: Добавляет новое физическое лицо в справочник клиента.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -4101,8 +4101,8 @@ paths:
       summary: Получить данные физического лица
       description: Возвращает данные физического лица по его уникальному идентификатору.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4143,8 +4143,8 @@ paths:
       summary: Обновить данные физического лица
       description: Обновляет данные физического лица в справочнике.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4200,8 +4200,8 @@ paths:
         Удаляет физическое лицо из справочника по его уникальному
         идентификатору.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4246,8 +4246,8 @@ paths:
         - Справочник "Физические лица"
       summary: Поиск физического лица по ФИО
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: query
           name: fio
@@ -4280,8 +4280,8 @@ paths:
         Возвращает список всех документов, прикрепленных к указанному
         физическому лицу.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список документов успешно получен
@@ -4317,8 +4317,8 @@ paths:
       summary: Добавить новый документ физического лица
       description: Добавляет новый документ (сканы) к указанному физическому лицу.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -4352,8 +4352,8 @@ paths:
         - Справочник "Профиль клиента"
       summary: Получить данные профиля организации
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Данные профиля успешно получены
@@ -4367,8 +4367,8 @@ paths:
         - Справочник "Профиль клиента"
       summary: Обновить данные профиля организации
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4396,8 +4396,8 @@ paths:
         - Справочник "Профиль клиента"
       summary: Получить список договоров организации
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4422,8 +4422,8 @@ paths:
       summary: Получить данные контрагента по ИНН с сайта ФНС
       description: Позволяет получить информацию о контрагенте, используя его ИНН
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: query
           name: inn
@@ -4468,8 +4468,8 @@ paths:
         - Справочник "Грузоотправитель"
       summary: Получить данные о всех грузополучателях
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список грузоотправителей успешно получен
@@ -4496,8 +4496,8 @@ paths:
         - Справочник "Грузоотправитель"
       summary: Создать нового грузоотправителя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -4535,8 +4535,8 @@ paths:
         - Справочник "Грузоотправитель"
       summary: Получить данные конкретного грузоотправителя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4575,8 +4575,8 @@ paths:
         - Справочник "Грузоотправитель"
       summary: Обновить данные грузоотправителя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4628,8 +4628,8 @@ paths:
         - Справочник "Грузополучатель"
       summary: Получить данные о всех грузополучателях
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список грузополучателей успешно получен
@@ -4656,8 +4656,8 @@ paths:
         - Справочник "Грузополучатель"
       summary: Создать нового грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -4695,8 +4695,8 @@ paths:
         - Справочник "Грузополучатель"
       summary: Получить данные конкретного грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4735,8 +4735,8 @@ paths:
         - Справочник "Грузополучатель"
       summary: Обновить данные грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4788,8 +4788,8 @@ paths:
         - Справочник "Конечный грузополучатель"
       summary: Получить данные о всех грузополучателях
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Список грузополучателей успешно получен
@@ -4816,8 +4816,8 @@ paths:
         - Справочник "Конечный грузополучатель"
       summary: Создать нового грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -4855,8 +4855,8 @@ paths:
         - Справочник "Конечный грузополучатель"
       summary: Получить данные конкретного грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4895,8 +4895,8 @@ paths:
         - Справочник "Конечный грузополучатель"
       summary: Обновить данные грузополучателя
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - in: path
           name: guid
@@ -4950,8 +4950,8 @@ paths:
       summary: Получить список автотранспортных средств
       description: Возвращает список всех автотранспортных средств с поддержкой пагинации.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -5011,8 +5011,8 @@ paths:
       summary: Добавить новое автотранспортное средство
       description: Добавляет новое автотранспортное средство в справочник.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       requestBody:
         required: true
         content:
@@ -5058,8 +5058,8 @@ paths:
         Возвращает данные автотранспортного средства по его уникальному
         идентификатору `guid`.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -5092,8 +5092,8 @@ paths:
       summary: Обновить данные автотранспортного средства
       description: Обновляет данные существующего автотранспортного средства.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -5140,8 +5140,8 @@ paths:
       summary: Удалить автотранспортное средство
       description: Удаляет автотранспортное средство из справочника.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -5179,8 +5179,8 @@ paths:
       summary: Получить список доступных терминалов
       description: Возвращает список доступных терминалов с их описанием и GUID.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       responses:
         '200':
           description: Успешный ответ. Список доступных терминалов.
@@ -5211,8 +5211,8 @@ paths:
         Возвращает изображение карты и координаты складских зон для указанного
         терминала.
       security:
-        - ApiKeyAuth: []
         - bearerAuth: []
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
