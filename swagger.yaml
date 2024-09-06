@@ -269,7 +269,6 @@ components:
               example: false
           required:
             - number
-            - isEmpty
         status:
           type: string
           description: Статус грузового места
@@ -285,6 +284,11 @@ components:
         - name
         - nomenklatura
         - cargoType
+        - weight
+        - length
+        - width
+        - height
+        - quantity     
     VesselCall:
       type: object
       properties:
@@ -504,6 +508,104 @@ components:
         - manager
         - signer
         - status
+
+    CargoRequestShipCommon:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestCommon'
+      properties:
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка судно
+        operationType:
+          type: string
+          readOnly: false
+          description: Вид операции по заявке
+          example: Погрузка или Разгрузка
+        vesselGuid:
+          type: string
+          readOnly: false
+          description: GUID судозахода
+          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241       
+          # $ref: '#/components/schemas/VesselCall'
+      required:
+        - vesselGuid
+
+    CargoRequestShipLoad:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestShipCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            type: string
+            format: uuid
+
+      required:
+        - cargoList
+
+    CargoRequestShipUnload:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestShipCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к разгрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - cargoList
+
+    CargoRequestAutoCommon:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestCommon'
+      properties:
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка автомобиля
+        operationType:
+          type: string
+          readOnly: false
+          description: Вид операции по заявке
+          example: Погрузка
+        autoVisitGuids:
+          type: array
+          description: Массив GUID согласованных автовизитов
+          items:
+            type: string
+      required:
+        - autoVisitGuids
+
+    CargoRequestAutoLoad:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            type: string
+            format: uuid
+      required:
+        - cargoList
+    CargoRequestAutoUnload:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к разгрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - cargoList
+
     PassRequest:
       allOf:
         - $ref: '#/components/schemas/PassRequestCommon'
@@ -2579,6 +2681,228 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /requests/ship:
+    post:
+      tags:
+        - Заявки на погрузку / выгрузку грузов
+      summary: Создать новую заявку на погрузку/разгрузку
+      description: >-
+        Создает новую заявку на погрузку или разгрузку грузов автомобиля или
+        судна.
+      requestBody:
+        description: Данные для создания новой заявки
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CargoRequestShipLoad'
+                - $ref: '#/components/schemas/CargoRequestShipUnload'
+            examples:              
+              CargoRequestShipLoadExample:
+                summary: Пример заявки на погрузку
+                value: 
+                  requestName: Погрузка судно
+                  operationType: Погрузка
+                  client: ООО Транс логистика
+                  contract: Договор перевалки №455-24
+                  location: Экономия
+                  manager: Иванов Иван Иванович
+                  signer: Сидоров Дмитрий Иванович
+                  status: В обработке
+                  comment: Добавьте сканы документов
+                  vesselGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestShipUnloadExample:
+                summary: Пример заявки на разгрузку
+                value: 
+                  requestName: Разгрузка судно
+                  operationType: Разгрузка
+                  client: ООО Транс логистика
+                  contract: Договор перевалки №455-24
+                  location: Экономия
+                  manager: Иванов Иван Иванович
+                  signer: Сидоров Дмитрий Иванович
+                  status: В обработке
+                  comment: Добавьте сканы документов
+                  vesselGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+
+                  cargoList:
+                    - name: Контейнер CAXU6600984
+                      nomenklatura: Контейнер CAXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: '1.2'
+                      marka: EE3421-RU
+                      container:
+                        number: JASRZH241602676
+                      status: Ожидается
+                    - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
+                      nomenklatura: Крепь анкерная  АСПТ-48х3х2400
+                      weight: 660
+                      volume: 0.638
+                      length: 2.55
+                      width: 0.5
+                      height: 0.5
+                      quantity: 2
+                      cargoType: Генеральный груз
+                      packaging: связка
+                      storageConditions: Крытое
+                      hazardClass: ''
+                      status: Ожидается
+                    - name: Насыпной груз ABC
+                      nomenklatura: Насыпной ABC
+                      weight: 50000
+                      volume: 120.0
+                      length: 15.0
+                      width: 3.0
+                      height: 3.0
+                      quantity: 1
+                      cargoType: Насыпной/Навальный
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: '3.2'
+                      marka: BB3344-TU
+                      status: Запланирован
+
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                    example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+                required:
+                  - guid
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Invalid request data
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: Token has expired
+  /requests/auto:
+    post:
+      tags:
+        - Заявки на погрузку / выгрузку грузов
+      summary: Создать новую заявку на погрузку/разгрузку автомобиля
+      description: Создает новую заявку на погрузку или разгрузку грузов автомобиля.
+      requestBody:
+        description: Данные для создания новой заявки
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CargoRequestAutoLoad'
+                - $ref: '#/components/schemas/CargoRequestAutoUnload'
+            examples:
+              CargoRequestAutoLoadExample:
+                summary: Пример заявки на погрузку
+                value:
+                  requestName: Погрузка автомобиль
+                  operationType: Погрузка
+                  client: ООО Транс логистика
+                  contract: Договор перевалки №455-24
+                  location: Экономия
+                  manager: Иванов Иван Иванович
+                  signer: Сидоров Дмитрий Иванович
+                  status: В обработке
+                  comment: Добавьте сканы документов
+                  autoVisitGuids:
+                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c242
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestAutoUnloadExample:
+                summary: Пример заявки на разгрузку
+                value:
+                  requestName: Разгрузка автомобиль
+                  operationType: Разгрузка
+                  client: ООО Транс логистика
+                  contract: Договор перевалки №455-24
+                  location: Экономия
+                  manager: Иванов Иван Иванович
+                  signer: Сидоров Дмитрий Иванович
+                  status: В обработке
+                  comment: Добавьте сканы документов
+                  autoVisitGuids:
+                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                  cargoList:
+                    - name: Контейнер CAXU6600984
+                      nomenklatura: Контейнер CAXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: '1.2'
+                      marka: EE3421-RU
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                    example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+                required:
+                  - guid
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Invalid request data
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: Token has expired
   /passes/requests:
     get:
       tags:
