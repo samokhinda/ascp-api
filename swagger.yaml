@@ -20,10 +20,10 @@ info:
     email: dev@ascp.ru
   version: 1.0.2
 servers:
-  - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
-    description: Сервер для разработчиков
   - url: https://gate.ascp.ru:8443/Ugt-test/hs/v2/
     description: Сервер для тестирования
+  - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
+    description: Сервер для разработчиков
 tags:
   - name: Авторизация
     description: Авторизация
@@ -40,11 +40,11 @@ components:
     BasicAuth:
       type: apiKey
       in: header
-      name: BasicAuth  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
+      name: BasicAuth1  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
     sessionAuth:
       type: apiKey
       in: header
-      name: bearerAuth # Сессионный JWT токен который возвращает сервер      
+      name: bearerAuth1 # Сессионный JWT токен который возвращает сервер      
   schemas:
     ErrorResponse:
       type: object
@@ -2536,7 +2536,7 @@ paths:
             type: string
             enum:
               - Погрузка/выгрузка автомобиля
-              - Погрузка/выгрузка судно
+              - Погрузка/выгрузка судна
               - Погрузка/выгрузка ЖД
         - name: operationType
           in: query
