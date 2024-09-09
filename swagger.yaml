@@ -519,7 +519,7 @@ components:
           type: string
           readOnly: false
           description: Наименование типа заявки
-          example: Погрузка/выгрузка судно
+          example: Погрузка/выгрузка судна
         operationType:
           type: string
           readOnly: false
@@ -845,7 +845,7 @@ components:
           type: string
           readOnly: false
           description: Наименование типа заявки
-          example: Погрузка/выгрузка судно
+          example: Погрузка/выгрузка судна
         operationType:
           type: string
           readOnly: false        
