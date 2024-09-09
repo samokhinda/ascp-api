@@ -40,11 +40,11 @@ components:
     BasicAuth:
       type: apiKey
       in: header
-      name: BasicAuth1  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
+      name: BasicAuth  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
     sessionAuth:
       type: apiKey
       in: header
-      name: bearerAuth1 # Сессионный JWT токен который возвращает сервер      
+      name: bearerAuth # Сессионный JWT токен который возвращает сервер      
   schemas:
     ErrorResponse:
       type: object
