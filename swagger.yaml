@@ -297,7 +297,7 @@ components:
           type: string
           description: Уникальный идентификатор судозахода
           readOnly: true
-          example: c5851ca8-faeb-11ee-bbac-904d466aa48a
+          example: 6bb94c03-ecc2-11ee-bbac-904d466aa48a
         vesselName:
           type: string
           description: Название судна
@@ -525,12 +525,16 @@ components:
           readOnly: false
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
-        vesselGuid:
-          type: string
+        vesselCall:
+          type: array
           readOnly: false
           description: GUID судозахода
-          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241       
-          # $ref: '#/components/schemas/VesselCall'
+          items:
+            type: string
+            format: uuid
+          example: 
+            - c5851ca8-faeb-11ee-bbac-904d466aa48a       
+            - 9f246293-eefc-11ee-bbac-904d466aa48a
       required:
         - vesselGuid
     CargoRequestShipLoad:
@@ -2107,7 +2111,7 @@ paths:
           description: Уникальный идентификатор судозахода
           schema:
             type: string
-            example: VC123456
+            example: 6bb94c03-ecc2-11ee-bbac-904d466aa48a
       responses:
         '200':
           description: Данные по судозаходу успешно получены
@@ -2528,6 +2532,24 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: sortBy
+          in: query
+          description: Поле для сортировки (createdDate, documentID)
+          required: false
+          schema: 
+            type: string
+            enum:
+              - createdDate
+              - documentID
+        - name: sortOrder
+          in: query
+          description: Порядок сортировки (asc для возрастания, desc для убывания)
+          required: false
+          schema: 
+            type: string
+            enum: 
+              - asc
+              - desc
         - name: requestName
           in: query
           description: Тип заявки
@@ -2613,6 +2635,145 @@ paths:
                 - $ref: '#/components/schemas/CargoRequestAuto'
                 - $ref: '#/components/schemas/CargoRequestShip'
                 - $ref: '#/components/schemas/CargoRequestRail' 
+            examples:
+              CargoRequestShipLoadExample:
+                summary: Пример заявки на погрузку судна
+                value:
+                  requestName: Погрузка судна
+                  operationType: Погрузка
+                  client: ООО Морской Агент
+                  contract: Договор №123
+                  location: Экономия
+                  manager: Иванов И.И.
+                  signer: Петров П.П.
+                  status: Создана
+                  comment: Срочная отправка
+                  vesselCall: 0000789453def1db-b554-11ea-a9b0-ac1f6b48c241
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestShipUnloadExample:
+                summary: Пример заявки на разгрузку судна
+                value:
+                  requestName: Разгрузка судна
+                  operationType: Разгрузка
+                  client: ООО Морской Агент
+                  contract: Договор №124
+                  location: Экономия
+                  manager: Иванов И.И.
+                  signer: Петров П.П.
+                  status: Создана
+                  comment: Обычная разгрузка
+                  vesselCall: 0000789453def1db-b554-11ea-a9b0-ac1f6b48c241
+                  cargoList:
+                    - name: Контейнер CAXU6600984
+                      nomenklatura: Контейнер CAXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 1.2
+                      marka: EE3421-RU
+              CargoRequestAutoLoadExample:
+                summary: Пример заявки на погрузку автомобиля
+                value:
+                  requestName: Погрузка автомобиля
+                  operationType: Погрузка
+                  client: ООО Авто Логистика
+                  contract: Договор №456
+                  location: Бакарица
+                  manager: Сидоров С.С.
+                  signer: Кузнецов К.К.
+                  status: Создана
+                  comment: Ожидается разрешение
+                  autoVisitGuids:
+                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - 0000789453def1dbc-b554-11ea-a9f6b48c242
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestAutoUnloadExample:
+                summary: Пример заявки на разгрузку автомобиля
+                value:
+                  requestName: Разгрузка автомобиля
+                  operationType: Разгрузка
+                  client: ООО Авто Логистика
+                  contract: Договор №457
+                  location: Бакарица
+                  manager: Сидоров С.С.
+                  signer: Кузнецов К.К.
+                  status: Создана
+                  comment: Документы в работе
+                  autoVisitGuids:
+                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - 0000789453def1dbc-b554-11ea-a9f6b48c242
+                  cargoList:
+                    - name: Контейнер CAXU6600985
+                      nomenklatura: Контейнер CAXU
+                      weight: 35000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 1.2
+                      marka: EE3422-RU
+              CargoRequestRailLoadExample:
+                summary: Пример заявки на погрузку ЖД
+                value:
+                  requestName: Погрузка ЖД
+                  operationType: Погрузка
+                  client: ООО Железнодорожная Логистика
+                  contract: Договор №789
+                  location: СОЛОМБАЛКА
+                  manager: Николаев Н.Н.
+                  signer: Дмитриев Д.Д.
+                  status: Создана
+                  comment: Требуется допуск
+                  departureStation: СОЛОМБАЛКА
+                  wagons: 2
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestRailUnloadExample:
+                summary: Пример заявки на разгрузку ЖД
+                value:
+                  requestName: Разгрузка ЖД
+                  operationType: Разгрузка
+                  client: ООО Железнодорожная Логистика
+                  contract: Договор №790
+                  location: СОЛОМБАЛКА
+                  manager: Николаев Н.Н.
+                  signer: Дмитриев Д.Д.
+                  status: Создана
+                  comment: Обычная разгрузка
+                  departureStation: СОЛОМБАЛКА
+                  wagons: 2
+                  cargoList:
+                    - name: Контейнер CAXU6600986
+                      nomenklatura: Контейнер CAXU
+                      weight: 36000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 1.2
+                      marka: EE3423-RU                     
       responses:
         '201':
           description: Заявка успешно создана
@@ -2716,16 +2877,17 @@ paths:
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку
                 value: 
-                  requestName: Погрузка судно
+                  requestName: Погрузка/выгрузка судна
                   operationType: Погрузка
                   client: ООО Транс логистика
-                  contract: Договор перевалки №455-24
+                  contract: 01/Э-16/600-15-НН/1096-2015
                   location: Экономия
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
-                  status: В обработке
+                  status: Черновик
                   comment: Добавьте сканы документов
-                  vesselGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                  vesselCall: 
+                    - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
                     - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
@@ -2733,17 +2895,17 @@ paths:
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
                 value: 
-                  requestName: Разгрузка судно
+                  requestName: Погрузка/выгрузка судна
                   operationType: Разгрузка
                   client: ООО Транс логистика
-                  contract: Договор перевалки №455-24
+                  contract: 01/Э-16/600-15-НН/1096-2015
                   location: Экономия
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
-                  status: В обработке
+                  status: Черновик
                   comment: Добавьте сканы документов
-                  vesselGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
-
+                  vesselCall: 
+                    - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - name: Контейнер CAXU6600984
                       nomenklatura: Контейнер CAXU
@@ -2788,7 +2950,6 @@ paths:
                       hazardClass: '3.2'
                       marka: BB3344-TU
                       status: Запланирован
-
       responses:
         '201':
           description: Заявка успешно создана
