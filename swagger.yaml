@@ -510,6 +510,7 @@ components:
         - manager
         - signer
         - status
+
     CargoRequestShipCommon:
       type: object
       allOf:
@@ -536,7 +537,7 @@ components:
             - c5851ca8-faeb-11ee-bbac-904d466aa48a       
             - 9f246293-eefc-11ee-bbac-904d466aa48a
       required:
-        - vesselGuid
+        - vesselCall
     CargoRequestShipLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
@@ -561,6 +562,7 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
+    
     CargoRequestAutoCommon:
       type: object
       allOf:
@@ -598,6 +600,56 @@ components:
     CargoRequestAutoUnload:
       allOf:
         - $ref: '#/components/schemas/CargoRequestAutoCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к разгрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - cargoList
+
+    CargoRequestRailCommon:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestCommon'
+      properties:
+        requestName:
+          type: string
+          readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка ЖД
+        operationType:
+          type: string
+          readOnly: false
+          description: Вид операции по заявке
+          example: Погрузка или Разгрузка
+        departureStation:
+          type: string
+          description: Станция отправления
+          example: СОЛОМБАЛКА
+        wagons:
+          type: integer
+          description: Количество вагонов
+          example: 2
+      required:
+        - departureStation
+        - wagons
+    CargoRequestRailLoad:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestRailCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            type: string
+            format: uuid
+      required:
+        - cargoList
+    CargoRequestRailUnload:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestRailCommon'
       properties:
         cargoList:
           type: array
@@ -3080,6 +3132,106 @@ paths:
               example:
                 code: 401
                 message: Token has expired
+
+  /requests/rail:
+    post:
+      tags:
+        - Заявки на погрузку / выгрузку грузов
+      summary: Создать новую заявку на погрузку/разгрузку ЖД вагона
+      description: Создает новую заявку на погрузку или разгрузку ЖД вагона.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      requestBody:
+        description: Данные для создания новой заявки
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CargoRequestRailLoad'
+                - $ref: '#/components/schemas/CargoRequestRailUnload'
+            examples:
+              CargoRequestRailLoadExample:
+                summary: Пример заявки на погрузку
+                value:
+                  requestName: Погрузка ЖД
+                  operationType: Погрузка
+                  client: ООО Железнодорожная Логистика
+                  contract: Договор №789
+                  location: СОЛОМБАЛКА
+                  manager: Николаев Н.Н.
+                  signer: Дмитриев Д.Д.
+                  status: Создана
+                  comment: Требуется допуск
+                  departureStation: СОЛОМБАЛКА
+                  wagons: 2
+                  cargoList:
+                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+              CargoRequestRailUnloadExample:
+                summary: Пример заявки на разгрузку
+                value:
+                  requestName: Разгрузка ЖД
+                  operationType: Разгрузка
+                  client: ООО Железнодорожная Логистика
+                  contract: Договор №790
+                  location: СОЛОМБАЛКА
+                  manager: Николаев Н.Н.
+                  signer: Дмитриев Д.Д.
+                  status: Создана
+                  comment: Обычная разгрузка
+                  departureStation: СОЛОМБАЛКА
+                  wagons: 2
+                  cargoList:
+                    - name: Контейнер CAXU6600986
+                      nomenklatura: Контейнер CAXU
+                      weight: 36000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 1.2
+                      marka: EE3423-RU
+      responses:
+        '201':
+          description: Заявка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  guid:
+                    type: string
+                    description: Уникальный идентификатор созданной заявки
+                    example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+                required:
+                  - guid
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 400
+                message: Invalid request data
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                code: 401
+                message: Token has expired
+
+
   /passes/requests:
     get:
       tags:
