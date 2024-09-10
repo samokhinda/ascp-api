@@ -578,13 +578,13 @@ components:
           readOnly: false
           description: Вид операции по заявке
           example: Погрузка
-        autoVisitGuids:
+        autoPass:
           type: array
-          description: Массив GUID согласованных автовизитов
+          description: Массив GUID согласованных пропусков
           items:
             type: string
       required:
-        - autoVisitGuids
+        - autoPass
     CargoRequestAutoLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestAutoCommon'
@@ -2744,7 +2744,7 @@ paths:
                   signer: Кузнецов К.К.
                   status: Создана
                   comment: Ожидается разрешение
-                  autoVisitGuids:
+                  autoPass:
                     - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                     - 0000789453def1dbc-b554-11ea-a9f6b48c242
                   cargoList:
@@ -2763,7 +2763,7 @@ paths:
                   signer: Кузнецов К.К.
                   status: Создана
                   comment: Документы в работе
-                  autoVisitGuids:
+                  autoPass:
                     - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                     - 0000789453def1dbc-b554-11ea-a9f6b48c242
                   cargoList:
@@ -3065,7 +3065,7 @@ paths:
                   signer: Сидоров Дмитрий Иванович
                   status: В обработке
                   comment: Добавьте сканы документов
-                  autoVisitGuids:
+                  autoPass:
                     - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                     - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c242
                   cargoList:
@@ -3084,7 +3084,7 @@ paths:
                   signer: Сидоров Дмитрий Иванович
                   status: В обработке
                   comment: Добавьте сканы документов
-                  autoVisitGuids:
+                  autoPass:
                     - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                   cargoList:
                     - name: Контейнер CAXU6600984
@@ -3229,7 +3229,6 @@ paths:
               example:
                 code: 401
                 message: Token has expired
-
 
   /passes/requests:
     get:
