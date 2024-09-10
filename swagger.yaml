@@ -3056,7 +3056,7 @@ paths:
               CargoRequestAutoLoadExample:
                 summary: Пример заявки на погрузку
                 value:
-                  requestName: Погрузка автомобиль
+                  requestName: Погрузка/выгрузка автомобиля
                   operationType: Погрузка
                   client: ООО Транс логистика
                   contract: Договор перевалки №455-24
@@ -3075,7 +3075,7 @@ paths:
               CargoRequestAutoUnloadExample:
                 summary: Пример заявки на разгрузку
                 value:
-                  requestName: Разгрузка автомобиль
+                  requestName: Погрузка/выгрузка автомобиля
                   operationType: Разгрузка
                   client: ООО Транс логистика
                   contract: Договор перевалки №455-24
@@ -3132,7 +3132,6 @@ paths:
               example:
                 code: 401
                 message: Token has expired
-
   /requests/rail:
     post:
       tags:
@@ -3155,7 +3154,7 @@ paths:
               CargoRequestRailLoadExample:
                 summary: Пример заявки на погрузку
                 value:
-                  requestName: Погрузка ЖД
+                  requestName: Погрузка/выгрузка ЖД
                   operationType: Погрузка
                   client: ООО Железнодорожная Логистика
                   contract: Договор №789
@@ -3173,7 +3172,7 @@ paths:
               CargoRequestRailUnloadExample:
                 summary: Пример заявки на разгрузку
                 value:
-                  requestName: Разгрузка ЖД
+                  requestName: Погрузка/выгрузка ЖД
                   operationType: Разгрузка
                   client: ООО Железнодорожная Логистика
                   contract: Договор №790
