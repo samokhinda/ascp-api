@@ -625,7 +625,7 @@ components:
               destinationPort:
                 type: string
                 description: Порт назначения
-                example: Порт Владивосток
+                example: Владивосток
               urgent:
                 type: boolean
                 description: Срочный груз или нет
@@ -636,16 +636,19 @@ components:
                 example: 1
               sender:
                 type: string
+                format: uuid
                 description: Грузоотправитель
-                example: ООО Экспорт ЛТД
+                example: 0fd50d38-c53d-11ec-8112-d89d6732c837
               recipient:
                 type: string
                 description: Грузополучатель
-                example: ООО Импорт ЛТД
+                format: uuid
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
               portReceiver:
                 type: string
+                format: uuid
                 description: Грузополучатель в порту назначения
-                example: Портовая компания     
+                example: c05a8361-c53c-11ec-8112-d89d6732c837  
             required:
               - guid    
               - recipient
@@ -3056,14 +3059,14 @@ paths:
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                      destinationPort: Порт Владивосток
+                      destinationPort: Владивосток
                       quantity: 1
                       urgent: 
-                      sender: ООО Экспорт ЛТД
-                      recipient: ООО Импорт ЛТД
-                      portReceiver: Портовая компания
+                      sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
+                      recipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                      portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
                     - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                      destinationPort: Порт Калининград
+                      destinationPort: Калининград
                       quantity: 1
                       urgent: true
                       sender: 
