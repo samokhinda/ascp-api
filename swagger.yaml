@@ -434,6 +434,41 @@ components:
         - signer
         - status
 
+    Port:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный код порта
+          example: "4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7"
+        name:
+          type: string
+          description: Наименование порта
+          example: Калининград
+        parent:
+          type: string
+          description: Родительский объект (например, Бассейн)
+          example: Балтийский бассейн
+        unLocode:
+          type: string
+          description: Код UN/LOCODE
+          example: RU KG
+        country:
+          type: string
+          description: Страна
+          example: Россия
+        location:
+          type: string
+          description: Местоположение
+          example: Калининградская область
+        coordinates:
+          type: string
+          description: Координаты
+          example: "54.710426, 20.509207"
+      required:
+        - guid
+        - name
+
     CargoRequestCommon:
       type: object
       properties:
@@ -594,7 +629,11 @@ components:
               urgent:
                 type: boolean
                 description: Срочный груз или нет
-                example: true        
+                example: true   
+              quantity:
+                type: number
+                description: Количество грузовых мест
+                example: 1
               sender:
                 type: string
                 description: Грузоотправитель
@@ -608,7 +647,9 @@ components:
                 description: Грузополучатель в порту назначения
                 example: Портовая компания     
             required:
-              - guid               
+              - guid    
+              - recipient
+              - quantity
       required:
         - cargoList
     CargoRequestShipUnload:
@@ -3000,10 +3041,10 @@ paths:
                 value: 
                   requestName: Погрузка/выгрузка судна
                   operationType: Погрузка
-                  client: ООО Транс логистика
+                  client: АТФ ПАО ГМК "Норильский Никель"
                   contract: 01/Э-16/600-15-НН/1096-2015
                   location: Экономия
-                  manager: Иванов Иван Иванович
+                  manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
                   typeOfTransport: Прямое
@@ -3016,31 +3057,34 @@ paths:
                   cargoList:
                     - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
                       destinationPort: Порт Владивосток
-                      urgent: false
+                      quantity: 1
+                      urgent: 
                       sender: ООО Экспорт ЛТД
                       recipient: ООО Импорт ЛТД
                       portReceiver: Портовая компания
                     - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
                       destinationPort: Порт Калининград
+                      quantity: 1
                       urgent: true
-                      sender: ООО Экспорт СТД
-                      recipient: ООО Импорт СТД
-                      portReceiver: Морская компания
+                      sender: 
+                      recipient: 
+                      portReceiver: 
                     - guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
-                      destinationPort: Порт Санкт-Петербург
-                      urgent: false
-                      sender: ООО Экспорт ХХL
-                      recipient: ООО Импорт ХХL
-                      portReceiver: Логистическая компания
+                      destinationPort: 
+                      quantity: 1
+                      urgent: 
+                      sender: 
+                      recipient: 
+                      portReceiver: 
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
                 value: 
                   requestName: Погрузка/выгрузка судна
                   operationType: Разгрузка
-                  client: ООО Транс логистика
+                  client: АТФ ПАО ГМК "Норильский Никель"
                   contract: 01/Э-16/600-15-НН/1096-2015
                   location: Экономия
-                  manager: Иванов Иван Иванович
+                  manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
                   typeOfTransport: Прямое
@@ -3066,6 +3110,28 @@ paths:
                       marka: EE3421-RU
                       container:
                         number: JASRZH241602676
+                        cargoes: >-
+                          ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76,
+                          100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
+                        isEmpty: false
+                      status: Ожидается
+                    - name: Контейнер CAXU62320981
+                      nomenklatura: Контейнер AXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: JASRZH241604444
+                        cargoes: 
+                        isEmpty: true
                       status: Ожидается
                     - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
                       nomenklatura: Крепь анкерная  АСПТ-48х3х2400
@@ -3078,7 +3144,12 @@ paths:
                       cargoType: Генеральный груз
                       packaging: связка
                       storageConditions: Крытое
-                      hazardClass: ''
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: 
+                        cargoes: 
+                        isEmpty:                       
                       status: Ожидается
                     - name: Насыпной груз ABC
                       nomenklatura: Насыпной ABC
@@ -3092,7 +3163,11 @@ paths:
                       packaging: Отсутствует
                       storageConditions: Открытое
                       hazardClass: '3.2'
-                      marka: BB3344-TU
+                      marka: SRZH241
+                      container:
+                        number: 
+                        cargoes: 
+                        isEmpty: 
                       status: Запланирован
       responses:
         '201':
@@ -6191,62 +6266,126 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /invoices/{guid}:
+  /ports:
     get:
       tags:
-        - Финансовые документы
-      summary: Получение выставленного счета-фактуры
-      servers:
-        - url: http://gate.ascp.ru:8443/ka-dev-7/v1/
-          description: Сервер КА      
+        - Справочник "Порты"
+      summary: Получить список портов
+      description: Возвращает список портов с возможностью фильтрации и пагинации.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
       parameters:
-        - name: guid
-          in: path
-          description: Идентификатор счета-фактуры
-          required: true
+        - name: country
+          in: query
+          description: Фильтр по стране
+          required: false
           schema:
             type: string
-            format: uuid
-            description: Уникальный идентификатор
+          example: Россия
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+            example: 1
+        - name: pageSize
+          in: query
+          description: Количество портов на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+            example: 10
       responses:
         '200':
-          description: Успешное получение счета-фактуры
+          description: Список портов успешно получен
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  invoiceId:
-                    type: string
-                    description: Идентификатор счета-фактуры
-                    example: '12345'
-                  amount:
-                    type: number
-                    description: Сумма счета
-                    example: 1500.75
-                  dueDate:
-                    type: string
-                    description: Дата оплаты
-                    example: '2023-12-31'
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  ports:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Port'
                 required:
-                  - invoiceId
-                  - amount
-                  - dueDate
+                  - total
+                  - page
+                  - pageSize
+                  - ports
         '400':
-          description: Неверный запрос
+          description: >-
+            Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: 400
-                message: Invalid invoice ID
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Счет-фактура не найден
+          description: Данные не найдены
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                code: 404
-                message: Invoice not found
+  /ports/search:
+    get:
+      tags:
+        - Справочник "Порты"
+      summary: Поиск порта по наименованию
+      description: Поиск порта по наименованию
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Наименование порта
+          required: true
+          schema:
+            type: string
+          example: Калининград
+      responses:
+        '200':
+          description: Результаты поиска портов успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Port'
+        '400':
+          description: >-
+            Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
