@@ -224,7 +224,7 @@ components:
           example: 2.896
         quantity: 
           type: number
-          description: Количество груза
+          description: Количество мест груза
           example: 2
         cargoType:
           type: string
@@ -268,8 +268,8 @@ components:
               type: boolean
               description: Признак порожнего контейнера
               example: false
-          required:
-            - number
+          # required:
+          #   - number
         status:
           type: string
           description: Статус грузового места
@@ -516,6 +516,23 @@ components:
       allOf:
         - $ref: '#/components/schemas/CargoRequestCommon'
       properties:
+        typeOfTransport:
+          type: string
+          # readOnly: false
+          enum:
+            - Прямое
+            - ПСЖВС
+          description: Вид сообщения
+          example: Прямое
+        direction:
+          type: string
+          # readOnly: false
+          enum:
+            - Импорт
+            - Каботаж
+            - Экспорт
+          description: Направление
+          example: Каботаж
         requestName:
           type: string
           readOnly: false
@@ -523,9 +540,21 @@ components:
           example: Погрузка/выгрузка судна
         operationType:
           type: string
-          readOnly: false
+          readOnly: true
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
+        departurePort:
+          type: string
+          description: Порт отправления
+          example: Архангельск
+        destinationPort:
+          type: string
+          description: Порт назначения
+          example: Дудинка
+        customsClearance:
+          type: boolean
+          description: Таможенное оформление    
+          example: false
         vesselCall:
           type: array
           readOnly: false
@@ -538,28 +567,68 @@ components:
             - 9f246293-eefc-11ee-bbac-904d466aa48a
       required:
         - vesselCall
+        - typeOfTransport
+        - direction
     CargoRequestShipLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
       properties:
+        operationType:
+          type: string
+          readOnly: false
+          description: Вид операции по заявке
+          example: Погрузка     
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            type: string
-            format: uuid
-
+            type: object
+            properties:
+              guid:
+                type: string
+                format: uuid
+              destinationPort:
+                type: string
+                description: Порт назначения
+                example: Порт Владивосток
+              urgent:
+                type: boolean
+                description: Срочный груз или нет
+                example: true        
+              sender:
+                type: string
+                description: Грузоотправитель
+                example: ООО Экспорт ЛТД
+              recipient:
+                type: string
+                description: Грузополучатель
+                example: ООО Импорт ЛТД
+              portReceiver:
+                type: string
+                description: Грузополучатель в порту назначения
+                example: Портовая компания     
+            required:
+              - guid               
       required:
         - cargoList
     CargoRequestShipUnload:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
       properties:
+        operationType:
+          type: string
+          readOnly: false
+          description: Вид операции по заявке
+          example: Разгрузка         
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             $ref: '#/components/schemas/Cargo'
+
+
+
+
       required:
         - cargoList
     
@@ -2937,13 +3006,32 @@ paths:
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
-                  comment: Добавьте сканы документов
+                  typeOfTransport: Прямое
+                  direction: Каботаж
+                  departurePort: 
+                  destinationPort:
+                  comment: Добавьте сканы документов                 
                   vesselCall: 
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
-                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                    - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                      destinationPort: Порт Владивосток
+                      urgent: false
+                      sender: ООО Экспорт ЛТД
+                      recipient: ООО Импорт ЛТД
+                      portReceiver: Портовая компания
+                    - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                      destinationPort: Порт Калининград
+                      urgent: true
+                      sender: ООО Экспорт СТД
+                      recipient: ООО Импорт СТД
+                      portReceiver: Морская компания
+                    - guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                      destinationPort: Порт Санкт-Петербург
+                      urgent: false
+                      sender: ООО Экспорт ХХL
+                      recipient: ООО Импорт ХХL
+                      portReceiver: Логистическая компания
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
                 value: 
@@ -2955,6 +3043,10 @@ paths:
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
+                  typeOfTransport: Прямое
+                  direction: Каботаж
+                  departurePort: 
+                  destinationPort:                  
                   comment: Добавьте сканы документов
                   vesselCall: 
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
