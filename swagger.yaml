@@ -3058,21 +3058,21 @@ paths:
                   vesselCall: 
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
-                    - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
+                    - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
                       destinationPort: Владивосток
                       quantity: 1
                       urgent: 
                       sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
-                    - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                    - guid: f9f78d83-525d-11ef-bbae-e744ebce2988
                       destinationPort: Калининград
                       quantity: 1
                       urgent: true
                       sender: 
                       recipient: 
                       portReceiver: 
-                    - guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                    - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
                       destinationPort: 
                       quantity: 1
                       urgent: 
