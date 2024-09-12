@@ -3171,7 +3171,7 @@ paths:
                         number: 
                         cargoes: 
                         isEmpty: 
-                      status: Запланирован
+                      status: Запланирован 
       responses:
         '201':
           description: Заявка успешно создана
