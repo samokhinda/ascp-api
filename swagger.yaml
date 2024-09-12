@@ -439,7 +439,7 @@ components:
       properties:
         guid:
           type: string
-          description: Уникальный код порта
+          description: Уникальный код справочника
           example: "4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7"
         name:
           type: string
@@ -467,6 +467,49 @@ components:
           example: "54.710426, 20.509207"
       required:
         - guid
+        - name
+
+    Station:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный код справочника
+          example: "4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7"      
+        code:
+          type: string
+          description: Код станции
+          example: "172705"
+        name:
+          type: string
+          description: Наименование станции
+          example: "АППАРАТНАЯ"
+        fullName:
+          type: string
+          description: Полное наименование станции
+          example: "АППАРАТНАЯ СВЕРД. ж.д."
+        region:
+          type: string
+          description: Регион
+          example: "Свердловская обл.;г.Екатеринбург"
+        directionType:
+          type: string
+          description: Вид сообщения
+          example: "ПСЖВС"
+        road:
+          type: string
+          description: Дорога
+          example: СЕВ         
+        roadID:
+          type: integer
+          description: ID Дороги
+          example: 7
+        countryID:
+          type: integer
+          description: Код страны
+          example: 178
+      required:
+        - code
         - name
 
     CargoRequestCommon:
@@ -6392,3 +6435,126 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /stations:
+    get:
+      tags:
+        - Справочник "ЖД Станции"
+      summary: Получить список ЖД станций
+      description: Возвращает список ЖД станций с возможностью фильтрации и пагинации.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: countryID
+          in: query
+          description: Фильтр по коду страны
+          required: false
+          schema:
+            type: integer
+          example: 178
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+          example: 1
+        - name: pageSize
+          in: query
+          description: Количество станций на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+          example: 10
+      responses:
+        '200':
+          description: Список ЖД станций успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  stations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Station'
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - stations
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /stations/search:
+    get:
+      tags:
+        - Справочник "ЖД Станции"
+      summary: Поиск ЖД станции по наименованию
+      description: Поиск ЖД станции по наименованию
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Наименование ЖД станции
+          required: true
+          schema:
+            type: string
+          example: "АППАРАТНАЯ"
+      responses:
+        '200':
+          description: Результаты поиска ЖД станций успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Station'
+        '400':
+          description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Данные не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'                
