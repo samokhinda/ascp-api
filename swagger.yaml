@@ -3162,6 +3162,7 @@ paths:
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
                       status: Ожидается
+                      docNumber: 
                     - name: Контейнер CAXU62320981
                       nomenklatura: Контейнер AXU
                       weight: 38000
@@ -3180,6 +3181,7 @@ paths:
                         cargoes: 
                         isEmpty: true
                       status: Ожидается
+                      docNumber: 
                     - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
                       nomenklatura: Крепь анкерная  АСПТ-48х3х2400
                       weight: 660
@@ -3198,6 +3200,7 @@ paths:
                         cargoes: 
                         isEmpty:                       
                       status: Ожидается
+                      docNumber: 
                     - name: Насыпной груз ABC
                       nomenklatura: Насыпной ABC
                       weight: 50000
@@ -3216,6 +3219,7 @@ paths:
                         cargoes: 
                         isEmpty: 
                       status: Запланирован 
+                      docNumber: 
       responses:
         '201':
           description: Заявка успешно создана
