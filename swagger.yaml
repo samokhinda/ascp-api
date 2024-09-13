@@ -779,7 +779,24 @@ components:
           type: string
           readOnly: false
           description: Вид операции по заявке
-          example: Погрузка или Разгрузка
+          example: Погрузка
+        typeOfTraffic:
+          type: string
+          # readOnly: false
+          enum:
+            - Прямое
+            - ПСЖВС
+          description: Вид сообщения
+          example: Прямое
+        direction:
+          type: string
+          # readOnly: false
+          enum:
+            - Импорт
+            - Каботаж
+            - Экспорт
+          description: Направление
+          example: Каботаж          
         departureStation:
           type: string
           description: Станция отправления
@@ -789,19 +806,58 @@ components:
           description: Количество вагонов
           example: 2
       required:
+        - typeOfTraffic
+        - direction
         - departureStation
         - wagons
     CargoRequestRailLoad:
       allOf:
         - $ref: '#/components/schemas/CargoRequestRailCommon'
       properties:
+        clientRequestNumber:
+          type: string
+          description: Номер заявки клиента
+          example: 0fd50d38  
+        sender:
+          type: string
+          format: uuid
+          description: Грузоотправитель
+          example: 0fd50d38-c53d-11ec-8112-d89d6732c837        
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            type: string
-            format: uuid
+            type: object
+            properties:
+              guid:
+                type: string
+                format: uuid
+              quantity:
+                type: number
+                description: Количество грузовых мест
+                example: 1                
+              destStation:
+                type: string
+                description: Станция назначения
+                example: СОЛОМБАЛКА
+              recipient:
+                type: string
+                description: Грузополучатель
+                format: uuid
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
+              endRecipient:
+                type: string
+                format: uuid
+                description: Конечный грузополучатель
+                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+            required:
+              - guid   
+              - destinationStation 
+              - recipient
+              - quantity
       required:
+        - sender
+        - clientRequestNumber
         - cargoList
     CargoRequestRailUnload:
       allOf:
@@ -3114,7 +3170,7 @@ paths:
                   direction: Каботаж
                   departurePort: 
                   destinationPort:
-                  comment: Добавьте сканы документов                 
+                  comment: Добавьте сканы документов
                   vesselCall: 
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
@@ -3710,54 +3766,70 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/CargoRequestRailLoad'
-                - $ref: '#/components/schemas/CargoRequestRailUnload'
+                # - $ref: '#/components/schemas/CargoRequestRailUnload'
             examples:
               CargoRequestRailLoadExample:
                 summary: Пример заявки на погрузку
                 value:
                   requestName: Погрузка/выгрузка ЖД
                   operationType: Погрузка
-                  client: ООО Железнодорожная Логистика
+                  typeOfTraffic: Прямое
+                  direction: Каботаж
+                  departureStation: СОЛОМБАЛКА
+                  wagons: 2
+                  client: АТФ ПАО ГМК "Норильский Никель"
                   contract: Договор №789
                   location: СОЛОМБАЛКА
-                  manager: Николаев Н.Н.
-                  signer: Дмитриев Д.Д.
-                  status: Создана
+                  manager: Трунова Эльза Владимировна
+                  signer: Сидоров Дмитрий Иванович
+                  status: Черновик
                   comment: Требуется допуск
-                  departureStation: СОЛОМБАЛКА
-                  wagons: 2
                   cargoList:
-                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
-              CargoRequestRailUnloadExample:
-                summary: Пример заявки на разгрузку
-                value:
-                  requestName: Погрузка/выгрузка ЖД
-                  operationType: Разгрузка
-                  client: ООО Железнодорожная Логистика
-                  contract: Договор №790
-                  location: СОЛОМБАЛКА
-                  manager: Николаев Н.Н.
-                  signer: Дмитриев Д.Д.
-                  status: Создана
-                  comment: Обычная разгрузка
-                  departureStation: СОЛОМБАЛКА
-                  wagons: 2
-                  cargoList:
-                    - name: Контейнер CAXU6600986
-                      nomenklatura: Контейнер CAXU
-                      weight: 36000
-                      volume: 67.7
-                      length: 13.716
-                      width: 2.438
-                      height: 2.896
+                    - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
                       quantity: 1
-                      cargoType: Контейнер
-                      packaging: Отсутствует
-                      storageConditions: Открытое
-                      hazardClass: 1.2
-                      marka: EE3423-RU
+                      destStation: СОЛОМБАЛКА
+                      recipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                      endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                    - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
+                      quantity: 1
+                      destStation: СОЛОМБАЛКА
+                      recipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                      endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                    - guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                      quantity: 1
+                      destStation: СОЛОМБАЛКА
+                      recipient: c05a8361-c53c-11ec-8112-d89d6732c837
+                      endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
+
+
+              # CargoRequestRailUnloadExample:
+              #   summary: Пример заявки на разгрузку
+              #   value:
+              #     requestName: Погрузка/выгрузка ЖД
+              #     operationType: Разгрузка
+              #     client: ООО Железнодорожная Логистика
+              #     contract: Договор №790
+              #     location: СОЛОМБАЛКА
+              #     manager: Николаев Н.Н.
+              #     signer: Дмитриев Д.Д.
+              #     status: Создана
+              #     comment: Обычная разгрузка
+              #     departureStation: СОЛОМБАЛКА
+              #     wagons: 2
+              #     cargoList:
+              #       - name: Контейнер CAXU6600986
+              #         nomenklatura: Контейнер CAXU
+              #         weight: 36000
+              #         volume: 67.7
+              #         length: 13.716
+              #         width: 2.438
+              #         height: 2.896
+              #         quantity: 1
+              #         cargoType: Контейнер
+              #         packaging: Отсутствует
+              #         storageConditions: Открытое
+              #         hazardClass: 1.2
+              #         marka: EE3423-RU
       responses:
         '201':
           description: Заявка успешно создана
