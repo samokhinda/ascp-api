@@ -591,9 +591,70 @@ components:
 
     CargoRequestShipCommon:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/CargoRequestCommon'
+      # allOf:
+      #   - $ref: '#/components/schemas/CargoRequestCommon'
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор заявки
+          readOnly: true
+          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+        documentID:
+          type: string
+          description: Номер документа
+          readOnly: true
+          example: '000078945'     
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: true
+          description: Дата и время создания заявки          
+        # requestName:
+        #   type: string
+        #   readOnly: true
+        #   description: Наименование типа заявки
+        #   example: Погрузка/выгрузка автомобиля
+        # operationType:
+        #   type: string
+        #   readOnly: true          
+        #   description: Вид операции по заявке
+          # example: Погрузка  
+        client:
+          type: string
+          description: Клиент порта
+          example: ООО Транс логистика
+        contract:
+          type: string
+          description: Договор с клиентом порта
+          example: Договор перевалки №455-24
+        location:
+          type: string
+          description: Место оказания услуги
+          example: Экономия
+        manager:
+          type: string
+          description: Ответственный за подготовку документа
+          example: Иванов Иван Иванович
+        signer:
+          type: string
+          description: Подписант заявки со стороны клиента
+          example: Сидоров Дмитрий Иванович
+        status:
+          type: string
+          description: Статус заявки
+          # readOnly: true
+          enum:
+            - Создана
+            - В обработке
+            - Одобрена
+            - Отклонена
+          example: В обработке
+        comment:
+          type: string
+          description: Комментарий к заявке
+          example: Добавьте сканы документов      
         typeOfTransport:
           type: string
           # readOnly: false
@@ -613,12 +674,19 @@ components:
           example: Каботаж
         requestName:
           type: string
-          readOnly: false
+          enum:
+              - Погрузка/выгрузка автомобиля
+              - Погрузка/выгрузка судна
+              - Погрузка/выгрузка ЖД
+          # readOnly: false
           description: Наименование типа заявки
           example: Погрузка/выгрузка судна
         operationType:
           type: string
-          readOnly: true
+          enum:
+            - Погрузка
+            - Разгрузка 
+          # readOnly: true
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
         departurePort:
@@ -638,12 +706,26 @@ components:
           readOnly: false
           description: GUID судозахода
           items:
-            type: string
-            format: uuid
-          example: 
+            type: object
+            properties:
+              guid:
+                type: string
+                format: uuid
+            example: 
             - c5851ca8-faeb-11ee-bbac-904d466aa48a       
             - 9f246293-eefc-11ee-bbac-904d466aa48a
       required:
+        - guid
+        - documentID
+        - createdDate        
+        - requestName
+        - operationType
+        - client
+        - contract
+        - location
+        - manager
+        - signer
+        - status      
         - vesselCall
         - typeOfTransport
         - direction
@@ -651,11 +733,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
       properties:
-        operationType:
-          type: string
-          readOnly: false
-          description: Вид операции по заявке
-          example: Погрузка     
+        # operationType:
+        #   type: string
+        #   readOnly: false
+        #   description: Вид операции по заявке
+        #   example: Погрузка     
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
@@ -702,11 +784,11 @@ components:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
       properties:
-        operationType:
-          type: string
-          readOnly: false
-          description: Вид операции по заявке
-          example: Разгрузка         
+        # operationType:
+        #   type: string
+        #   readOnly: false
+        #   description: Вид операции по заявке
+        #   example: Разгрузка         
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
@@ -767,19 +849,77 @@ components:
 
     CargoRequestRailCommon:
       type: object
-      allOf:
-        - $ref: '#/components/schemas/CargoRequestCommon'
+      # allOf:
+      #   - $ref: '#/components/schemas/CargoRequestCommon'
       properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор заявки
+          readOnly: true
+          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+        documentID:
+          type: string
+          description: Номер документа
+          readOnly: true
+          example: '000078945'     
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: true
+          description: Дата и время создания заявки          
         requestName:
           type: string
-          readOnly: false
+          enum:
+              - Погрузка/выгрузка автомобиля
+              - Погрузка/выгрузка судна
+              - Погрузка/выгрузка ЖД
+          # readOnly: false
           description: Наименование типа заявки
-          example: Погрузка/выгрузка ЖД
+          example: Погрузка/выгрузка судна
         operationType:
           type: string
-          readOnly: false
+          enum:
+            - Погрузка
+            - Разгрузка 
+          # readOnly: true
           description: Вид операции по заявке
-          example: Погрузка
+          example: Погрузка или Разгрузка
+        client:
+          type: string
+          description: Клиент порта
+          example: ООО Транс логистика
+        contract:
+          type: string
+          description: Договор с клиентом порта
+          example: Договор перевалки №455-24
+        location:
+          type: string
+          description: Место оказания услуги
+          example: Экономия
+        manager:
+          type: string
+          description: Ответственный за подготовку документа
+          example: Иванов Иван Иванович
+        signer:
+          type: string
+          description: Подписант заявки со стороны клиента
+          example: Сидоров Дмитрий Иванович
+        status:
+          type: string
+          description: Статус заявки
+          readOnly: true
+          enum:
+            - Создана
+            - В обработке
+            - Одобрена
+            - Отклонена
+          example: В обработке
+        comment:
+          type: string
+          description: Комментарий к заявке
+          example: Добавьте сканы документов
         typeOfTraffic:
           type: string
           # readOnly: false
@@ -806,6 +946,17 @@ components:
           description: Количество вагонов
           example: 2
       required:
+        - guid
+        - documentID
+        - createdDate        
+        - requestName
+        - operationType
+        - client
+        - contract
+        - location
+        - manager
+        - signer
+        - status
         - typeOfTraffic
         - direction
         - departureStation
@@ -814,7 +965,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/CargoRequestRailCommon'
       properties:
-        clientRequestNumber:
+        clientNumber:
           type: string
           description: Номер заявки клиента
           example: 0fd50d38  
@@ -3172,7 +3323,7 @@ paths:
                   destinationPort:
                   comment: Добавьте сканы документов
                   vesselCall: 
-                    - 9f246293-eefc-11ee-bbac-904d466aa48a
+                    - guid: 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
                       destinationPort: Владивосток
@@ -3778,8 +3929,10 @@ paths:
                   departureStation: СОЛОМБАЛКА
                   wagons: 2
                   client: АТФ ПАО ГМК "Норильский Никель"
+                  sender: c05a8361-c53c-11ec-8112-d89d6732c837
                   contract: Договор №789
                   location: Экономия
+                  clientNumber: 0fd50d38  
                   manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
