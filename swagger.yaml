@@ -691,11 +691,13 @@ components:
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
         departurePort:
-          type: string
+          # type: string
+          $ref: '#/components/schemas/Port'
           description: Порт отправления
           example: Архангельск
         destinationPort:
-          type: string
+          # type: string
+          $ref: '#/components/schemas/Port'
           description: Порт назначения
           example: Дудинка
         customsClearance:
@@ -749,7 +751,8 @@ components:
                 type: string
                 format: uuid
               destinationPort:
-                type: string
+                # type: string
+                $ref: '#/components/schemas/Port'
                 description: Порт назначения
                 example: Владивосток
               urgent:
@@ -795,10 +798,6 @@ components:
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             $ref: '#/components/schemas/Cargo'
-
-
-
-
       required:
         - cargoList
     
@@ -3322,21 +3321,43 @@ paths:
                   status: Черновик
                   typeOfTransport: Прямое
                   direction: Каботаж
-                  departurePort: 
+                  departurePort:
+                    guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7
+                    name: Калининград
+                    parent: Балтийский бассейн
+                    unLocode: RU KG
+                    country: Россия
+                    location: Калининградская область
+                    coordinates: "54.710426, 20.509207"
                   destinationPort:
+                    guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b8
+                    name: Мурманск
+                    parent: Северный бассейн
+                    unLocode: RU MMK
+                    country: Россия
+                    location: Мурманская область
+                    coordinates: "68.97917, 33.085"
                   comment: Добавьте сканы документов
                   vesselCall: 
                     - guid: 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
-                      destinationPort: Владивосток
+                      destinationPort: 
                       quantity: 1
                       urgent: 
                       sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
                     - guid: f9f78d83-525d-11ef-bbae-e744ebce2988
-                      destinationPort: Калининград
+                      destinationPort:
+                        guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b8
+                        name: Мурманск
+                        parent: Северный бассейн
+                        unLocode: RU MMK
+                        country: Россия
+                        location: Мурманская область
+                        coordinates: "68.97917, 33.085"
+                      # Калининград
                       quantity: 1
                       urgent: true
                       sender: 
