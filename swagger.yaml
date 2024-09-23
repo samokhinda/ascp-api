@@ -612,16 +612,6 @@ components:
           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
           readOnly: true
           description: Дата и время создания заявки          
-        # requestName:
-        #   type: string
-        #   readOnly: true
-        #   description: Наименование типа заявки
-        #   example: Погрузка/выгрузка автомобиля
-        # operationType:
-        #   type: string
-        #   readOnly: true          
-        #   description: Вид операции по заявке
-          # example: Погрузка  
         client:
           type: string
           description: Клиент порта
@@ -801,52 +791,6 @@ components:
       required:
         - cargoList
     
-    CargoRequestAutoCommon:
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/CargoRequestCommon'
-      properties:
-        requestName:
-          type: string
-          readOnly: false
-          description: Наименование типа заявки
-          example: Погрузка/выгрузка автомобиля
-        operationType:
-          type: string
-          readOnly: false
-          description: Вид операции по заявке
-          example: Погрузка
-        autoPass:
-          type: array
-          description: Массив GUID согласованных пропусков
-          items:
-            type: string
-      required:
-        - autoPass
-    CargoRequestAutoLoad:
-      allOf:
-        - $ref: '#/components/schemas/CargoRequestAutoCommon'
-      properties:
-        cargoList:
-          type: array
-          description: Табличная часть со списком грузов к погрузке в заявке
-          items:
-            type: string
-            format: uuid
-      required:
-        - cargoList
-    CargoRequestAutoUnload:
-      allOf:
-        - $ref: '#/components/schemas/CargoRequestAutoCommon'
-      properties:
-        cargoList:
-          type: array
-          description: Табличная часть со списком грузов к разгрузке в заявке
-          items:
-            $ref: '#/components/schemas/Cargo'
-      required:
-        - cargoList
-
     CargoRequestRailCommon:
       type: object
       # allOf:
@@ -1024,6 +968,180 @@ components:
       required:
         - cargoList
 
+    CargoRequestAutoCommon:
+      type: object
+      # allOf:
+      #   - $ref: '#/components/schemas/CargoRequestCommon'
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор заявки
+          readOnly: true
+          example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+        documentID:
+          type: string
+          description: Номер документа
+          readOnly: true
+          example: '000078945'     
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: true
+          description: Дата и время создания заявки   
+        visitStart:
+          type: string
+          pattern: ^\d{2}-\d{2}-\d{4}$
+          description: Дата начала предполагаемого автовизита
+          example: 07-02-2024
+        visitEnd:
+          type: string
+          pattern: ^\d{2}-\d{2}-\d{4}$
+          description: Дата окончания предполагаемого автовизита
+          example: 09-02-2024        
+        client:
+          type: string
+          description: Клиент порта
+          example: ООО Транс логистика
+        contract:
+          type: string
+          description: Договор с клиентом порта
+          example: Договор перевалки №455-24
+        location:
+          type: string
+          description: Место оказания услуги
+          example: Экономия
+        manager:
+          type: string
+          description: Ответственный за подготовку документа
+          example: Иванов Иван Иванович
+        signer:
+          type: string
+          description: Подписант заявки со стороны клиента
+          example: Сидоров Дмитрий Иванович
+        status:
+          type: string
+          description: Статус заявки
+          # readOnly: true
+          enum:
+            - Создана
+            - В обработке
+            - Одобрена
+            - Отклонена
+          example: В обработке
+        comment:
+          type: string
+          description: Комментарий к заявке
+          example: Добавьте сканы документов      
+        typeOfTransport:
+          type: string
+          # readOnly: false
+          enum:
+            - Прямое
+            - ПСЖВС
+          description: Вид сообщения
+          example: Прямое
+        direction:
+          type: string
+          # readOnly: false
+          enum:
+            - Импорт
+            - Каботаж
+            - Экспорт
+          description: Направление
+          example: Каботаж
+        requestName:
+          type: string
+          enum:
+              - Погрузка/выгрузка автомобиля
+              - Погрузка/выгрузка судна
+              - Погрузка/выгрузка ЖД
+          # readOnly: false
+          description: Наименование типа заявки
+          example: Погрузка/выгрузка судна
+        operationType:
+          type: string
+          enum:
+            - Погрузка
+            - Разгрузка 
+          # readOnly: true
+          description: Вид операции по заявке
+          example: Погрузка или Разгрузка
+      required:
+        - guid
+        - documentID
+        - createdDate        
+        - requestName
+        - operationType
+        - client
+        - contract
+        - location
+        - manager
+        - signer
+        - status      
+        - typeOfTransport
+        - direction
+        - visitStart
+        - visitEnd
+    CargoRequestAutoLoad:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            type: object
+            properties:
+              guid:
+                type: string
+                format: uuid
+                description: Идентификатор грузовых мест
+              quantity:
+                type: number
+                description: Количество грузовых мест
+                example: 1                
+              recipient:
+                type: string
+                description: Грузополучатель
+                format: uuid
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
+              endRecipient:
+                type: string
+                format: uuid
+                description: Конечный грузополучатель
+                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+            required:
+              - guid   
+              - recipient
+              - quantity
+        driversList:
+          type: array
+          description: Табличная часть со списком пропусков
+          items:
+            $ref: '#/components/schemas/DriverPass'                            
+      required:
+        - cargoList
+        - driversList
+    CargoRequestAutoUnload:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+      properties:
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к разгрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+        driversList:
+          type: array
+          description: Табличная часть со списком пропусков
+          items:
+            $ref: '#/components/schemas/DriverPass'                  
+      required:
+        - cargoList
+        - driversList
+
     PassRequest:
       allOf:
         - $ref: '#/components/schemas/PassRequestCommon'
@@ -1086,7 +1204,7 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор пропуска
-          readOnly: true
+          # readOnly: true
         status:
           type: string
           description: Статус пропуска
@@ -3693,18 +3811,18 @@ paths:
                   signer: Сидоров Дмитрий Иванович
                   status: В обработке
                   comment: Добавьте сканы документов
-                  autoPass:
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c242
+                  driversPass:
+                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                   cargoList:
-                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                    - cargoGuid: 13d4c601-525e-11ef-bbae-e744ebce2988
+                      quantity: 1
               CargoRequestAutoUnloadExample:
                 summary: Пример заявки на разгрузку
                 value:
                   requestName: Погрузка/выгрузка автомобиля
                   operationType: Разгрузка
+                  visitStart: 10-01-2024
+                  visitEnd: 12-01-2024
                   client: ООО Транс логистика
                   contract: Договор перевалки №455-24
                   location: Экономия
@@ -3712,8 +3830,6 @@ paths:
                   signer: Сидоров Дмитрий Иванович
                   status: В обработке
                   comment: Добавьте сканы документов
-                  autoPass:
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                   cargoList:
                     - name: Контейнер CAXU6600984
                       nomenklatura: Контейнер CAXU
@@ -3728,6 +3844,36 @@ paths:
                       storageConditions: Открытое
                       hazardClass: '1.2'
                       marka: EE3421-RU
+                      container:
+                        number: JASRZH241602676
+                        cargoes: >-
+                          ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76,
+                          100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
+                        isEmpty: false
+                      status: Ожидается
+                      docNumber: 
+                    - name: Контейнер CAXU62320981
+                      nomenklatura: Контейнер AXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: JASRZH241604444
+                        cargoes: 
+                        isEmpty: true
+                      status: Ожидается
+                      docNumber: 
+                  driversPass:
+                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
       responses:
         '201':
           description: Заявка успешно создана
