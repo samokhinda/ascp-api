@@ -2858,7 +2858,6 @@ paths:
                   - total
                   - page
                   - pageSize
-                  - documents
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
