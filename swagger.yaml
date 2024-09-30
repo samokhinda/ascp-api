@@ -2726,13 +2726,14 @@ paths:
             enum:
               - asc
               - desc
-        - name: documentType
+        - name: documentName
           in: query
           description: Фильтр по типу документа
           required: false
           schema:
             type: string
-            example: Приемный акт
+            enum:
+              - Приемный акт
       responses:
         '200':
           description: Список документов успешно получен
@@ -2769,10 +2770,18 @@ paths:
                           example: 07-02-2024T06:32:49Z
                           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
                           description: Дата и время создания заявки
-                        documentType:
+                        documentName:
                           type: string
                           description: Название документа
                           example: Приемный акт
+                        # documentType:
+                        #   type: string
+                        #   description: Тип операции
+                        #   example: Затарка                        
+                        isProcessed:
+                          type: boolean
+                          description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
+                          example: true
                         operationType:
                           type: string
                           description: Тип операции
@@ -2887,6 +2896,10 @@ paths:
                   operationType:
                     type: string
                     example: "Разгрузка вагона"
+                  isProcessed:
+                    type: boolean
+                    description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
+                    example: true                  
                   comment:
                     type: string
                     example: ""
@@ -6082,6 +6095,13 @@ paths:
       security:
         - bearerAuth: []
         - sessionAuth: []
+      parameters:
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+            description: Параметру name ищет первые 20 вхождений наименования
       responses:
         '200':
           description: Список грузоотправителей успешно получен
@@ -6242,6 +6262,13 @@ paths:
       security:
         - bearerAuth: []
         - sessionAuth: []
+      parameters:
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+            description: Параметру name ищет первые 20 вхождений наименования        
       responses:
         '200':
           description: Список грузополучателей успешно получен
@@ -6402,6 +6429,13 @@ paths:
       security:
         - bearerAuth: []
         - sessionAuth: []
+      parameters:
+        - in: query
+          name: name
+          required: false
+          schema:
+            type: string
+            description: Параметру name ищет первые 20 вхождений наименования        
       responses:
         '200':
           description: Список грузополучателей успешно получен
@@ -6894,7 +6928,6 @@ paths:
           required: false
           schema:
             type: string
-          example: Россия
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -7018,7 +7051,8 @@ paths:
           required: false
           schema:
             type: integer
-          example: 178
+            enum:
+              - 178
         - name: page
           in: query
           description: Номер страницы для пагинации
