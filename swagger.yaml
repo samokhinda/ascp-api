@@ -2774,10 +2774,10 @@ paths:
                           type: string
                           description: Название документа
                           example: Приемный акт
-                        # documentType:
-                        #   type: string
-                        #   description: Тип операции
-                        #   example: Затарка                        
+                        documentType:
+                          type: string
+                          description: Тип операции
+                          example: Затарка                        
                         isProcessed:
                           type: boolean
                           description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
@@ -2886,6 +2886,10 @@ paths:
                   documentId:
                     type: string
                     example: "00503788"
+                  documentName:
+                    type: string
+                    description: Название документа
+                    example: Приемный акт                    
                   createdDate:
                     type: string
                     format: date-time
