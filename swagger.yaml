@@ -433,7 +433,58 @@ components:
         - manager
         - signer
         - status
-
+    Document:
+      type: object
+      properties:
+        guid:
+          type: string
+          readOnly: true
+          description: Уникальный идентификатор документа в БД
+          example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+        documentId:
+          type: string
+          description: Регистрационный номер документа
+          example: '0000098212'
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          description: Дата и время создания заявки
+        documentName:
+          type: string
+          description: Название документа
+          example: Приемный акт
+        documentType:
+          type: string
+          description: Тип операции
+          example: Затарка                        
+        isProcessed:
+          type: boolean
+          description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
+          example: true
+        operationType:
+          type: string
+          description: Тип операции
+          example: Затарка
+        comment:
+          type: string
+          description: Комментарий к документу
+          example: Стандартный груз
+        attached:
+          type: boolean
+          description: Наличие прикрепленных файлов в документе
+          example: true
+        pdfFileContent:
+          type: string
+          format: binary           
+      required:
+        - guid
+        - documentId
+        - createdDate
+        - documentName
+        - operationType
+        - isProcessed
     Port:
       type: object
       properties:
@@ -468,7 +519,6 @@ components:
       required:
         - guid
         - name
-
     Station:
       type: object
       properties:
@@ -512,7 +562,6 @@ components:
         - guid
         # - code
         - name
-
     CargoRequestCommon:
       type: object
       properties:
@@ -1435,7 +1484,7 @@ components:
         - RequestName
         - operation
         - cargoList
-    Document:
+    _Document:
       type: object
       properties:
         guid:
@@ -2734,6 +2783,12 @@ paths:
             type: string
             enum:
               - Приемный акт
+        - name: documentId
+          in: query
+          description: Поиск по номеру документа
+          required: false
+          schema:
+            type: string              
       responses:
         '200':
           description: Список документов успешно получен
@@ -2754,50 +2809,56 @@ paths:
                   documents:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        guid:
-                          type: string
-                          description: Уникальный идентификатор документа в БД
-                          example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
-                        documentId:
-                          type: string
-                          description: Регистрационный номер документа
-                          example: '0000098212'
-                        createdDate:
-                          type: string
-                          format: date-time
-                          example: 07-02-2024T06:32:49Z
-                          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
-                          description: Дата и время создания заявки
-                        documentName:
-                          type: string
-                          description: Название документа
-                          example: Приемный акт
-                        documentType:
-                          type: string
-                          description: Тип операции
-                          example: Затарка                        
-                        isProcessed:
-                          type: boolean
-                          description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
-                          example: true
-                        operationType:
-                          type: string
-                          description: Тип операции
-                          example: Затарка
-                        comment:
-                          type: string
-                          description: Комментарий к документу
-                          example: Стандартный груз
-                        attached:
-                          type: boolean
-                          description: Наличие прикрепленных файлов в документе
-                          example: true
+                      $ref: '#/components/schemas/Document'
+
+                  # documents:
+                  #   type: array
+                  #   items:
+                  #     type: object
+                  #     properties:
+                  #       guid:
+                  #         type: string
+                  #         description: Уникальный идентификатор документа в БД
+                  #         example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+                  #       documentId:
+                  #         type: string
+                  #         description: Регистрационный номер документа
+                  #         example: '0000098212'
+                  #       createdDate:
+                  #         type: string
+                  #         format: date-time
+                  #         example: 07-02-2024T06:32:49Z
+                  #         pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+                  #         description: Дата и время создания заявки
+                  #       documentName:
+                  #         type: string
+                  #         description: Название документа
+                  #         example: Приемный акт
+                  #       documentType:
+                  #         type: string
+                  #         description: Тип операции
+                  #         example: Затарка                        
+                  #       isProcessed:
+                  #         type: boolean
+                  #         description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
+                  #         example: true
+                  #       operationType:
+                  #         type: string
+                  #         description: Тип операции
+                  #         example: Затарка
+                  #       comment:
+                  #         type: string
+                  #         description: Комментарий к документу
+                  #         example: Стандартный груз
+                  #       attached:
+                  #         type: boolean
+                  #         description: Наличие прикрепленных файлов в документе
+                  #         example: true
                 required:
                   - total
                   - page
                   - pageSize
+                  - documents
         '400':
           description: Неверный запрос, отсутствуют необходимые данные
           content:
@@ -2878,41 +2939,42 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  guid:
-                    type: string
-                    example: a583b637-5570-488e-a322-fece4d202ff7
-                  documentId:
-                    type: string
-                    example: "00503788"
-                  documentName:
-                    type: string
-                    description: Название документа
-                    example: Приемный акт                    
-                  createdDate:
-                    type: string
-                    format: date-time
-                    example: "2024-08-11T19:12:04"
-                  documentType:
-                    type: string
-                    example: "Приемный акт"
-                  operationType:
-                    type: string
-                    example: "Разгрузка вагона"
-                  isProcessed:
-                    type: boolean
-                    description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
-                    example: true                  
-                  comment:
-                    type: string
-                    example: ""
-                  attached:
-                    type: boolean
-                    example: true
-                  pdfFileContent:
-                    type: string
-                    format: binary                  
+                $ref: '#/components/schemas/Document'
+                # type: object
+                # properties:
+                #   guid:
+                #     type: string
+                #     example: a583b637-5570-488e-a322-fece4d202ff7
+                #   documentId:
+                #     type: string
+                #     example: "0000503788"
+                #   documentName:
+                #     type: string
+                #     description: Название документа
+                #     example: "Приемный акт"                   
+                #   createdDate:
+                #     type: string
+                #     format: date-time
+                #     example: "2024-08-11T19:12:04"
+                #   documentType:
+                #     type: string
+                #     example: "Приемный акт"
+                #   operationType:
+                #     type: string
+                #     example: "Разгрузка вагона"
+                #   isProcessed:
+                #     type: boolean
+                #     description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
+                #     example: true                  
+                #   comment:
+                #     type: string
+                #     example: ""
+                #   attached:
+                #     type: boolean
+                #     example: true
+                #   pdfFileContent:
+                #     type: string
+                #     format: binary                  
         '400':
           description: Неверный запрос. Проверить параметры
           content:
@@ -5919,7 +5981,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Document'
+                  $ref: '#/components/schemas/_Document'
         '400':
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
@@ -5953,14 +6015,14 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/Document'
+              $ref: '#/components/schemas/_Document'
       responses:
         '201':
           description: Документ успешно добавлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
+                $ref: '#/components/schemas/_Document'
         '400':
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
