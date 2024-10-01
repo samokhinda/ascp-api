@@ -570,7 +570,7 @@ components:
           description: Уникальный идентификатор заявки
           readOnly: true
           example: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
-        documentID:
+        documentId:
           type: string
           description: Номер документа
           readOnly: true
@@ -3169,7 +3169,7 @@ paths:
             type: string
             enum:
               - createdDate
-              - documentID
+              - documentId
         - name: sortOrder
           in: query
           description: Порядок сортировки (asc для возрастания, desc для убывания)
@@ -3198,6 +3198,12 @@ paths:
             enum:
               - Погрузка
               - Разгрузка
+        - name: documentId
+          in: query
+          description: Поиск по номеру документа
+          required: false
+          schema:
+            type: string                            
       responses:
         '200':
           description: Список заявок успешно получен
@@ -4581,13 +4587,12 @@ paths:
       parameters:
         - name: sortBy
           in: query
-          description: Поле для сортировки (createdDate, fullName)
+          description: Поле для сортировки 
           required: false
           schema:
             type: string
             enum:
               - createdDate
-              - fullName
         - name: sortOrder
           in: query
           description: Порядок сортировки (asc для возрастания, desc для убывания)
@@ -4634,6 +4639,12 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: documentId
+          in: query
+          description: Поиск по номеру документа
+          required: false
+          schema:
+            type: string                 
       responses:
         '200':
           description: Список заявок успешно получен
