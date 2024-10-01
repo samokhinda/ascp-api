@@ -4949,22 +4949,29 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       parameters:
-        - name: date
-          in: query
-          required: false
-          description: Дата проверки наличия груза (по умолчанию текущая дата)
-          schema:
-            type: string
-            format: date
-            example: 10-01-2023
-            default: Текущая дата
+        # - name: date
+        #   in: query
+        #   required: false
+        #   description: Дата проверки наличия груза (по умолчанию текущая дата)
+        #   schema:
+        #     type: string
+        #     format: date
+        #     example: 10-01-2023
+        #     default: Текущая дата
         - name: warehouse
           in: query
           required: false
           description: Складской комплекс
           schema:
             type: string
-            example: Складской комплекс 1
+            example: 2 СК
+        - name: warehouseZone
+          in: query
+          required: false
+          description: Складская зона
+          schema:
+            type: string        
+            example: ГГ2
         - name: page
           in: query
           required: true
