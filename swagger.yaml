@@ -1902,7 +1902,7 @@ components:
           type: string
           description: Грузовое место
           example: Контейнер NMKU 6213040 (ИСО-20 22G1)
-        trademark:
+        marka:
           type: string
           description: Марка товара
           example: Марка 1
