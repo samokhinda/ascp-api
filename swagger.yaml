@@ -3225,41 +3225,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Document'
-                # type: object
-                # properties:
-                #   guid:
-                #     type: string
-                #     example: a583b637-5570-488e-a322-fece4d202ff7
-                #   documentId:
-                #     type: string
-                #     example: "0000503788"
-                #   documentName:
-                #     type: string
-                #     description: Название документа
-                #     example: "Приемный акт"                   
-                #   createdDate:
-                #     type: string
-                #     format: date-time
-                #     example: "2024-08-11T19:12:04"
-                #   documentType:
-                #     type: string
-                #     example: "Приемный акт"
-                #   operationType:
-                #     type: string
-                #     example: "Разгрузка вагона"
-                #   isProcessed:
-                #     type: boolean
-                #     description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
-                #     example: true                  
-                #   comment:
-                #     type: string
-                #     example: ""
-                #   attached:
-                #     type: boolean
-                #     example: true
-                #   pdfFileContent:
-                #     type: string
-                #     format: binary                  
+                       
         '400':
           description: Неверный запрос. Проверить параметры
           content:
@@ -4051,7 +4017,7 @@ paths:
             type: string
             format: uuid
       requestBody:
-        description: Данные для обновления заявки
+        description: Данные для создания новой заявки
         required: true
         content:
           application/json:
@@ -4059,7 +4025,7 @@ paths:
               oneOf:
                 - $ref: '#/components/schemas/CargoRequestShipLoad'
                 - $ref: '#/components/schemas/CargoRequestShipUnload'
-            examples:
+            examples:              
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку
                 value: 
@@ -4091,7 +4057,7 @@ paths:
                     coordinates: "68.97917, 33.085"
                   comment: Добавьте сканы документов
                   vesselCall: 
-                    - guid: 9f6bb94c03-ecc2-11ee-bbac-904d466aa48a
+                    - guid: 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
                       destinationPort: 
@@ -4100,6 +4066,28 @@ paths:
                       sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
+                    - guid: f9f78d83-525d-11ef-bbae-e744ebce2988
+                      destinationPort:
+                        guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b8
+                        name: Мурманск
+                        parent: Северный бассейн
+                        unLocode: RU MMK
+                        country: Россия
+                        location: Мурманская область
+                        coordinates: "68.97917, 33.085"
+                      # Калининград
+                      quantity: 1
+                      urgent: true
+                      sender: 
+                      recipient: 
+                      portReceiver: 
+                    - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
+                      destinationPort: 
+                      quantity: 1
+                      urgent: 
+                      sender: 
+                      recipient: 
+                      portReceiver: 
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
                 value: 
@@ -4117,7 +4105,7 @@ paths:
                   destinationPort:                  
                   comment: Добавьте сканы документов
                   vesselCall: 
-                    - 6bb94c03-ecc2-11ee-bbac-904d466aa48a
+                    - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - name: Контейнер CAXU6600984
                       nomenklatura: Контейнер CAXU
@@ -4138,6 +4126,44 @@ paths:
                           ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76,
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
+                      status: Ожидается
+                      docNumber: 
+                    - name: Контейнер CAXU62320981
+                      nomenklatura: Контейнер AXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: JASRZH241604444
+                        cargoes: 
+                        isEmpty: true
+                      status: Ожидается
+                      docNumber: 
+                    - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
+                      nomenklatura: Крепь анкерная  АСПТ-48х3х2400
+                      weight: 660
+                      volume: 0.638
+                      length: 2.55
+                      width: 0.5
+                      height: 0.5
+                      quantity: 2
+                      cargoType: Генеральный груз
+                      packaging: связка
+                      storageConditions: Крытое
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: 
+                        cargoes: 
+                        isEmpty:                       
                       status: Ожидается
                       docNumber: 
                     - name: Насыпной груз ABC
@@ -4280,9 +4306,9 @@ paths:
                   status: В обработке
                   comment: Добавьте сканы документов
                   driversPass:
-                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - guid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                   cargoList:
-                    - cargoGuid: 13d4c601-525e-11ef-bbae-e744ebce2988
+                    - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
                       quantity: 1
               CargoRequestAutoUnloadExample:
                 summary: Пример заявки на разгрузку
@@ -4393,7 +4419,7 @@ paths:
             type: string
             format: uuid
       requestBody:
-        description: Данные для обновления заявки
+        description: Данные для создания новой заявки
         required: true
         content:
           application/json:
@@ -4403,7 +4429,7 @@ paths:
                 - $ref: '#/components/schemas/CargoRequestAutoUnload'
             examples:
               CargoRequestAutoLoadExample:
-                summary: Пример обновления заявки на погрузку автомобиля
+                summary: Пример заявки на погрузку
                 value:
                   requestName: Погрузка/выгрузка автомобиля
                   operationType: Погрузка
@@ -4412,29 +4438,27 @@ paths:
                   location: Экономия
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
-                  status: Утверждена
-                  comment: Срочные изменения
-                  autoVisitGuids:
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c242
+                  status: В обработке
+                  comment: Добавьте сканы документов
+                  driversPass:
+                    - guid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                   cargoList:
-                    - 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                    - 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                    - 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
+                    - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
+                      quantity: 1
               CargoRequestAutoUnloadExample:
-                summary: Пример обновления заявки на разгрузку автомобиля
+                summary: Пример заявки на разгрузку
                 value:
                   requestName: Погрузка/выгрузка автомобиля
                   operationType: Разгрузка
+                  visitStart: 10-01-2024
+                  visitEnd: 12-01-2024
                   client: ООО Транс логистика
                   contract: Договор перевалки №455-24
                   location: Экономия
                   manager: Иванов Иван Иванович
                   signer: Сидоров Дмитрий Иванович
-                  status: Утверждена
-                  comment: Срочные изменения
-                  autoVisitGuids:
-                    - 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                  status: В обработке
+                  comment: Добавьте сканы документов
                   cargoList:
                     - name: Контейнер CAXU6600984
                       nomenklatura: Контейнер CAXU
@@ -4449,8 +4473,36 @@ paths:
                       storageConditions: Открытое
                       hazardClass: '1.2'
                       marka: EE3421-RU
-
-
+                      container:
+                        number: JASRZH241602676
+                        cargoes: >-
+                          ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76,
+                          100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
+                        isEmpty: false
+                      status: Ожидается
+                      docNumber: 
+                    - name: Контейнер CAXU62320981
+                      nomenklatura: Контейнер AXU
+                      weight: 38000
+                      volume: 67.7
+                      length: 13.716
+                      width: 2.438
+                      height: 2.896
+                      quantity: 1
+                      cargoType: Контейнер
+                      packaging: Отсутствует
+                      storageConditions: Открытое
+                      hazardClass: 
+                      marka: 
+                      container:
+                        number: JASRZH241604444
+                        cargoes: 
+                        isEmpty: true
+                      status: Ожидается
+                      docNumber: 
+                  driversPass:
+                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
+                    - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
       responses:
         '200':
           description: Заявка успешно обновлена
@@ -4709,7 +4761,7 @@ paths:
             type: string
             format: uuid
       requestBody:
-        description: Данные для обновления заявки
+        description: Данные для создания новой заявки
         required: true
         content:
           application/json:
@@ -4719,7 +4771,7 @@ paths:
                 # - $ref: '#/components/schemas/CargoRequestRailUnload'
             examples:
               CargoRequestRailLoadExample:
-                summary: Пример обновления заявки на погрузку ЖД вагона
+                summary: Пример заявки на погрузку
                 value:
                   requestName: Погрузка/выгрузка ЖД
                   operationType: Погрузка
@@ -4740,31 +4792,13 @@ paths:
                   sender: c05a8361-c53c-11ec-8112-d89d6732c837
                   contract: Договор №789
                   location: Экономия
-                  clientNumber: 0fd50d38
+                  clientNumber: 0fd50d38  
                   manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
                   comment: Требуется допуск
                   cargoList:
-                    - cargo:
-                        guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
-                        name: Контейнер CAXU6600984
-                        nomenklatura: Контейнер CAXU
-                        weight: 38000
-                        volume: 67.7
-                        length: 13.716
-                        width: 2.438
-                        height: 2.896
-                        quantity: 2
-                        cargoType: Контейнер
-                        packaging: Отсутствует
-                        storageConditions: Открытое
-                        hazardClass: '1.2'
-                        marka: EE3421-RU
-                        container:
-                          number: JASRZH241602676
-                          cargoes: ISOTEC Цилиндр :60х25/ч-1200, 60х28, 80х35,80х38, 80х48, 90х76, 100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
-                          isEmpty: false
+                    - guid: 72b61a39-c9a4-4fda-8724-51db2cfb0a6f
                       quantity: 1
                       destStation:
                         guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7
@@ -4778,25 +4812,7 @@ paths:
                         countryID: 178
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
-                    - cargo:
-                        guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
-                        name: Контейнер FASU6601284
-                        nomenklatura: Контейнер FASU
-                        weight: 40000
-                        volume: 70.0
-                        length: 14.0
-                        width: 2.5
-                        height: 3.0
-                        quantity: 2
-                        cargoType: Контейнер
-                        packaging: Отсутствует
-                        storageConditions: Открытое
-                        hazardClass: '2.1'
-                        marka: EE3421-US
-                        container:
-                          number: JASRUT241602676
-                          cargoes: Машинные детали
-                          isEmpty: false
+                    - guid: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c242
                       quantity: 1
                       destStation:
                         guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7
@@ -4810,25 +4826,7 @@ paths:
                         countryID: 178
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
-                    - cargo:
-                        guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
-                        name: Контейнер GAXU6601084
-                        nomenklatura: Контейнер GAXU
-                        weight: 39000
-                        volume: 68.5
-                        length: 13.5
-                        width: 2.4
-                        height: 3.1
-                        quantity: 2
-                        cargoType: Контейнер
-                        packaging: Отсутствует
-                        storageConditions: Открытое
-                        hazardClass: '3.1'
-                        marka: EE3421-CN
-                        container:
-                          number: JASRZH241602678
-                          cargoes: Медицинское оборудование
-                          isEmpty: false
+                    - guid: 4a5b7c3d-6e77-4599-ae6f-dbdd5b36c1b7
                       quantity: 1
                       destStation:
                         guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7
@@ -4842,35 +4840,6 @@ paths:
                         countryID: 178
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
-
-              # CargoRequestRailUnloadExample:
-              #   summary: Пример обновления заявки на разгрузку ЖД вагона
-              #   value:
-              #     requestName: Разгрузка ЖД
-              #     operationType: Разгрузка
-              #     client: ООО Железнодорожная Логистика
-              #     contract: Договор №790
-              #     location: СОЛОМБАЛКА
-              #     manager: Николаев Н.Н.
-              #     signer: Дмитриев Д.Д.
-              #     status: Одобрено
-              #     comment: Требуется допуск
-              #     departureStation: СОЛОМБАЛКА
-              #     wagons: 2
-              #     cargoList:
-              #       - name: Контейнер CAXU6600986
-              #         nomenklatura: Контейнер CAXU
-              #         weight: 36000
-              #         volume: 67.7
-              #         length: 13.716
-              #         width: 2.438
-              #         height: 2.896
-              #         quantity: 1
-              #         cargoType: Контейнер
-              #         packaging: Отсутствует
-              #         storageConditions: Открытое
-              #         hazardClass: 1.2
-              #         marka: EE3423-RU
       responses:
         '200':
           description: Заявка успешно обновлена
