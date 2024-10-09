@@ -5825,6 +5825,7 @@ paths:
                 required:
                   - data
                   - totals
+                  - headers
         '400':
           description: Неверный запрос. Проверьте параметры
           content:
