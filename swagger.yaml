@@ -7553,7 +7553,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /terminals/{guid}/warehouses:
+    get:
+      tags:
+        - "Справочник \"Терминалы\""
+      summary: "Получение списка всех складов по GUID терминала"
+      description: "Возвращает список складов для указанного терминала."
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: "guid"
+          in: "path"
+          required: true
+          description: "Уникальный идентификатор терминала"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Список складов успешно получен"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Warehouse"
+        "401":
+          description: "Неавторизованный доступ"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: "Терминал не найден"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /ports:
     get:
       tags:
