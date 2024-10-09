@@ -3774,6 +3774,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /requests/{guid}/forms:
+    get:
+      tags:
+        - Заявки на погрузку / выгрузку грузов      
+      summary: Получить печатную форму заявки в PDF
+      description: Возвращает PDF печатную форму заявки, поданной клиентом на погрузку или выгрузку грузов, по указанному уникальному идентификатору заявки.
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: Уникальный идентификатор заявки.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение PDF файла печатной формы заявки.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: >-
+            Неверный запрос. Отсутствуют необходимые данные или данные
+            некорректны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заявки не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+
   /requests/ship:
     post:
       tags:
