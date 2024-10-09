@@ -1188,7 +1188,6 @@ components:
       required:
         - cargoList
         - driversList
-
     PassRequest:
       allOf:
         - $ref: '#/components/schemas/PassRequestCommon'
@@ -5733,14 +5732,14 @@ paths:
         - name: page
           in: query
           description: Номер страницы для пагинации
-          required: true
+          required: false
           schema:
             type: integer
             example: 1
         - name: pageSize
           in: query
           description: Количество записей на странице
-          required: true
+          required: false
           schema:
             type: integer
             example: 20
@@ -5881,23 +5880,42 @@ paths:
               - Передача клиенту
               - Затаренные контейнеры  
           description: Вид операции
-        - name: warehouse
+        - name: terminalGuid
           in: query
           required: false
           schema:
-            type: string
-          description: Складской комплекс
+            type: array
+            items:
+              type: string
+              enum:
+                - e3adea16-72f6-11e9-a9a5-ac1f6b48c241
+                - ecf13f72-72f6-11e9-a9a5-ac1f6b48c241
+          description: Терминал порта по GUID
+          style: form
+          explode: false
+        - name: warehouseGuid
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - 46213e2f-64f4-11e9-a9a5-ac1f6b48c241
+                - 2885b311-8928-11ea-a9ae-ac1f6b48c241
+                - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241     
+          description: Склад по GUID    
         - name: page
           in: query
           description: Номер страницы для пагинации
-          required: true
+          required: false
           schema:
             type: integer
             example: 1
         - name: pageSize
           in: query
           description: Количество записей на странице
-          required: true
+          required: false
           schema:
             type: integer
             example: 20          
@@ -5946,6 +5964,49 @@ paths:
                         type: integer
                         description: Общее количество мест
                         example: 100                  
+                  headers:
+                    type: array
+                    description: Заголовки для динамического формирования таблицы
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          description: Ключ колонки
+                        title:
+                          type: string
+                          description: Заголовок колонки
+                    example:
+                      - key: "client"
+                        title: "Название клиента"
+                      - key: "document"
+                        title: "ПА/Погруз.ордер"
+                      - key: "operationType"
+                        title: "Тип операции"
+                      - key: "documentNumber"
+                        title: "ТН/ЖДН/Коносамент"
+                      - key: "cargoDescription"
+                        title: "Грузовое место"
+                      - key: "trademark"
+                        title: "Марка товара"
+                      - key: "cargoInContainer"
+                        title: "Описание груза в контейнере"
+                      - key: "tareType"
+                        title: "Тип тары"
+                      - key: "warehouseZone"
+                        title: "Складская зона"
+                      - key: "netWeight"
+                        title: "Вес нетто груза"
+                      - key: "tareWeight"
+                        title: "Вес тары"
+                      - key: "grossWeight"
+                        title: "Вес брутто груза"
+                      - key: "volume"
+                        title: "Объем груза"
+                      - key: "freightUnits"
+                        title: "Количество фрахтовых единиц"
+                      - key: "quantity"
+                        title: "Количество единиц груза"  
         '400':
           description: Неверный запрос. Проверьте параметры
           content:
@@ -6003,14 +6064,14 @@ paths:
         - name: page
           in: query
           description: Номер страницы для пагинации
-          required: true
+          required: false
           schema:
             type: integer
             example: 1
         - name: pageSize
           in: query
           description: Количество записей на странице
-          required: true
+          required: false
           schema:
             type: integer
             example: 20
@@ -6026,6 +6087,55 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/LukovayaZapiskaReportItem"              
+                  headers:
+                    type: array
+                    description: Заголовки для динамического формирования таблицы
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          description: Ключ колонки
+                        title:
+                          type: string
+                          description: Заголовок колонки
+                    example:
+                      - key: "sudovoe_pomeshenie"
+                        title: "Судовое помещение"
+                      - key: "klient"
+                        title: "Клиент"
+                      - key: "gruzootpravitiel"
+                        title: "Грузоотправитель"
+                      - key: "gruzopoluchatel"
+                        title: "Грузополучатель"
+                      - key: "konosament_nomer"
+                        title: "Коносамент №"
+                      - key: "nomer_pogruzochnogo_dokumenta"
+                        title: "№ Погрузочного документа"
+                      - key: "nomer_prikhodnogo_dokumenta"
+                        title: "№ Приходного документа"
+                      - key: "nomer_tn"
+                        title: "№ ТН"
+                      - key: "nomer_konteinera"
+                        title: "№ Контейнера"
+                      - key: "gruzovoe_mesto"
+                        title: "Грузовое место"
+                      - key: "marka"
+                        title: "Марка"
+                      - key: "rod_upakovki"
+                        title: "Род упаковки"
+                      - key: "klass_opasnosti"
+                        title: "Класс опасности"
+                      - key: "kolichestvo_mest"
+                        title: "Количество мест"
+                      - key: "ves_brytto"
+                        title: "Вес брутто"
+                      - key: "obiem"
+                        title: "Объем"
+                      - key: "data_prikhoda"
+                        title: "Дата прихода"
+                      - key: "data_pogonki"
+                        title: "Дата погонки"
         '400':
           description: Неверный запрос. Проверьте параметры
           content:
