@@ -602,6 +602,23 @@ components:
           type: string
           description: Место оказания услуги
           example: Экономия
+        typeOfTransport:
+          type: string
+          # readOnly: false
+          enum:
+            - Прямое
+            - ПСЖВС
+          description: Вид сообщения
+          example: Прямое
+        direction:
+          type: string
+          # readOnly: false
+          enum:
+            - Импорт
+            - Каботаж
+            - Экспорт
+          description: Направление
+          example: Каботаж
         manager:
           type: string
           description: Ответственный за подготовку документа
@@ -630,6 +647,8 @@ components:
         - createdDate        
         - requestName
         - operationType
+        - typeOfTransport 
+        - direction
         - client
         - contract
         - location
