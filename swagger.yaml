@@ -1896,6 +1896,82 @@ components:
           type: number
           format: float
           description: Общая сумма счета
+    # ClientCargoReportItem:
+    #   type: object
+    #   properties:
+    #     client:
+    #       type: string
+    #       description: Название клиента
+    #       example: ЛОГИСТИК ООО
+    #     document:
+    #       type: string
+    #       description: ПА/Погруз.ордер
+    #       example: ПА 221238 от 23.12.2023
+    #     operationType:
+    #       type: string
+    #       description: Тип операции (Подработка, Затарка в контейнер, Выгрузка из автомобиля).
+    #       example: Выгрузка из автомобиля
+    #     documentNumber:
+    #       type: string
+    #       description: ТН/ЖДН/Коносамент
+    #       example: 51945
+    #     cargoDescription:
+    #       type: string
+    #       description: Грузовое место
+    #       example: Контейнер NMKU 6213040 (ИСО-20 22G1)
+    #     marka:
+    #       type: string
+    #       description: Марка товара
+    #       example: Марка 1
+    #     cargoInContainer:
+    #       type: string
+    #       description: Описание груза в контейнере
+    #       example: Огнетушители 11 / 22;Огнетушители 12 / 22;Огнетушители 13 / 22;Огнетушители 14 / 22;Огнетушители 16
+    #     tareType:
+    #       type: string
+    #       description: Тип тары
+    #       example: исо-1сс
+    #     warehouseZone:
+    #       type: string
+    #       description: Складская зона
+    #       example: СК1-2
+    #     netWeight:
+    #       type: number
+    #       description: Вес нетто груза
+    #       example: 6750
+    #     tareWeight:
+    #       type: number
+    #       description: Вес тары.
+    #       example: 2300
+    #     grossWeight:
+    #       type: number
+    #       description: Вес брутто груза
+    #       example: 9060
+    #     volume:
+    #       type: number
+    #       description: Объем груза
+    #       example: 38.268
+    #     freightUnits:
+    #       type: number
+    #       description: Количество фрахтовых единиц
+    #       example: 38.268
+    #     quantity:
+    #       type: number
+    #       description: Количество единиц груза
+    #       example: 1      
+    #   required:
+    #     - client
+    #     - document
+    #     - operationType
+    #     - documentNumber
+    #     - cargoDescription
+    #     - warehouseZone
+    #     - netWeight
+    #     - tareWeight
+    #     - grossWeight
+    #     - volume
+    #     - freightUnits
+    #     - quantity
     ClientCargoReportItem:
       type: object
       properties:
@@ -1907,9 +1983,14 @@ components:
           type: string
           description: ПА/Погруз.ордер
           example: ПА 221238 от 23.12.2023
+        documentData:
+          type: string
+          format: date-time
+          description: Дата документа
+          example: 2023-06-02T23:44:14
         operationType:
           type: string
-          description: Тип операции (Подработка, Затарка в контейнер, Выгрузка из автомобиля).
+          description: Тип операции
           example: Выгрузка из автомобиля
         documentNumber:
           type: string
@@ -1919,59 +2000,122 @@ components:
           type: string
           description: Грузовое место
           example: Контейнер NMKU 6213040 (ИСО-20 22G1)
-        marka:
+        typeCargo:
           type: string
-          description: Марка товара
-          example: Марка 1
-        cargoInContainer:
+          description: Тип груза
+          example: Генеральный груз
+        container:
           type: string
-          description: Описание груза в контейнере
-          example: Огнетушители 11 / 22;Огнетушители 12 / 22;Огнетушители 13 / 22;Огнетушители 14 / 22;Огнетушители 16
-        tareType:
-          type: string
-          description: Тип тары
-          example: исо-1сс
+          description: Контейнер
+          example: ''
         warehouseZone:
           type: string
           description: Складская зона
-          example: СК1-2
-        netWeight:
+          example: СК2-2
+        length:
           type: number
-          description: Вес нетто груза
-          example: 6750
-        tareWeight:
+          description: Длина
+          example: 0.8
+        width:
           type: number
-          description: Вес тары.
-          example: 2300
-        grossWeight:
+          description: Ширина
+          example: 1.4
+        height:
           type: number
-          description: Вес брутто груза
-          example: 9060
+          description: Высота
+          example: 2.7
         volume:
           type: number
           description: Объем груза
-          example: 38.268
+          example: 3.024
         freightUnits:
           type: number
           description: Количество фрахтовых единиц
-          example: 38.268
+          example: 3.024
         quantity:
           type: number
           description: Количество единиц груза
-          example: 1      
+          example: 1
+        grossWeight:
+          type: number
+          description: Вес брутто груза
+          example: 1230
+        tonWeight:
+          type: number
+          description: Вес тонны
+          example: 1.23
+        tareType:
+          type: string
+          description: Тип тары
+          example: ящик
+        cargoInContainer:
+          type: string
+          description: Описание груза в контейнере
+          example: ''
+        tare:
+          type: boolean
+          description: Порожний
+          example: false
+        NumberTN:
+          type: string
+          description: Номер ТН
+          example: 01-300523
+        warehouseComplex:
+          type: string
+          description: Складской комплекс
+          example: 1 СК
+        DangerClass:
+          type: string
+          description: Класс опасности
+          example: ''
+        NumberCustomsDeclaration:
+          type: string
+          description: Рег номер в таможне
+          example: ''
+        RegistrationNumberInCustoms:
+          type: string
+          description: Номер таможенной декларации
+          example: ''
+        DirectionOfCargoMovement:
+          type: string
+          description: Направление движения груза
+          example: ''
+        Senders:
+          type: string
+          description: Грузоотправитель
+          example: КОМПАНИЯ КРУС-ЗАПАД ООО
+        recipients:
+          type: string
+          description: Грузополучатель
+          example: Архангельский транспортный филиал ПАО \"ГМК \"Норильский никель\"
+        finalRecipients:
+          type: string
+          description: Конечный грузополучатель
+          example: ПЕСХ ТПЦ 1 СКЛАД 12
+        trademark:
+          type: string
+          description: Марка товара
+          example: ''
+        netWeight:
+          type: number
+          description: Вес нетто груза
+          example: 0
+        tareWeight:
+          type: number
+          description: Вес тары
+          example: 0
       required:
         - client
         - document
+        - documentData
         - operationType
         - documentNumber
         - cargoDescription
         - warehouseZone
-        - netWeight
-        - tareWeight
-        - grossWeight
         - volume
         - freightUnits
         - quantity
+        - grossWeight    
     ClientCargoIncomeReportItem:
       type: object
       properties:
@@ -6000,32 +6144,66 @@ paths:
                         title: "Название клиента"
                       - key: "document"
                         title: "ПА/Погруз.ордер"
+                      - key: "documentData"
+                        title: "Дата ПА"
                       - key: "operationType"
                         title: "Тип операции"
                       - key: "documentNumber"
                         title: "ТН/ЖДН/Коносамент"
                       - key: "cargoDescription"
                         title: "Грузовое место"
-                      - key: "trademark"
-                        title: "Марка товара"
-                      - key: "cargoInContainer"
-                        title: "Описание груза в контейнере"
-                      - key: "tareType"
-                        title: "Тип тары"
+                      - key: "typeCargo"
+                        title: "Тип груза"
+                      - key: "container"
+                        title: "Контейнер"
                       - key: "warehouseZone"
                         title: "Складская зона"
-                      - key: "netWeight"
-                        title: "Вес нетто груза"
-                      - key: "tareWeight"
-                        title: "Вес тары"
-                      - key: "grossWeight"
-                        title: "Вес брутто груза"
+                      - key: "length"
+                        title: "Длина"
+                      - key: "width"
+                        title: "Ширина"
+                      - key: "height"
+                        title: "Высота"
                       - key: "volume"
                         title: "Объем груза"
                       - key: "freightUnits"
                         title: "Количество фрахтовых единиц"
                       - key: "quantity"
-                        title: "Количество единиц груза"  
+                        title: "Количество единиц груза"
+                      - key: "grossWeight"
+                        title: "Вес брутто груза"
+                      - key: "tonWeight"
+                        title: "Вес тонны"
+                      - key: "tareType"
+                        title: "Тип тары"
+                      - key: "cargoInContainer"
+                        title: "Описание груза в контейнере"
+                      - key: "tare"
+                        title: "Порожний"
+                      - key: "NumberTN"
+                        title: "Номер ТН"
+                      - key: "warehouseComplex"
+                        title: "Складской комплекс"
+                      - key: "DangerClass"
+                        title: "Класс опасности"
+                      - key: "NumberCustomsDeclaration"
+                        title: "Рег номер в таможне"
+                      - key: "RegistrationNumberInCustoms"
+                        title: "Номер таможенной декларации"
+                      - key: "DirectionOfCargoMovement"
+                        title: "Направление движения груза"
+                      - key: "Senders"
+                        title: "Грузоотправитель"
+                      - key: "recipients"
+                        title: "Грузополучатель"
+                      - key: "finalRecipients"
+                        title: "Конечный грузополучатель"
+                      - key: "trademark"
+                        title: "Марка товара"
+                      - key: "netWeight"
+                        title: "Вес нетто груза"
+                      - key: "tareWeight"
+                        title: "Вес тары"
         '400':
           description: Неверный запрос. Проверьте параметры
           content:
