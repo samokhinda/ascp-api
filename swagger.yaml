@@ -5802,7 +5802,37 @@ paths:
                           type: array
                           description: Доступные фильтры для отчета
                           items:
-                            type: string
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                description: Название фильтра
+                              description:
+                                type: string
+                                description: Описание фильтра
+                              type:
+                                type: string
+                                description: Тип данных фильтра
+                          example:
+                            - name: reportDate
+                              description: Дата отчета
+                              type: string
+                            - name: documentId
+                              description: Номер приемного акта
+                              type: string
+                            - name: operationType
+                              description: Вид операции
+                              type: string
+                            - name: terminalGuid
+                              description: Терминал по GUID
+                              type: array
+                            - name: warehouseGuid
+                              description: Склад по GUID
+                              type: array
+                        route:
+                          type: string
+                          description: Маршрут к отчету
+                          example: /reports/cargoes
                 required:
                   - reports
         '401':
