@@ -6023,7 +6023,8 @@ paths:
                 - 46213e2f-64f4-11e9-a9a5-ac1f6b48c241
                 - 2885b311-8928-11ea-a9ae-ac1f6b48c241
                 - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241     
-          description: Склад по GUID                   
+          description: Склад по GUID     
+          explode: false                        
         - name: page
           in: query
           description: Номер страницы для пагинации
