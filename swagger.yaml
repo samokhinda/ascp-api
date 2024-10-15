@@ -5817,18 +5817,27 @@ paths:
                             - name: reportDate
                               description: Дата отчета
                               type: string
+                              example: "10-10-2024"
                             - name: documentId
                               description: Номер приемного акта
                               type: string
+                              example: "00012345"
                             - name: operationType
                               description: Вид операции
                               type: string
+                              example: "Авто"
                             - name: terminalGuid
                               description: Терминал по GUID
                               type: array
+                              example: 
+                                - "e3adea16-72f6-11e9-a9a5-ac1f6b48c241"
+                                - "ecf13f72-72f6-11e9-a9a5-ac1f6b48c241"
                             - name: warehouseGuid
                               description: Склад по GUID
                               type: array
+                              example:
+                                - "46213e2f-64f4-11e9-a9a5-ac1f6b48c241"
+                                - "2885b311-8928-11ea-a9ae-ac1f6b48c241"
                         route:
                           type: string
                           description: Маршрут к отчету
