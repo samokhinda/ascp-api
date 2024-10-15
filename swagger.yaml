@@ -797,6 +797,11 @@ components:
         #   readOnly: false
         #   description: Вид операции по заявке
         #   example: Погрузка     
+        # documentID:
+        #   type: string
+        #   description: Номер документа
+        #   readOnly: false
+        #   example: '000078945'          
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
@@ -856,7 +861,93 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
-    
+
+
+    CargoRequestShipLoadPUT:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestShipCommon'
+      properties:
+        documentId:
+          type: string
+          description: Номер документа
+          readOnly: false
+          example: '000078945'    
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$     
+          readOnly: false 
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к погрузке в заявке
+          items:
+            type: object
+            properties:
+              guid:
+                type: string
+                format: uuid
+              destinationPort:
+                # type: string
+                $ref: '#/components/schemas/Port'
+                description: Порт назначения
+                example: Владивосток
+              urgent:
+                type: boolean
+                description: Срочный груз или нет
+                example: true   
+              quantity:
+                type: number
+                description: Количество грузовых мест
+                example: 1
+              sender:
+                type: string
+                format: uuid
+                description: Грузоотправитель
+                example: 0fd50d38-c53d-11ec-8112-d89d6732c837
+              recipient:
+                type: string
+                description: Грузополучатель
+                format: uuid
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
+              portReceiver:
+                type: string
+                format: uuid
+                description: Грузополучатель в порту назначения
+                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+            required:
+              - guid    
+              - recipient
+              - quantity
+      required:
+        - cargoList
+        - documentId
+        - createdDate
+    CargoRequestShipUnloadPUT:
+      allOf:
+        - $ref: '#/components/schemas/CargoRequestShipCommon'
+      properties:
+        documentId:
+          type: string
+          description: Номер документа
+          readOnly: false
+          example: '000078945'    
+        createdDate:
+          type: string
+          format: date-time
+          example: 07-02-2024T06:32:49Z
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$   
+          readOnly: false                        
+        cargoList:
+          type: array
+          description: Табличная часть со списком грузов к разгрузке в заявке
+          items:
+            $ref: '#/components/schemas/Cargo'
+      required:
+        - cargoList
+        - documentId
+        - createdDate
+
     CargoRequestRailCommon:
       type: object
       # allOf:
@@ -4183,12 +4274,14 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestShipLoad'
-                - $ref: '#/components/schemas/CargoRequestShipUnload'
+                - $ref: '#/components/schemas/CargoRequestShipLoadPUT'
+                - $ref: '#/components/schemas/CargoRequestShipUnloadPUT'
             examples:              
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку
                 value: 
+                  documentId: "000012345"
+                  createdDate: 10-10-2024
                   requestName: Погрузка/выгрузка судна
                   operationType: Погрузка
                   client: АТФ ПАО ГМК "Норильский Никель"
@@ -6106,7 +6199,8 @@ paths:
                 - 46213e2f-64f4-11e9-a9a5-ac1f6b48c241
                 - 2885b311-8928-11ea-a9ae-ac1f6b48c241
                 - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241     
-          description: Склад по GUID    
+          description: Склад по GUID  
+          explode: false            
         - name: page
           in: query
           description: Номер страницы для пагинации
