@@ -632,10 +632,15 @@ components:
           description: Статус заявки
           readOnly: true
           enum:
-            - Создана
-            - В обработке
-            - Одобрена
-            - Отклонена
+            - ВРаботе
+            - Выполнена
+            - Запланирована
+            - ОжидаетОсмотра
+            - ОжидаетОтправки
+            - ОжидаетПроезда
+            - Отклонено
+            - Согласовано
+            - Черновик
           example: В обработке
         comment:
           type: string
@@ -703,10 +708,15 @@ components:
           description: Статус заявки
           # readOnly: true
           enum:
-            - Создана
-            - В обработке
-            - Одобрена
-            - Отклонена
+            - ВРаботе
+            - Выполнена
+            - Запланирована
+            - ОжидаетОсмотра
+            - ОжидаетОтправки
+            - ОжидаетПроезда
+            - Отклонено
+            - Согласовано
+            - Черновик
           example: В обработке
         comment:
           type: string
@@ -861,8 +871,6 @@ components:
             $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
-
-
     CargoRequestShipLoadPUT:
       allOf:
         - $ref: '#/components/schemas/CargoRequestShipCommon'
@@ -1012,10 +1020,15 @@ components:
           description: Статус заявки
           readOnly: true
           enum:
-            - Создана
-            - В обработке
-            - Одобрена
-            - Отклонена
+            - ВРаботе
+            - Выполнена
+            - Запланирована
+            - ОжидаетОсмотра
+            - ОжидаетОтправки
+            - ОжидаетПроезда
+            - Отклонено
+            - Согласовано
+            - Черновик
           example: В обработке
         comment:
           type: string
@@ -1182,10 +1195,15 @@ components:
           description: Статус заявки
           # readOnly: true
           enum:
-            - Создана
-            - В обработке
-            - Одобрена
-            - Отклонена
+            - ВРаботе
+            - Выполнена
+            - Запланирована
+            - ОжидаетОсмотра
+            - ОжидаетОтправки
+            - ОжидаетПроезда
+            - Отклонено
+            - Согласовано
+            - Черновик
           example: В обработке
         comment:
           type: string
@@ -1987,82 +2005,6 @@ components:
           type: number
           format: float
           description: Общая сумма счета
-    # ClientCargoReportItem:
-    #   type: object
-    #   properties:
-    #     client:
-    #       type: string
-    #       description: Название клиента
-    #       example: ЛОГИСТИК ООО
-    #     document:
-    #       type: string
-    #       description: ПА/Погруз.ордер
-    #       example: ПА 221238 от 23.12.2023
-    #     operationType:
-    #       type: string
-    #       description: Тип операции (Подработка, Затарка в контейнер, Выгрузка из автомобиля).
-    #       example: Выгрузка из автомобиля
-    #     documentNumber:
-    #       type: string
-    #       description: ТН/ЖДН/Коносамент
-    #       example: 51945
-    #     cargoDescription:
-    #       type: string
-    #       description: Грузовое место
-    #       example: Контейнер NMKU 6213040 (ИСО-20 22G1)
-    #     marka:
-    #       type: string
-    #       description: Марка товара
-    #       example: Марка 1
-    #     cargoInContainer:
-    #       type: string
-    #       description: Описание груза в контейнере
-    #       example: Огнетушители 11 / 22;Огнетушители 12 / 22;Огнетушители 13 / 22;Огнетушители 14 / 22;Огнетушители 16
-    #     tareType:
-    #       type: string
-    #       description: Тип тары
-    #       example: исо-1сс
-    #     warehouseZone:
-    #       type: string
-    #       description: Складская зона
-    #       example: СК1-2
-    #     netWeight:
-    #       type: number
-    #       description: Вес нетто груза
-    #       example: 6750
-    #     tareWeight:
-    #       type: number
-    #       description: Вес тары.
-    #       example: 2300
-    #     grossWeight:
-    #       type: number
-    #       description: Вес брутто груза
-    #       example: 9060
-    #     volume:
-    #       type: number
-    #       description: Объем груза
-    #       example: 38.268
-    #     freightUnits:
-    #       type: number
-    #       description: Количество фрахтовых единиц
-    #       example: 38.268
-    #     quantity:
-    #       type: number
-    #       description: Количество единиц груза
-    #       example: 1      
-    #   required:
-    #     - client
-    #     - document
-    #     - operationType
-    #     - documentNumber
-    #     - cargoDescription
-    #     - warehouseZone
-    #     - netWeight
-    #     - tareWeight
-    #     - grossWeight
-    #     - volume
-    #     - freightUnits
-    #     - quantity
     ClientCargoReportItem:
       type: object
       properties:
