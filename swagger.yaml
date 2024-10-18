@@ -5570,34 +5570,27 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       parameters:
-        - name: documentId
+        - name: terminal
           in: query
           required: false
-          description: Поиск ПА номеру документа
+          description: Терминал порта
           schema:
             type: string
-            example: 00084244     
-        # - name: terminal
-        #   in: query
-        #   required: false
-        #   description: Терминал порта
-        #   schema:
-        #     type: string
-        #     example: Экономия
-        # - name: warehouse
-        #   in: query
-        #   required: false
-        #   description: Складской комплекс
-        #   schema:
-        #     type: string
-        #     example: СК1
-        # - name: warehouseZone
-        #   in: query
-        #   required: false
-        #   description: Складская зона
-        #   schema:
-        #     type: string
-        #     example: А25
+            example: Экономия
+        - name: warehouse
+          in: query
+          required: false
+          description: Складской комплекс
+          schema:
+            type: string
+            example: СК1
+        - name: warehouseZone
+          in: query
+          required: false
+          description: Складская зона
+          schema:
+            type: string
+            example: А25
         - name: page
           in: query
           required: true
