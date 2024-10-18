@@ -560,6 +560,23 @@ components:
         - guid
         # - code
         - name
+
+    RequestStatuses:
+      type: string
+      description: Статус заявки
+      enum:
+        - ВРаботе
+        - Выполнена
+        - Запланирована
+        - ОжидаетОсмотра
+        - ОжидаетОтправки
+        - ОжидаетПроезда
+        - Отклонено
+        - Согласовано
+        - Черновик
+      example: Черновик
+    
+        
     CargoRequestCommon:
       type: object
       properties:
@@ -628,20 +645,8 @@ components:
           description: Подписант заявки со стороны клиента
           example: Сидоров Дмитрий Иванович
         status:
-          type: string
-          description: Статус заявки
-          readOnly: true
-          enum:
-            - ВРаботе
-            - Выполнена
-            - Запланирована
-            - ОжидаетОсмотра
-            - ОжидаетОтправки
-            - ОжидаетПроезда
-            - Отклонено
-            - Согласовано
-            - Черновик
-          example: В обработке
+          allOf:
+            - $ref: '#/components/schemas/RequestStatuses'
         comment:
           type: string
           description: Комментарий к заявке
@@ -663,8 +668,6 @@ components:
 
     CargoRequestShipCommon:
       type: object
-      # allOf:
-      #   - $ref: '#/components/schemas/CargoRequestCommon'
       properties:
         guid:
           type: string
@@ -704,20 +707,8 @@ components:
           description: Подписант заявки со стороны клиента
           example: Сидоров Дмитрий Иванович
         status:
-          type: string
-          description: Статус заявки
-          # readOnly: true
-          enum:
-            - ВРаботе
-            - Выполнена
-            - Запланирована
-            - ОжидаетОсмотра
-            - ОжидаетОтправки
-            - ОжидаетПроезда
-            - Отклонено
-            - Согласовано
-            - Черновик
-          example: В обработке
+          allOf:
+            - $ref: '#/components/schemas/RequestStatuses'
         comment:
           type: string
           description: Комментарий к заявке
@@ -757,13 +748,13 @@ components:
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
         departurePort:
-          # type: string
-          $ref: '#/components/schemas/Port'
+          allOf:
+            - $ref: '#/components/schemas/Port'
           description: Порт отправления
           example: Архангельск
         destinationPort:
-          # type: string
-          $ref: '#/components/schemas/Port'
+          allOf:
+            - $ref: '#/components/schemas/Port'
           description: Порт назначения
           example: Дудинка
         customsClearance:
@@ -822,8 +813,8 @@ components:
                 type: string
                 format: uuid
               destinationPort:
-                # type: string
-                $ref: '#/components/schemas/Port'
+                allOf:
+                  - $ref: '#/components/schemas/Port'
                 description: Порт назначения
                 example: Владивосток
               urgent:
@@ -868,7 +859,8 @@ components:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            allOf:
+              - $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
     CargoRequestShipLoadPUT:
@@ -896,8 +888,8 @@ components:
                 type: string
                 format: uuid
               destinationPort:
-                # type: string
-                $ref: '#/components/schemas/Port'
+                allOf:
+                  - $ref: '#/components/schemas/Port'
                 description: Порт назначения
                 example: Владивосток
               urgent:
@@ -950,7 +942,8 @@ components:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            allOf:
+              - $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
         - documentId
@@ -958,8 +951,6 @@ components:
 
     CargoRequestRailCommon:
       type: object
-      # allOf:
-      #   - $ref: '#/components/schemas/CargoRequestCommon'
       properties:
         guid:
           type: string
@@ -1016,20 +1007,8 @@ components:
           description: Подписант заявки со стороны клиента
           example: Сидоров Дмитрий Иванович
         status:
-          type: string
-          description: Статус заявки
-          readOnly: true
-          enum:
-            - ВРаботе
-            - Выполнена
-            - Запланирована
-            - ОжидаетОсмотра
-            - ОжидаетОтправки
-            - ОжидаетПроезда
-            - Отклонено
-            - Согласовано
-            - Черновик
-          example: В обработке
+          allOf:
+            - $ref: '#/components/schemas/RequestStatuses'
         comment:
           type: string
           description: Комментарий к заявке
@@ -1052,10 +1031,8 @@ components:
           description: Направление
           example: Каботаж          
         departureStation:
-          $ref: '#/components/schemas/Station'
-          # type: string
-          # description: Станция отправления
-          # example: СОЛОМБАЛКА
+          allOf:
+            - $ref: '#/components/schemas/Station'
         wagons:
           type: integer
           description: Количество вагонов
@@ -1103,10 +1080,8 @@ components:
                 description: Количество грузовых мест
                 example: 1                
               destStation:
-                # type: string
-                # description: Станция назначения
-                # example: СОЛОМБАЛКА
-                $ref: '#/components/schemas/Station'
+                allOf:
+                  - $ref: '#/components/schemas/Station'
               recipient:
                 type: string
                 description: Грузополучатель
@@ -1134,7 +1109,8 @@ components:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            allOf:
+              - $ref: '#/components/schemas/Cargo'
       required:
         - cargoList
 
@@ -1191,20 +1167,8 @@ components:
           description: Подписант заявки со стороны клиента
           example: Сидоров Дмитрий Иванович
         status:
-          type: string
-          description: Статус заявки
-          # readOnly: true
-          enum:
-            - ВРаботе
-            - Выполнена
-            - Запланирована
-            - ОжидаетОсмотра
-            - ОжидаетОтправки
-            - ОжидаетПроезда
-            - Отклонено
-            - Согласовано
-            - Черновик
-          example: В обработке
+          allOf:
+            - $ref: '#/components/schemas/RequestStatuses'
         comment:
           type: string
           description: Комментарий к заявке
@@ -1295,7 +1259,8 @@ components:
           type: array
           description: Табличная часть со списком пропусков
           items:
-            $ref: '#/components/schemas/DriverPass'                            
+            allOf:
+              - $ref: '#/components/schemas/DriverPass'                            
       required:
         - cargoList
         - driversList
@@ -1307,12 +1272,14 @@ components:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            allOf:
+              - $ref: '#/components/schemas/Cargo'
         driversList:
           type: array
           description: Табличная часть со списком пропусков
           items:
-            $ref: '#/components/schemas/DriverPass'                  
+            allOf:
+              - $ref: '#/components/schemas/DriverPass'                  
       required:
         - cargoList
         - driversList
@@ -1486,7 +1453,8 @@ components:
             - Бакарица
           example: Экономия
         persona:
-          $ref: '#/components/schemas/Person'
+          allOf:
+            - $ref: '#/components/schemas/Person'
       required:
         - accessPeriod
         - location
