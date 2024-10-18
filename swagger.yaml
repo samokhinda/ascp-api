@@ -5692,6 +5692,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /cargoes/acts/search:
+    get:
+      tags:
+        - Грузы клиента
+      summary: Поиск приемных актов по номеру.
+      description: >-
+        Возвращает список приемных актов.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: documentId
+          in: query
+          required: true
+          description: Номер приемного акта
+          schema:
+            type: string
+            example: 00084244     
+      responses:
+        '200':
+          description: Информация ПА успешно получена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество записей
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество записей на странице
+                  documents:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/components/schemas/ReceivingCommon'
+                required:
+                  - total
+                  - page
+                  - pageSize
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   /cargoes/{guid}:
     get:
       tags:
