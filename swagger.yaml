@@ -567,13 +567,15 @@ components:
       enum:
         - В работе
         - Выполнена
-        - Запланирована
+        - Запланирована на выполнение
         - Ожидает осмотра
-        - Ожидает отправки
+        - Ожидает отправки в работу
         - Ожидает проезда
         - Отклонено
         - Согласовано
+        - Согласовано Бакарица
         - На согласовании
+        - На согласовании ФСБ
         - Черновик
       example: Черновик
     
@@ -5568,27 +5570,34 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       parameters:
-        - name: terminal
+        - name: documentId
           in: query
           required: false
-          description: Терминал порта
+          description: Поиск ПА номеру документа
           schema:
             type: string
-            example: Экономия
-        - name: warehouse
-          in: query
-          required: false
-          description: Складской комплекс
-          schema:
-            type: string
-            example: СК1
-        - name: warehouseZone
-          in: query
-          required: false
-          description: Складская зона
-          schema:
-            type: string
-            example: А25
+            example: 00084244     
+        # - name: terminal
+        #   in: query
+        #   required: false
+        #   description: Терминал порта
+        #   schema:
+        #     type: string
+        #     example: Экономия
+        # - name: warehouse
+        #   in: query
+        #   required: false
+        #   description: Складской комплекс
+        #   schema:
+        #     type: string
+        #     example: СК1
+        # - name: warehouseZone
+        #   in: query
+        #   required: false
+        #   description: Складская зона
+        #   schema:
+        #     type: string
+        #     example: А25
         - name: page
           in: query
           required: true
@@ -5623,7 +5632,8 @@ paths:
                   documents:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ReceivingCommon'
+                      allOf:
+                        - $ref: '#/components/schemas/ReceivingCommon'
                 required:
                   - total
                   - page
@@ -7905,6 +7915,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /terminals/{guid}/gis:
+    get:
+      tags:
+        - Справочник "Терминалы"
+      summary: Получить координаты складских зон с грузом клиента по GUID
+      description: >-
+        Возвращает координаты складских зон для указанного
+        терминала в которых находятся грузы клиента.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: guid
+          in: path
+          required: true
+          description: GUID терминала
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный ответ. Картинка карты терминала и координаты складских зон.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  terminal:
+                    allOf:
+                      - $ref: '#/components/schemas/Terminal'
+                    description: Параметры терминала
+                  warehouses:
+                    type: array
+                    description: Склады и координаты складских зон
+                    items:
+                      $ref: '#/components/schemas/Warehouse'
+        '400':
+          description: Неверный запрос. Проверьте передаваемые данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизованный доступ. Проверьте токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Терминал не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /terminals/{guid}/warehouses:
     get:
       tags:
