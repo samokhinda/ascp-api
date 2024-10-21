@@ -5697,6 +5697,27 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       parameters:
+        - name: terminal
+          in: query
+          required: true
+          description: Терминал порта
+          schema:
+            type: string
+            example: Экономия
+        - name: warehouse
+          in: query
+          required: true
+          description: Складской комплекс
+          schema:
+            type: string
+            example: СК1
+        - name: warehouseZone
+          in: query
+          required: true
+          description: Складская зона
+          schema:
+            type: string
+            example: А25        
         - name: documentId
           in: query
           required: true
