@@ -6649,21 +6649,21 @@ paths:
         - name: startDate
           in: query
           description: Дата начала периода
-          required: false
+          required: true
           schema:
             type: string
             format: date
         - name: endDate
           in: query
           description: Дата окончания периода
-          required: false
+          required: true
           schema:
             type: string
             format: date
         - name: passType
           in: query
           description: Тип пропуска
-          required: false
+          required: true
           schema:
             type: string
             enum:
