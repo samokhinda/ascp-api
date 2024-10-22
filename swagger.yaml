@@ -5699,25 +5699,25 @@ paths:
       parameters:
         - name: terminal
           in: query
-          required: true
+          required: false
           description: Терминал порта
           schema:
             type: string
-            example: Экономия
+            example: Терминал «Экономия»
         - name: warehouse
           in: query
-          required: true
+          required: false
           description: Складской комплекс
           schema:
             type: string
-            example: СК1
+            example: 1 СК
         - name: warehouseZone
           in: query
-          required: true
+          required: false
           description: Складская зона
           schema:
             type: string
-            example: А25        
+            example: А-29-2        
         - name: documentId
           in: query
           required: true
