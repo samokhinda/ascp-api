@@ -5764,7 +5764,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-
   /cargoes/{guid}:
     get:
       tags:
@@ -6479,8 +6478,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'     
-
-
 
   /passes:
     get:
