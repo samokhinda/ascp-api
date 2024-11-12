@@ -8351,3 +8351,148 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'                
+  /location:
+    get:
+      tags:
+        - Справочник "Локации"
+      summary: Получить список локаций
+      description: Возвращает список локаций с поддержкой пагинации.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы для пагинации
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Количество локаций на странице
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Список локаций успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество локаций
+                  page:
+                    type: integer
+                    description: Текущая страница
+                  pageSize:
+                    type: integer
+                    description: Количество локаций на странице
+                  passes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        guid:
+                          type: string
+                          description: Уникальный идентификатор локации
+                        name:
+                          type: string
+                          description: Название локации
+                      required:
+                        - guid
+                        - name
+                required:
+                  - total
+                  - page
+                  - pageSize
+                  - passes
+              example:
+                total: 1040
+                page: 1
+                pageSize: 10
+                passes:
+                  - guid: 6374b447-6027-11ed-8112-d89d6732c837
+                    name: ' д.Казанцево'
+                  - guid: 060ea4cd-e109-11e9-a9a9-ac1f6b48c241
+                    name: AALEN
+                  - guid: 09c9ddda-7fcb-11ef-bbaf-e6c543e51ba3
+                    name: Abidjan, Ivory Coast
+                  - guid: aaa83552-23cb-11ef-bbac-904d466aa48a
+                    name: Abu Dhabi, United Arab Emirates
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /location/search:
+    get:
+      tags:
+        - Справочник "Локации"
+      summary: Поиск локаций по названию
+      description: Возвращает список локаций, соответсвующих заданному названию.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      parameters:
+        - name: name
+          in: query
+          description: Название локации для поиска
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список найденных локаций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    guid:
+                      type: string
+                      description: Уникальный идентификатор локации
+                    name:
+                      type: string
+                      description: Название локации
+                  required:
+                    - guid
+                    - name
+              example:
+                - guid: 1c42bdeb-e62f-11ec-8112-d89d6732c837
+                  name: АРХАНГЕЛЬСК
+                - guid: e4575677-903e-11ea-a9b0-ac1f6b48c241
+                  name: Архангельск Рыбный Порт
+                - guid: dbd8030d-b7df-11ec-a9b9-ac1f6b48c241
+                  name: Архангельская обл. п.Ширшинский
+                - guid: 848e26e0-7dd2-11ec-a9b9-ac1f6b48c241
+                  name: Архангельский Траловый Флот
+        '400':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
