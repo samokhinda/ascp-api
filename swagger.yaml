@@ -8351,7 +8351,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'                
-  /location:
+  /locations:
     get:
       tags:
         - Справочник "Локации"
@@ -8436,7 +8436,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /location/search:
+  /locations/search:
     get:
       tags:
         - Справочник "Локации"
