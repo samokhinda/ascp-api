@@ -22,8 +22,10 @@ info:
 servers:
   - url: https://gate.ascp.ru:8443/Ugt-test/hs/v2/
     description: Сервер для тестирования
+  - url: https://gate.ascp.ru:8443/ugt-dev-6/hs/v2/
+    description: Сервер 6 для разработчиков
   - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
-    description: Сервер для разработчиков
+    description: Сервер 7 для разработчиков
 tags:
   - name: Авторизация
     description: Авторизация
@@ -38,11 +40,11 @@ components:
     BasicAuth:
       type: apiKey
       in: header
-      name: BasicAuth  # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация) 
+      name: BasicAuth # Используем для авторизации пользователя,'Basic {token}' (корявая Basic авторизация)
     sessionAuth:
       type: apiKey
       in: header
-      name: bearerAuth # Сессионный JWT токен который возвращает сервер      
+      name: bearerAuth # Сессионный JWT токен который возвращает сервер
   schemas:
     ErrorResponse:
       type: object
@@ -74,7 +76,7 @@ components:
           type: string
           format: date
           description: Дата рождения
-          example: '1992-12-13'
+          example: "1992-12-13"
         gender:
           type: string
           description: Пол
@@ -98,7 +100,7 @@ components:
               type: string
               format: date
               description: Дата выдачи паспорта
-              example: '2021-09-24'
+              example: "2021-09-24"
         contactInfo:
           type: object
           properties:
@@ -179,11 +181,11 @@ components:
         - owner
     Driver:
       allOf:
-        - $ref: '#/components/schemas/Person'
+        - $ref: "#/components/schemas/Person"
         - type: object
           properties:
             auto:
-              $ref: '#/components/schemas/Auto'
+              $ref: "#/components/schemas/Auto"
     Cargo:
       type: object
       properties:
@@ -220,7 +222,7 @@ components:
           type: number
           description: Высота груза
           example: 2.896
-        quantity: 
+        quantity:
           type: number
           description: Количество мест груза
           example: 2
@@ -243,7 +245,7 @@ components:
         hazardClass:
           type: string
           description: Класс опасности
-          example: '1.2'
+          example: "1.2"
         marka:
           type: string
           description: Марка груза
@@ -278,7 +280,7 @@ components:
         docNumber:
           type: string
           description: Номер приемного акта порта
-          example: '0000041334'
+          example: "0000041334"
       required:
         - name
         # - nomenklatura
@@ -287,7 +289,7 @@ components:
         # - length
         # - width
         # - height
-        # - quantity     
+        # - quantity
     VesselCall:
       type: object
       properties:
@@ -303,7 +305,7 @@ components:
         imoNumber:
           type: string
           description: IMO номер судна
-          example: '9703316'
+          example: "9703316"
         callSign:
           type: string
           description: Позывной судна
@@ -326,7 +328,7 @@ components:
           enum:
             - Экономия
             - Бакарица
-          example: Экономия          
+          example: Экономия
         berth:
           type: string
           description: Номер причала
@@ -382,7 +384,7 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'             
+          example: "000078945"
         client:
           type: string
           description: Клиент порта
@@ -442,7 +444,7 @@ components:
         documentId:
           type: string
           description: Регистрационный номер документа
-          example: '0000098212'
+          example: "0000098212"
         createdDate:
           type: string
           format: date-time
@@ -456,7 +458,7 @@ components:
         documentType:
           type: string
           description: Тип операции
-          example: Затарка                        
+          example: Затарка
         isProcessed:
           type: boolean
           description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
@@ -475,7 +477,7 @@ components:
           example: true
         pdfFileContent:
           type: string
-          format: binary           
+          format: binary
       required:
         - guid
         - documentId
@@ -523,7 +525,7 @@ components:
         guid:
           type: string
           description: Уникальный код справочника
-          example: "4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7"      
+          example: "4a5b3d-6e77-4599-ae6f-dbdd5b36c1b7"
         code:
           type: string
           description: Код станции
@@ -547,7 +549,7 @@ components:
         road:
           type: string
           description: Дорога
-          example: СЕВ         
+          example: СЕВ
         roadID:
           type: integer
           description: ID Дороги
@@ -578,8 +580,7 @@ components:
         - На согласовании ФСБ
         - Черновик
       example: Черновик
-    
-        
+
     CargoRequestCommon:
       type: object
       properties:
@@ -592,14 +593,14 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'     
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
           readOnly: true
-          description: Дата и время создания заявки          
+          description: Дата и время создания заявки
         requestName:
           type: string
           readOnly: true
@@ -607,9 +608,9 @@ components:
           example: Погрузка/выгрузка автомобиля
         operationType:
           type: string
-          readOnly: true          
+          readOnly: true
           description: Вид операции по заявке
-          example: Погрузка  
+          example: Погрузка
         client:
           type: string
           description: Клиент порта
@@ -649,7 +650,7 @@ components:
           example: Сидоров Дмитрий Иванович
         status:
           allOf:
-            - $ref: '#/components/schemas/RequestStatuses'
+            - $ref: "#/components/schemas/RequestStatuses"
         comment:
           type: string
           description: Комментарий к заявке
@@ -657,10 +658,10 @@ components:
       required:
         - guid
         - documentID
-        - createdDate        
+        - createdDate
         - requestName
         - operationType
-        - typeOfTransport 
+        - typeOfTransport
         - direction
         - client
         - contract
@@ -681,14 +682,14 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'     
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
           readOnly: true
-          description: Дата и время создания заявки          
+          description: Дата и время создания заявки
         client:
           type: string
           description: Клиент порта
@@ -711,11 +712,11 @@ components:
           example: Сидоров Дмитрий Иванович
         status:
           allOf:
-            - $ref: '#/components/schemas/RequestStatuses'
+            - $ref: "#/components/schemas/RequestStatuses"
         comment:
           type: string
           description: Комментарий к заявке
-          example: Добавьте сканы документов      
+          example: Добавьте сканы документов
         typeOfTransport:
           type: string
           # readOnly: false
@@ -736,9 +737,9 @@ components:
         requestName:
           type: string
           enum:
-              - Погрузка/выгрузка автомобиля
-              - Погрузка/выгрузка судна
-              - Погрузка/выгрузка ЖД
+            - Погрузка/выгрузка автомобиля
+            - Погрузка/выгрузка судна
+            - Погрузка/выгрузка ЖД
           # readOnly: false
           description: Наименование типа заявки
           example: Погрузка/выгрузка судна
@@ -746,23 +747,23 @@ components:
           type: string
           enum:
             - Погрузка
-            - Разгрузка 
+            - Разгрузка
           # readOnly: true
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
         departurePort:
           allOf:
-            - $ref: '#/components/schemas/Port'
+            - $ref: "#/components/schemas/Port"
           description: Порт отправления
           example: Архангельск
         destinationPort:
           allOf:
-            - $ref: '#/components/schemas/Port'
+            - $ref: "#/components/schemas/Port"
           description: Порт назначения
           example: Дудинка
         customsClearance:
           type: boolean
-          description: Таможенное оформление    
+          description: Таможенное оформление
           example: false
         vesselCall:
           type: array
@@ -774,13 +775,13 @@ components:
               guid:
                 type: string
                 format: uuid
-            example: 
-            - c5851ca8-faeb-11ee-bbac-904d466aa48a       
-            - 9f246293-eefc-11ee-bbac-904d466aa48a
+            example:
+              - c5851ca8-faeb-11ee-bbac-904d466aa48a
+              - 9f246293-eefc-11ee-bbac-904d466aa48a
       required:
         - guid
         - documentID
-        - createdDate        
+        - createdDate
         - requestName
         - operationType
         - client
@@ -788,24 +789,24 @@ components:
         - location
         - manager
         - signer
-        - status      
+        - status
         - vesselCall
         - typeOfTransport
         - direction
     CargoRequestShipLoad:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestShipCommon'
+        - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
         # operationType:
         #   type: string
         #   readOnly: false
         #   description: Вид операции по заявке
-        #   example: Погрузка     
+        #   example: Погрузка
         # documentID:
         #   type: string
         #   description: Номер документа
         #   readOnly: false
-        #   example: '000078945'          
+        #   example: '000078945'
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
@@ -817,13 +818,13 @@ components:
                 format: uuid
               destinationPort:
                 allOf:
-                  - $ref: '#/components/schemas/Port'
+                  - $ref: "#/components/schemas/Port"
                 description: Порт назначения
                 example: Владивосток
               urgent:
                 type: boolean
                 description: Срочный груз или нет
-                example: true   
+                example: true
               quantity:
                 type: number
                 description: Количество грузовых мест
@@ -842,45 +843,45 @@ components:
                 type: string
                 format: uuid
                 description: Грузополучатель в порту назначения
-                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
             required:
-              - guid    
+              - guid
               - recipient
               - quantity
       required:
         - cargoList
     CargoRequestShipUnload:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestShipCommon'
+        - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
         # operationType:
         #   type: string
         #   readOnly: false
         #   description: Вид операции по заявке
-        #   example: Разгрузка         
+        #   example: Разгрузка
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             allOf:
-              - $ref: '#/components/schemas/Cargo'
+              - $ref: "#/components/schemas/Cargo"
       required:
         - cargoList
     CargoRequestShipLoadPUT:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestShipCommon'
+        - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
         documentId:
           type: string
           description: Номер документа
           readOnly: false
-          example: '000078945'    
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
-          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$     
-          readOnly: false 
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: false
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
@@ -892,13 +893,13 @@ components:
                 format: uuid
               destinationPort:
                 allOf:
-                  - $ref: '#/components/schemas/Port'
+                  - $ref: "#/components/schemas/Port"
                 description: Порт назначения
                 example: Владивосток
               urgent:
                 type: boolean
                 description: Срочный груз или нет
-                example: true   
+                example: true
               quantity:
                 type: number
                 description: Количество грузовых мест
@@ -917,9 +918,9 @@ components:
                 type: string
                 format: uuid
                 description: Грузополучатель в порту назначения
-                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
             required:
-              - guid    
+              - guid
               - recipient
               - quantity
       required:
@@ -928,25 +929,25 @@ components:
         - createdDate
     CargoRequestShipUnloadPUT:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestShipCommon'
+        - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
         documentId:
           type: string
           description: Номер документа
           readOnly: false
-          example: '000078945'    
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
-          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$   
-          readOnly: false                        
+          pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
+          readOnly: false
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             allOf:
-              - $ref: '#/components/schemas/Cargo'
+              - $ref: "#/components/schemas/Cargo"
       required:
         - cargoList
         - documentId
@@ -964,20 +965,20 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'     
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
           readOnly: true
-          description: Дата и время создания заявки          
+          description: Дата и время создания заявки
         requestName:
           type: string
           enum:
-              - Погрузка/выгрузка автомобиля
-              - Погрузка/выгрузка судна
-              - Погрузка/выгрузка ЖД
+            - Погрузка/выгрузка автомобиля
+            - Погрузка/выгрузка судна
+            - Погрузка/выгрузка ЖД
           # readOnly: false
           description: Наименование типа заявки
           example: Погрузка/выгрузка судна
@@ -985,7 +986,7 @@ components:
           type: string
           enum:
             - Погрузка
-            - Разгрузка 
+            - Разгрузка
           # readOnly: true
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
@@ -1011,7 +1012,7 @@ components:
           example: Сидоров Дмитрий Иванович
         status:
           allOf:
-            - $ref: '#/components/schemas/RequestStatuses'
+            - $ref: "#/components/schemas/RequestStatuses"
         comment:
           type: string
           description: Комментарий к заявке
@@ -1032,10 +1033,10 @@ components:
             - Каботаж
             - Экспорт
           description: Направление
-          example: Каботаж          
+          example: Каботаж
         departureStation:
           allOf:
-            - $ref: '#/components/schemas/Station'
+            - $ref: "#/components/schemas/Station"
         wagons:
           type: integer
           description: Количество вагонов
@@ -1043,7 +1044,7 @@ components:
       required:
         - guid
         - documentID
-        - createdDate        
+        - createdDate
         - requestName
         - operationType
         - client
@@ -1058,17 +1059,17 @@ components:
         - wagons
     CargoRequestRailLoad:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestRailCommon'
+        - $ref: "#/components/schemas/CargoRequestRailCommon"
       properties:
         clientNumber:
           type: string
           description: Номер заявки клиента
-          example: 0fd50d38  
+          example: 0fd50d38
         sender:
           type: string
           format: uuid
           description: Грузоотправитель
-          example: 0fd50d38-c53d-11ec-8112-d89d6732c837        
+          example: 0fd50d38-c53d-11ec-8112-d89d6732c837
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
@@ -1081,10 +1082,10 @@ components:
               quantity:
                 type: number
                 description: Количество грузовых мест
-                example: 1                
+                example: 1
               destStation:
                 allOf:
-                  - $ref: '#/components/schemas/Station'
+                  - $ref: "#/components/schemas/Station"
               recipient:
                 type: string
                 description: Грузополучатель
@@ -1094,10 +1095,10 @@ components:
                 type: string
                 format: uuid
                 description: Конечный грузополучатель
-                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
             required:
-              - guid   
-              - destinationStation 
+              - guid
+              - destinationStation
               - recipient
               - quantity
       required:
@@ -1106,14 +1107,14 @@ components:
         - cargoList
     CargoRequestRailUnload:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestRailCommon'
+        - $ref: "#/components/schemas/CargoRequestRailCommon"
       properties:
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             allOf:
-              - $ref: '#/components/schemas/Cargo'
+              - $ref: "#/components/schemas/Cargo"
       required:
         - cargoList
 
@@ -1131,14 +1132,14 @@ components:
           type: string
           description: Номер документа
           readOnly: true
-          example: '000078945'     
+          example: "000078945"
         createdDate:
           type: string
           format: date-time
           example: 07-02-2024T06:32:49Z
           pattern: ^\d{2}-\d{2}-\d{4}T\d{2}:\d{2}:\d{2}Z$
           readOnly: true
-          description: Дата и время создания заявки   
+          description: Дата и время создания заявки
         visitStart:
           type: string
           pattern: ^\d{2}-\d{2}-\d{4}$
@@ -1148,7 +1149,7 @@ components:
           type: string
           pattern: ^\d{2}-\d{2}-\d{4}$
           description: Дата окончания предполагаемого автовизита
-          example: 09-02-2024        
+          example: 09-02-2024
         client:
           type: string
           description: Клиент порта
@@ -1171,11 +1172,11 @@ components:
           example: Сидоров Дмитрий Иванович
         status:
           allOf:
-            - $ref: '#/components/schemas/RequestStatuses'
+            - $ref: "#/components/schemas/RequestStatuses"
         comment:
           type: string
           description: Комментарий к заявке
-          example: Добавьте сканы документов      
+          example: Добавьте сканы документов
         typeOfTransport:
           type: string
           # readOnly: false
@@ -1196,9 +1197,9 @@ components:
         requestName:
           type: string
           enum:
-              - Погрузка/выгрузка автомобиля
-              - Погрузка/выгрузка судна
-              - Погрузка/выгрузка ЖД
+            - Погрузка/выгрузка автомобиля
+            - Погрузка/выгрузка судна
+            - Погрузка/выгрузка ЖД
           # readOnly: false
           description: Наименование типа заявки
           example: Погрузка/выгрузка судна
@@ -1206,14 +1207,14 @@ components:
           type: string
           enum:
             - Погрузка
-            - Разгрузка 
+            - Разгрузка
           # readOnly: true
           description: Вид операции по заявке
           example: Погрузка или Разгрузка
       required:
         - guid
         - documentID
-        - createdDate        
+        - createdDate
         - requestName
         - operationType
         - client
@@ -1221,14 +1222,14 @@ components:
         - location
         - manager
         - signer
-        - status      
+        - status
         - typeOfTransport
         - direction
         - visitStart
         - visitEnd
     CargoRequestAutoLoad:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+        - $ref: "#/components/schemas/CargoRequestAutoCommon"
       properties:
         cargoList:
           type: array
@@ -1243,7 +1244,7 @@ components:
               quantity:
                 type: number
                 description: Количество грузовых мест
-                example: 1                
+                example: 1
               recipient:
                 type: string
                 description: Грузополучатель
@@ -1253,9 +1254,9 @@ components:
                 type: string
                 format: uuid
                 description: Конечный грузополучатель
-                example: c05a8361-c53c-11ec-8112-d89d6732c837  
+                example: c05a8361-c53c-11ec-8112-d89d6732c837
             required:
-              - guid   
+              - guid
               - recipient
               - quantity
         driversList:
@@ -1263,32 +1264,32 @@ components:
           description: Табличная часть со списком пропусков
           items:
             allOf:
-              - $ref: '#/components/schemas/DriverPass'                            
+              - $ref: "#/components/schemas/DriverPass"
       required:
         - cargoList
         - driversList
     CargoRequestAutoUnload:
       allOf:
-        - $ref: '#/components/schemas/CargoRequestAutoCommon'
+        - $ref: "#/components/schemas/CargoRequestAutoCommon"
       properties:
         cargoList:
           type: array
           description: Табличная часть со списком грузов к разгрузке в заявке
           items:
             allOf:
-              - $ref: '#/components/schemas/Cargo'
+              - $ref: "#/components/schemas/Cargo"
         driversList:
           type: array
           description: Табличная часть со списком пропусков
           items:
             allOf:
-              - $ref: '#/components/schemas/DriverPass'                  
+              - $ref: "#/components/schemas/DriverPass"
       required:
         - cargoList
         - driversList
     PassRequest:
       allOf:
-        - $ref: '#/components/schemas/PassRequestCommon'
+        - $ref: "#/components/schemas/PassRequestCommon"
         - type: object
           properties:
             createdDate:
@@ -1300,7 +1301,7 @@ components:
             documentId:
               type: string
               description: Номер документа
-              example: '000012345'
+              example: "000012345"
               readOnly: true
             accessPeriod:
               type: object
@@ -1396,9 +1397,9 @@ components:
           type: object
           properties:
             persona:
-              $ref: '#/components/schemas/Person'
+              $ref: "#/components/schemas/Person"
             auto:
-              $ref: '#/components/schemas/Auto'
+              $ref: "#/components/schemas/Auto"
           required:
             - persona
             - auto
@@ -1457,7 +1458,7 @@ components:
           example: Экономия
         persona:
           allOf:
-            - $ref: '#/components/schemas/Person'
+            - $ref: "#/components/schemas/Person"
       required:
         - accessPeriod
         - location
@@ -1465,8 +1466,8 @@ components:
     CargoRequestAuto:
       type: object
       allOf:
-          - $ref: '#/components/schemas/CargoRequestCommon'
-      properties:        
+        - $ref: "#/components/schemas/CargoRequestCommon"
+      properties:
         requestName:
           type: string
           readOnly: false
@@ -1474,9 +1475,9 @@ components:
           example: Погрузка/выгрузка автомобиля
         operationType:
           type: string
-          readOnly: false         
+          readOnly: false
           description: Вид операции по заявке
-          example: Погрузка      
+          example: Погрузка
         period:
           type: object
           description: Дата автовизита
@@ -1500,13 +1501,13 @@ components:
           type: array
           description: Табличная часть со списком водителей
           items:
-            $ref: '#/components/schemas/DriverPass'
+            $ref: "#/components/schemas/DriverPass"
         cargoList:
           oneOf:
             - type: array
               description: Табличная часть со списком грузов к погрузке в заявке
               items:
-                $ref: '#/components/schemas/Cargo'
+                $ref: "#/components/schemas/Cargo"
             - type: array
               description: >-
                 Табличная часть со списком грузов к разгрузке в заявке
@@ -1523,8 +1524,8 @@ components:
     CargoRequestShip:
       type: object
       allOf:
-          - $ref: '#/components/schemas/CargoRequestCommon'      
-      properties:     
+        - $ref: "#/components/schemas/CargoRequestCommon"
+      properties:
         requestName:
           type: string
           readOnly: false
@@ -1532,16 +1533,16 @@ components:
           example: Погрузка/выгрузка судна
         operationType:
           type: string
-          readOnly: false        
+          readOnly: false
           description: Вид операции по заявке
-          example: Погрузка            
+          example: Погрузка
         vesselCall:
-          $ref: '#/components/schemas/VesselCall'
+          $ref: "#/components/schemas/VesselCall"
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            $ref: "#/components/schemas/Cargo"
       required:
         - guid
         - RequestName
@@ -1550,8 +1551,8 @@ components:
     CargoRequestRail:
       type: object
       allOf:
-          - $ref: '#/components/schemas/CargoRequestCommon'      
-      properties:    
+        - $ref: "#/components/schemas/CargoRequestCommon"
+      properties:
         requestName:
           type: string
           readOnly: false
@@ -1559,9 +1560,9 @@ components:
           example: Погрузка/выгрузка ЖД
         operationType:
           type: string
-          readOnly: false         
+          readOnly: false
           description: Вид операции по заявке
-          example: Погрузка            
+          example: Погрузка
         departureStation:
           type: string
           description: Станция отправления
@@ -1574,7 +1575,7 @@ components:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            $ref: '#/components/schemas/Cargo'
+            $ref: "#/components/schemas/Cargo"
       required:
         - guid
         - RequestName
@@ -1626,11 +1627,11 @@ components:
             inn:
               type: string
               description: ИНН
-              example: '8401005730'
+              example: "8401005730"
             kpp:
               type: string
               description: КПП
-              example: '290102001'
+              example: "290102001"
         contactInfo:
           type: object
           properties:
@@ -1655,7 +1656,7 @@ components:
           readOnly: true
           type: array
           items:
-            $ref: '#/components/schemas/Contract'
+            $ref: "#/components/schemas/Contract"
         responsiblePersons:
           type: array
           items:
@@ -1672,7 +1673,7 @@ components:
                 description: Тип ответственного лица
                 example: Главный бухгалтер
               person:
-                $ref: '#/components/schemas/Person'
+                $ref: "#/components/schemas/Person"
     Contractor:
       type: object
       properties:
@@ -1691,15 +1692,15 @@ components:
             inn:
               type: string
               description: ИНН контрагента
-              example: '7723456789'
+              example: "7723456789"
             kpp:
               type: string
               description: КПП контрагента
-              example: '770101001'
+              example: "770101001"
             okpo:
               type: string
               description: ОКПО контрагента
-              example: '101001'
+              example: "101001"
           required:
             - name
         contactInfo:
@@ -1725,7 +1726,7 @@ components:
         contracts:
           type: array
           items:
-            $ref: '#/components/schemas/Contract'
+            $ref: "#/components/schemas/Contract"
         responsiblePersons:
           type: array
           items:
@@ -1780,7 +1781,7 @@ components:
           type: array
           description: Список складских зон
           items:
-            $ref: '#/components/schemas/WarehouseZone'
+            $ref: "#/components/schemas/WarehouseZone"
       required:
         - guid
         - name
@@ -1807,7 +1808,7 @@ components:
               x:
                 type: integer
                 description: Координата X
-              'y':
+              "y":
                 type: integer
                 description: Координата Y
       required:
@@ -1840,7 +1841,7 @@ components:
           readOnly: true
         documentID:
           type: string
-          example: '000014294'
+          example: "000014294"
           description: Номер документа
         createdDate:
           type: string
@@ -1895,12 +1896,12 @@ components:
       type: object
       properties:
         receivingCommon:
-          $ref: '#/components/schemas/ReceivingCommon'
+          $ref: "#/components/schemas/ReceivingCommon"
         cargoList:
           type: array
           items:
             allOf:
-              - $ref: '#/components/schemas/Cargo'
+              - $ref: "#/components/schemas/Cargo"
               - type: object
                 properties:
                   warehouseZone:
@@ -2011,7 +2012,7 @@ components:
         container:
           type: string
           description: Контейнер
-          example: ''
+          example: ""
         warehouseZone:
           type: string
           description: Складская зона
@@ -2055,7 +2056,7 @@ components:
         cargoInContainer:
           type: string
           description: Описание груза в контейнере
-          example: ''
+          example: ""
         tare:
           type: boolean
           description: Порожний
@@ -2071,19 +2072,19 @@ components:
         DangerClass:
           type: string
           description: Класс опасности
-          example: ''
+          example: ""
         NumberCustomsDeclaration:
           type: string
           description: Рег номер в таможне
-          example: ''
+          example: ""
         RegistrationNumberInCustoms:
           type: string
           description: Номер таможенной декларации
-          example: ''
+          example: ""
         DirectionOfCargoMovement:
           type: string
           description: Направление движения груза
-          example: ''
+          example: ""
         Senders:
           type: string
           description: Грузоотправитель
@@ -2099,7 +2100,7 @@ components:
         trademark:
           type: string
           description: Марка товара
-          example: ''
+          example: ""
         netWeight:
           type: number
           description: Вес нетто груза
@@ -2119,7 +2120,7 @@ components:
         - volume
         - freightUnits
         - quantity
-        - grossWeight    
+        - grossWeight
     ClientCargoIncomeReportItem:
       type: object
       properties:
@@ -2170,9 +2171,9 @@ components:
         grossWeight:
           type: number
           description: Вес брутто груза
-          example: 6900      
+          example: 6900
       required:
-        - client          
+        - client
         - document
     LukovayaZapiskaReportItem:
       type: object
@@ -2249,7 +2250,7 @@ components:
         comment: "Срочные изменения"
     CargoListLoadExample:
       value:
-        - $ref: '#/components/schemas/Cargo'
+        - $ref: "#/components/schemas/Cargo"
     CargoListUnloadExample:
       value:
         - name: Контейнер CAXU6600984
@@ -2263,7 +2264,7 @@ components:
           cargoType: Контейнер
           packaging: Отсутствует
           storageConditions: Открытое
-          hazardClass: '1.2'
+          hazardClass: "1.2"
           marka: EE3421-RU
           container:
             number: JASRZH241602676
@@ -2272,7 +2273,7 @@ components:
               100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
             isEmpty: false
           status: Ожидается
-          docNumber: 
+          docNumber:
         - name: Контейнер CAXU62320981
           nomenklatura: Контейнер AXU
           weight: 38000
@@ -2284,14 +2285,14 @@ components:
           cargoType: Контейнер
           packaging: Отсутствует
           storageConditions: Открытое
-          hazardClass: 
-          marka: 
+          hazardClass:
+          marka:
           container:
             number: JASRZH241604444
-            cargoes: 
+            cargoes:
             isEmpty: true
           status: Ожидается
-          docNumber: 
+          docNumber:
         - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
           nomenklatura: Крепь анкерная  АСПТ-48х3х2400
           weight: 660
@@ -2303,14 +2304,14 @@ components:
           cargoType: Генеральный груз
           packaging: связка
           storageConditions: Крытое
-          hazardClass: 
-          marka: 
+          hazardClass:
+          marka:
           container:
-            number: 
-            cargoes: 
-            isEmpty:                       
+            number:
+            cargoes:
+            isEmpty:
           status: Ожидается
-          docNumber: 
+          docNumber:
         - name: Насыпной груз ABC
           nomenklatura: Насыпной ABC
           weight: 50000
@@ -2322,14 +2323,14 @@ components:
           cargoType: Насыпной/Навальный
           packaging: Отсутствует
           storageConditions: Открытое
-          hazardClass: '3.2'
+          hazardClass: "3.2"
           marka: SRZH241
           container:
-            number: 
-            cargoes: 
-            isEmpty: 
-          status: Запланирован 
-          docNumber: 
+            number:
+            cargoes:
+            isEmpty:
+          status: Запланирован
+          docNumber:
 
 paths:
   /auth/login:
@@ -2344,7 +2345,7 @@ paths:
         - BasicAuth: []
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Аутентификация прошла успешно. Возвращает JWT токен.
           content:
             application/json:
@@ -2361,12 +2362,12 @@ paths:
                   expires_in:
                     type: integer
                     description: Время действия токена в секундах.
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /auth/logout:
     post:
       tags:
@@ -2377,7 +2378,7 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Успешный выход из системы
           content:
             application/json:
@@ -2387,12 +2388,12 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном выходе из системы
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /users/create:
     post:
       tags:
@@ -2433,7 +2434,7 @@ paths:
                 - email
                 - role
       responses:
-        '201':
+        "201":
           description: Новый пользователь успешно создан
           content:
             application/json:
@@ -2446,12 +2447,12 @@ paths:
                   message:
                     type: string
                     description: Сообщение о успешном создании пользователя
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /users/list:
     get:
       tags:
@@ -2464,7 +2465,7 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Список пользователей организации успешно получен
           content:
             application/json:
@@ -2497,12 +2498,12 @@ paths:
                         - user
                         - manager
                         - guest
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /users/{guid}:
     delete:
       tags:
@@ -2520,7 +2521,7 @@ paths:
             type: string
           description: Уникальный идентификатор пользователя для удаления
       responses:
-        '200':
+        "200":
           description: Пользователь успешно удален
           content:
             application/json:
@@ -2530,20 +2531,20 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном удалении пользователя
-        '401':
+        "401":
           description: >-
             Неверный запрос, отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Доступ запрещен.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     get:
       tags:
         - Управление пользователями
@@ -2562,7 +2563,7 @@ paths:
             type: string
           description: Уникальный идентификатор пользователя для получения данных
       responses:
-        '200':
+        "200":
           description: Данные пользователя успешно получены
           content:
             application/json:
@@ -2597,12 +2598,12 @@ paths:
                       - user
                       - manager
                       - guest
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Управление пользователями
@@ -2639,7 +2640,7 @@ paths:
                   type: string
                   description: Новый пароль пользователя
       responses:
-        '200':
+        "200":
           description: Данные пользователя успешно обновлены
           content:
             application/json:
@@ -2649,12 +2650,12 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном обновлении данных пользователя
-        '403':
+        "403":
           description: Ошибка.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/ship:
     get:
       tags:
@@ -2683,9 +2684,9 @@ paths:
             type: string
             format: date
             example: 01-09-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
       responses:
-        '200':
+        "200":
           description: Данные по отгрузке и погрузке успешно получены
           content:
             application/json:
@@ -2725,24 +2726,24 @@ paths:
                             type: number
                             format: float
                             description: Фрахтовые единицы выгрузки
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/rail:
     get:
       tags:
@@ -2765,7 +2766,7 @@ paths:
             type: string
             format: date
             example: 01-06-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -2774,9 +2775,9 @@ paths:
             type: string
             format: date
             example: 01-09-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
       responses:
-        '200':
+        "200":
           description: Данные по отгрузке и погрузке успешно получены
           content:
             application/json:
@@ -2819,24 +2820,24 @@ paths:
                           processed_wagons:
                             type: integer
                             description: Количество обработанных вагонов
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/auto:
     get:
       tags:
@@ -2859,7 +2860,7 @@ paths:
             type: string
             format: date
             example: 01-06-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -2868,9 +2869,9 @@ paths:
             type: string
             format: date
             example: 01-09-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
       responses:
-        '200':
+        "200":
           description: Данные по отгрузке и погрузке успешно получены
           content:
             application/json:
@@ -2913,24 +2914,24 @@ paths:
                           processed_auto:
                             type: integer
                             description: Количество обработанных автомобилей
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/warehouse:
     get:
       tags:
@@ -2954,9 +2955,9 @@ paths:
             type: string
             format: date
             example: 01-09-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
       responses:
-        '200':
+        "200":
           description: Данные по грузам на складских комплексах успешно получены
           content:
             application/json:
@@ -2985,24 +2986,24 @@ paths:
                             type: number
                             format: float
                             description: Фрахтовые единицы груза
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /dashboard/container:
     get:
       tags:
@@ -3024,7 +3025,7 @@ paths:
             type: string
             format: date
             example: 01-06-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
         - name: endDate
           in: query
           description: Дата окончания периода
@@ -3033,9 +3034,9 @@ paths:
             type: string
             format: date
             example: 01-09-2024
-            pattern: ^\d{2}-\d{2}-\d{4}$            
+            pattern: ^\d{2}-\d{2}-\d{4}$
       responses:
-        '200':
+        "200":
           description: Данные по контейнерным операциям успешно получены
           content:
             application/json:
@@ -3064,24 +3065,24 @@ paths:
                           stripped_containers:
                             type: integer
                             description: Количество растаренных контейнеров
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /vesselcalls:
     get:
       tags:
@@ -3109,7 +3110,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Список судозаходов успешно получен
           content:
             application/json:
@@ -3128,23 +3129,23 @@ paths:
                   vesselCalls:
                     type: array
                     items:
-                      $ref: '#/components/schemas/VesselCall'
+                      $ref: "#/components/schemas/VesselCall"
                 required:
                   - total
                   - page
                   - pageSize
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /vesselcalls/{guid}:
     get:
       tags:
@@ -3163,24 +3164,24 @@ paths:
             type: string
             example: 6bb94c03-ecc2-11ee-bbac-904d466aa48a
       responses:
-        '200':
+        "200":
           description: Данные по судозаходу успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VesselCall'
-        '401':
+                $ref: "#/components/schemas/VesselCall"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Судозаход не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /documents:
     get:
       tags:
@@ -3238,9 +3239,9 @@ paths:
           description: Поиск по номеру документа
           required: false
           schema:
-            type: string              
+            type: string
       responses:
-        '200':
+        "200":
           description: Список документов успешно получен
           content:
             application/json:
@@ -3259,7 +3260,7 @@ paths:
                   documents:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Document'
+                      $ref: "#/components/schemas/Document"
 
                   # documents:
                   #   type: array
@@ -3287,7 +3288,7 @@ paths:
                   #       documentType:
                   #         type: string
                   #         description: Тип операции
-                  #         example: Затарка                        
+                  #         example: Затарка
                   #       isProcessed:
                   #         type: boolean
                   #         description: Статус обработки документа в БД (если обработан то доступна печатная форма PDF)
@@ -3308,24 +3309,24 @@ paths:
                   - total
                   - page
                   - pageSize
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Документы не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /documents/types:
     get:
       tags:
@@ -3336,7 +3337,7 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Список типов документов успешно получен
           content:
             application/json:
@@ -3345,24 +3346,24 @@ paths:
                 items:
                   type: string
                   example: Приемный акт
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Типы документов не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /documents/{guid}:
     get:
       summary: Получить данные документа по GUID
@@ -3371,7 +3372,7 @@ paths:
         учетом типа документа.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       tags:
         - Журнал документов
       parameters:
@@ -3383,31 +3384,31 @@ paths:
             type: string
             example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
       responses:
-        '200':
+        "200":
           description: Данные документа успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Document'
-                       
-        '400':
+                $ref: "#/components/schemas/Document"
+
+        "400":
           description: Неверный запрос. Проверить параметры
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ. Проверьте токен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Документ не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /documents/{guid}/attachments:
     get:
       tags:
@@ -3433,7 +3434,7 @@ paths:
             type: string
             example: Приемный акт
       responses:
-        '200':
+        "200":
           description: Документы успешно получены
           content:
             application/json:
@@ -3444,7 +3445,7 @@ paths:
                     type: array
                     description: Список документов
                     items:
-                      $ref: '#/components/schemas/Attachment'
+                      $ref: "#/components/schemas/Attachment"
                       # type: object
                       # properties:
                       #   fileName:
@@ -3457,18 +3458,18 @@ paths:
                       #     description: Содержимое файла
                 required:
                   - documents
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Документ не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /requests/name:
     get:
       tags:
@@ -3494,7 +3495,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Список типов заявок успешно получен
           content:
             application/json:
@@ -3513,30 +3514,30 @@ paths:
                   RequestNames:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RequestName'
+                      $ref: "#/components/schemas/RequestName"
                 required:
                   - total
                   - page
                   - pageSize
                   - RequestNames
-        '400':
+        "400":
           description: Неверный запрос, отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Типы заявок не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /requests:
     get:
       tags:
@@ -3547,7 +3548,7 @@ paths:
         фильтрации по периоду и типу.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: startDate
           in: query
@@ -3581,7 +3582,7 @@ paths:
           in: query
           description: Поле для сортировки (createdDate, documentID)
           required: false
-          schema: 
+          schema:
             type: string
             enum:
               - createdDate
@@ -3590,9 +3591,9 @@ paths:
           in: query
           description: Порядок сортировки (asc для возрастания, desc для убывания)
           required: false
-          schema: 
+          schema:
             type: string
-            enum: 
+            enum:
               - asc
               - desc
         - name: requestName
@@ -3619,9 +3620,9 @@ paths:
           description: Поиск по номеру документа
           required: false
           schema:
-            type: string                            
+            type: string
       responses:
-        '200':
+        "200":
           description: Список заявок успешно получен
           content:
             application/json:
@@ -3640,32 +3641,32 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CargoRequestCommon'
+                      $ref: "#/components/schemas/CargoRequestCommon"
                 required:
                   - total
                   - page
                   - pageSize
                   - requests
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявки не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Заявки на погрузку / выгрузку грузов
@@ -3675,7 +3676,7 @@ paths:
         судна.
       security:
         - bearerAuth: []
-        - sessionAuth: []           
+        - sessionAuth: []
       requestBody:
         description: Данные для создания новой заявки
         required: true
@@ -3683,9 +3684,9 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestAuto'
-                - $ref: '#/components/schemas/CargoRequestShip'
-                - $ref: '#/components/schemas/CargoRequestRail' 
+                - $ref: "#/components/schemas/CargoRequestAuto"
+                - $ref: "#/components/schemas/CargoRequestShip"
+                - $ref: "#/components/schemas/CargoRequestRail"
             examples:
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку судна
@@ -3824,9 +3825,9 @@ paths:
                       packaging: Отсутствует
                       storageConditions: Открытое
                       hazardClass: 1.2
-                      marka: EE3423-RU                     
+                      marka: EE3423-RU
       responses:
-        '201':
+        "201":
           description: Заявка успешно создана
           content:
             application/json:
@@ -3839,21 +3840,21 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
@@ -3865,7 +3866,7 @@ paths:
       description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -3874,40 +3875,40 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Данные заявки успешно получены
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/CargoRequestAuto'
-                  - $ref: '#/components/schemas/CargoRequestShip'
-                  - $ref: '#/components/schemas/CargoRequestRail' 
-        '400':
+                  - $ref: "#/components/schemas/CargoRequestAuto"
+                  - $ref: "#/components/schemas/CargoRequestShip"
+                  - $ref: "#/components/schemas/CargoRequestRail"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /requests/{guid}/forms:
     get:
       tags:
-        - Заявки на погрузку / выгрузку грузов      
+        - Заявки на погрузку / выгрузку грузов
       summary: Получить печатную форму заявки в PDF
       description: Возвращает PDF печатную форму заявки, поданной клиентом на погрузку или выгрузку грузов, по указанному уникальному идентификатору заявки.
       parameters:
@@ -3918,33 +3919,33 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Успешное получение PDF файла печатной формы заявки.
           content:
             application/pdf:
               schema:
                 type: string
                 format: binary
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявки не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
       security:
         - bearerAuth: []
         - sessionAuth: []
@@ -3953,11 +3954,11 @@ paths:
     post:
       tags:
         - Заявки на погрузку / выгрузку грузов
-        - Судно        
+        - Судно
       summary: Создать новую заявку на погрузку/разгрузку
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       description: >-
         Создает новую заявку на погрузку или разгрузку грузов автомобиля или
         судна.
@@ -3968,12 +3969,12 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestShipLoad'
-                - $ref: '#/components/schemas/CargoRequestShipUnload'
-            examples:              
+                - $ref: "#/components/schemas/CargoRequestShipLoad"
+                - $ref: "#/components/schemas/CargoRequestShipUnload"
+            examples:
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку
-                value: 
+                value:
                   requestName: Погрузка/выгрузка судна
                   operationType: Погрузка
                   client: АТФ ПАО ГМК "Норильский Никель"
@@ -4001,16 +4002,16 @@ paths:
                     location: Мурманская область
                     coordinates: "68.97917, 33.085"
                   comment: Добавьте сканы документов
-                  vesselCall: 
+                  vesselCall:
                     - guid: 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
-                      destinationPort: 
+                      destinationPort:
                       quantity: 1
-                      urgent: 
+                      urgent:
                       sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
-                      portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
+                      portReceiver: 87add32e-c566-11ec-8112-d89d6732c837
                     - guid: f9f78d83-525d-11ef-bbae-e744ebce2988
                       destinationPort:
                         guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b8
@@ -4023,19 +4024,19 @@ paths:
                       # Калининград
                       quantity: 1
                       urgent: true
-                      sender: 
-                      recipient: 
-                      portReceiver: 
+                      sender:
+                      recipient:
+                      portReceiver:
                     - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
-                      destinationPort: 
+                      destinationPort:
                       quantity: 1
-                      urgent: 
-                      sender: 
-                      recipient: 
-                      portReceiver: 
+                      urgent:
+                      sender:
+                      recipient:
+                      portReceiver:
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
-                value: 
+                value:
                   requestName: Погрузка/выгрузка судна
                   operationType: Разгрузка
                   client: АТФ ПАО ГМК "Норильский Никель"
@@ -4046,10 +4047,10 @@ paths:
                   status: Черновик
                   typeOfTransport: Прямое
                   direction: Каботаж
-                  departurePort: 
-                  destinationPort:                  
+                  departurePort:
+                  destinationPort:
                   comment: Добавьте сканы документов
-                  vesselCall: 
+                  vesselCall:
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - name: Контейнер CAXU6600984
@@ -4063,7 +4064,7 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '1.2'
+                      hazardClass: "1.2"
                       marka: EE3421-RU
                       container:
                         number: JASRZH241602676
@@ -4072,7 +4073,7 @@ paths:
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Контейнер CAXU62320981
                       nomenklatura: Контейнер AXU
                       weight: 38000
@@ -4084,14 +4085,14 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
                         number: JASRZH241604444
-                        cargoes: 
+                        cargoes:
                         isEmpty: true
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
                       nomenklatura: Крепь анкерная  АСПТ-48х3х2400
                       weight: 660
@@ -4103,14 +4104,14 @@ paths:
                       cargoType: Генеральный груз
                       packaging: связка
                       storageConditions: Крытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
-                        number: 
-                        cargoes: 
-                        isEmpty:                       
+                        number:
+                        cargoes:
+                        isEmpty:
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Насыпной груз ABC
                       nomenklatura: Насыпной ABC
                       weight: 50000
@@ -4122,16 +4123,16 @@ paths:
                       cargoType: Насыпной/Навальный
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '3.2'
+                      hazardClass: "3.2"
                       marka: SRZH241
                       container:
-                        number: 
-                        cargoes: 
-                        isEmpty: 
-                      status: Запланирован 
-                      docNumber: 
+                        number:
+                        cargoes:
+                        isEmpty:
+                      status: Запланирован
+                      docNumber:
       responses:
-        '201':
+        "201":
           description: Заявка успешно создана
           content:
             application/json:
@@ -4144,21 +4145,21 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
@@ -4166,7 +4167,7 @@ paths:
     put:
       tags:
         - Заявки на погрузку / выгрузку грузов
-        - Судно                
+        - Судно
       summary: Обновить данные заявки на погрузку/разгрузку судна
       security:
         - bearerAuth: []
@@ -4187,12 +4188,12 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestShipLoadPUT'
-                - $ref: '#/components/schemas/CargoRequestShipUnloadPUT'
-            examples:              
+                - $ref: "#/components/schemas/CargoRequestShipLoadPUT"
+                - $ref: "#/components/schemas/CargoRequestShipUnloadPUT"
+            examples:
               CargoRequestShipLoadExample:
                 summary: Пример заявки на погрузку
-                value: 
+                value:
                   documentId: "000012345"
                   createdDate: 10-10-2024
                   requestName: Погрузка/выгрузка судна
@@ -4222,16 +4223,16 @@ paths:
                     location: Мурманская область
                     coordinates: "68.97917, 33.085"
                   comment: Добавьте сканы документов
-                  vesselCall: 
+                  vesselCall:
                     - guid: 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - guid: 271edcd7-525d-11ef-bbae-e744ebce2988
-                      destinationPort: 
+                      destinationPort:
                       quantity: 1
-                      urgent: 
+                      urgent:
                       sender: 0fd50d38-c53d-11ec-8112-d89d6732c837
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
-                      portReceiver: 87add32e-c566-11ec-8112-d89d6732c837 
+                      portReceiver: 87add32e-c566-11ec-8112-d89d6732c837
                     - guid: f9f78d83-525d-11ef-bbae-e744ebce2988
                       destinationPort:
                         guid: 4a5b3d-6e77-4599-ae6f-dbdd5b36c1b8
@@ -4244,19 +4245,19 @@ paths:
                       # Калининград
                       quantity: 1
                       urgent: true
-                      sender: 
-                      recipient: 
-                      portReceiver: 
+                      sender:
+                      recipient:
+                      portReceiver:
                     - guid: 13d4c601-525e-11ef-bbae-e744ebce2988
-                      destinationPort: 
+                      destinationPort:
                       quantity: 1
-                      urgent: 
-                      sender: 
-                      recipient: 
-                      portReceiver: 
+                      urgent:
+                      sender:
+                      recipient:
+                      portReceiver:
               CargoRequestShipUnloadExample:
                 summary: Пример заявки на разгрузку
-                value: 
+                value:
                   requestName: Погрузка/выгрузка судна
                   operationType: Разгрузка
                   client: АТФ ПАО ГМК "Норильский Никель"
@@ -4267,10 +4268,10 @@ paths:
                   status: Черновик
                   typeOfTransport: Прямое
                   direction: Каботаж
-                  departurePort: 
-                  destinationPort:                  
+                  departurePort:
+                  destinationPort:
                   comment: Добавьте сканы документов
-                  vesselCall: 
+                  vesselCall:
                     - 9f246293-eefc-11ee-bbac-904d466aa48a
                   cargoList:
                     - name: Контейнер CAXU6600984
@@ -4284,7 +4285,7 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '1.2'
+                      hazardClass: "1.2"
                       marka: EE3421-RU
                       container:
                         number: JASRZH241602676
@@ -4293,7 +4294,7 @@ paths:
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Контейнер CAXU62320981
                       nomenklatura: Контейнер AXU
                       weight: 38000
@@ -4305,14 +4306,14 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
                         number: JASRZH241604444
-                        cargoes: 
+                        cargoes:
                         isEmpty: true
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Крепь анкерная  АСПТ-48х3х2400 1 / 54
                       nomenklatura: Крепь анкерная  АСПТ-48х3х2400
                       weight: 660
@@ -4324,14 +4325,14 @@ paths:
                       cargoType: Генеральный груз
                       packaging: связка
                       storageConditions: Крытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
-                        number: 
-                        cargoes: 
-                        isEmpty:                       
+                        number:
+                        cargoes:
+                        isEmpty:
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Насыпной груз ABC
                       nomenklatura: Насыпной ABC
                       weight: 50000
@@ -4343,16 +4344,16 @@ paths:
                       cargoType: Насыпной/Навальный
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '3.2'
+                      hazardClass: "3.2"
                       marka: SRZH241
                       container:
-                        number: 
-                        cargoes: 
-                        isEmpty: 
-                      status: Запланирован 
-                      docNumber: 
+                        number:
+                        cargoes:
+                        isEmpty:
+                      status: Запланирован
+                      docNumber:
       responses:
-        '200':
+        "200":
           description: Заявка успешно обновлена
           content:
             application/json:
@@ -4365,37 +4366,37 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
     delete:
       tags:
         - Заявки на погрузку / выгрузку грузов
-        - Судно        
+        - Судно
       summary: Удалить заявку на погрузку/разгрузку судна
       description: Удаляет существующую заявку на погрузку или разгрузку грузов судна.
       security:
@@ -4410,32 +4411,32 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Заявка успешно удалена
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
@@ -4448,7 +4449,7 @@ paths:
       description: Создает новую заявку на погрузку или разгрузку грузов автомобиля .
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       requestBody:
         description: Данные для создания новой заявки
         required: true
@@ -4456,8 +4457,8 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestAutoLoad'
-                - $ref: '#/components/schemas/CargoRequestAutoUnload'
+                - $ref: "#/components/schemas/CargoRequestAutoLoad"
+                - $ref: "#/components/schemas/CargoRequestAutoUnload"
             examples:
               CargoRequestAutoLoadExample:
                 summary: Пример заявки на погрузку
@@ -4502,7 +4503,7 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '1.2'
+                      hazardClass: "1.2"
                       marka: EE3421-RU
                       container:
                         number: JASRZH241602676
@@ -4511,7 +4512,7 @@ paths:
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Контейнер CAXU62320981
                       nomenklatura: Контейнер AXU
                       weight: 38000
@@ -4523,19 +4524,19 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
                         number: JASRZH241604444
-                        cargoes: 
+                        cargoes:
                         isEmpty: true
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                   driversPass:
                     - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                     - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
       responses:
-        '201':
+        "201":
           description: Заявка успешно создана
           content:
             application/json:
@@ -4548,21 +4549,21 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
@@ -4591,8 +4592,8 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestAutoLoad'
-                - $ref: '#/components/schemas/CargoRequestAutoUnload'
+                - $ref: "#/components/schemas/CargoRequestAutoLoad"
+                - $ref: "#/components/schemas/CargoRequestAutoUnload"
             examples:
               CargoRequestAutoLoadExample:
                 summary: Пример заявки на погрузку
@@ -4637,7 +4638,7 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: '1.2'
+                      hazardClass: "1.2"
                       marka: EE3421-RU
                       container:
                         number: JASRZH241602676
@@ -4646,7 +4647,7 @@ paths:
                           100х1080, 100х133. Прошивной мат ,Цилиндр -АЛ- 30х89/ч-1200
                         isEmpty: false
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                     - name: Контейнер CAXU62320981
                       nomenklatura: Контейнер AXU
                       weight: 38000
@@ -4658,19 +4659,19 @@ paths:
                       cargoType: Контейнер
                       packaging: Отсутствует
                       storageConditions: Открытое
-                      hazardClass: 
-                      marka: 
+                      hazardClass:
+                      marka:
                       container:
                         number: JASRZH241604444
-                        cargoes: 
+                        cargoes:
                         isEmpty: true
                       status: Ожидается
-                      docNumber: 
+                      docNumber:
                   driversPass:
                     - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
                     - passGuid: 0000789453def1dbc-b554-11ea-a9b0-ac1f6b48c241
       responses:
-        '200':
+        "200":
           description: Заявка успешно обновлена
           content:
             application/json:
@@ -4683,30 +4684,30 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
@@ -4728,32 +4729,32 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Заявка успешно удалена
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
@@ -4774,7 +4775,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestRailLoad'
+                - $ref: "#/components/schemas/CargoRequestRailLoad"
                 # - $ref: '#/components/schemas/CargoRequestRailUnload'
             examples:
               CargoRequestRailLoadExample:
@@ -4799,7 +4800,7 @@ paths:
                   sender: c05a8361-c53c-11ec-8112-d89d6732c837
                   contract: Договор №789
                   location: Экономия
-                  clientNumber: 0fd50d38  
+                  clientNumber: 0fd50d38
                   manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
@@ -4877,7 +4878,7 @@ paths:
               #         hazardClass: 1.2
               #         marka: EE3423-RU
       responses:
-        '201':
+        "201":
           description: Заявка успешно создана
           content:
             application/json:
@@ -4890,21 +4891,21 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
@@ -4933,7 +4934,7 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/CargoRequestRailLoad'
+                - $ref: "#/components/schemas/CargoRequestRailLoad"
                 # - $ref: '#/components/schemas/CargoRequestRailUnload'
             examples:
               CargoRequestRailLoadExample:
@@ -4958,7 +4959,7 @@ paths:
                   sender: c05a8361-c53c-11ec-8112-d89d6732c837
                   contract: Договор №789
                   location: Экономия
-                  clientNumber: 0fd50d38  
+                  clientNumber: 0fd50d38
                   manager: Трунова Эльза Владимировна
                   signer: Сидоров Дмитрий Иванович
                   status: Черновик
@@ -5007,7 +5008,7 @@ paths:
                       recipient: c05a8361-c53c-11ec-8112-d89d6732c837
                       endRecipient: c05a8361-c53c-11ec-8112-d89d6732c837
       responses:
-        '200':
+        "200":
           description: Заявка успешно обновлена
           content:
             application/json:
@@ -5020,30 +5021,30 @@ paths:
                     example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
                 required:
                   - guid
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
@@ -5065,32 +5066,32 @@ paths:
             type: string
             format: uuid
       responses:
-        '204':
+        "204":
           description: Заявка успешно удалена
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 400
                 message: Invalid request data
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 401
                 message: Token has expired
-        '404':
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
               example:
                 code: 404
                 message: Request not found
@@ -5104,11 +5105,11 @@ paths:
         и типу.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: sortBy
           in: query
-          description: Поле для сортировки 
+          description: Поле для сортировки
           required: false
           schema:
             type: string
@@ -5165,9 +5166,9 @@ paths:
           description: Поиск по номеру документа
           required: false
           schema:
-            type: string                 
+            type: string
       responses:
-        '200':
+        "200":
           description: Список заявок успешно получен
           content:
             application/json:
@@ -5186,32 +5187,32 @@ paths:
                   requests:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PassRequest'
+                      $ref: "#/components/schemas/PassRequest"
                 required:
                   - total
                   - page
                   - pageSize
                   - requests
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявки не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Заявки на пропуск
@@ -5221,21 +5222,21 @@ paths:
         и для водителей на автомобиле.
       security:
         - bearerAuth: []
-        - sessionAuth: []           
+        - sessionAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/PassRequest'
+                - $ref: "#/components/schemas/PassRequest"
                 - oneOf:
                     - type: object
                       properties:
                         guests:
                           type: array
                           items:
-                            $ref: '#/components/schemas/Person'
+                            $ref: "#/components/schemas/Person"
                       required:
                         - guests
                     - type: object
@@ -5243,11 +5244,11 @@ paths:
                         drivers:
                           type: array
                           items:
-                            $ref: '#/components/schemas/Driver'
+                            $ref: "#/components/schemas/Driver"
                       required:
                         - drivers
       responses:
-        '201':
+        "201":
           description: Заявка успешно создана
           content:
             application/json:
@@ -5259,20 +5260,20 @@ paths:
                     description: Уникальный идентификатор созданной заявки
                 required:
                   - guid
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /passes/requests/{guid}:
     get:
       tags:
@@ -5281,7 +5282,7 @@ paths:
       description: Возвращает данные заявки по ее уникальному идентификатору `guid`.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -5290,20 +5291,20 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Данные заявки успешно получены
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/PassRequest'
+                  - $ref: "#/components/schemas/PassRequest"
                   - oneOf:
                       - type: object
                         properties:
                           guests:
                             type: array
                             items:
-                              $ref: '#/components/schemas/Person'
+                              $ref: "#/components/schemas/Person"
                         required:
                           - guests
                       - type: object
@@ -5311,29 +5312,29 @@ paths:
                           drivers:
                             type: array
                             items:
-                              $ref: '#/components/schemas/Driver'
+                              $ref: "#/components/schemas/Driver"
                         required:
                           - drivers
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Заявки на пропуск
@@ -5341,7 +5342,7 @@ paths:
       description: Обновляет данные существующей заявки на пропуск.
       security:
         - bearerAuth: []
-        - sessionAuth: []           
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -5355,14 +5356,14 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/PassRequest'
+                - $ref: "#/components/schemas/PassRequest"
                 - oneOf:
                     - type: object
                       properties:
                         guests:
                           type: array
                           items:
-                            $ref: '#/components/schemas/Person'
+                            $ref: "#/components/schemas/Person"
                       required:
                         - guests
                     - type: object
@@ -5370,37 +5371,37 @@ paths:
                         drivers:
                           type: array
                           items:
-                            $ref: '#/components/schemas/Driver'
+                            $ref: "#/components/schemas/Driver"
                       required:
                         - drivers
       responses:
-        '200':
+        "200":
           description: Заявка успешно обновлена
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/PassRequest'
-        '400':
+                  - $ref: "#/components/schemas/PassRequest"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Заявка не найдена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /passes/requests/visits:
     get:
       tags:
@@ -5409,9 +5410,9 @@ paths:
       description: Возвращает полный список целей визитов.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Список целей визитов успешно получен
           content:
             application/json:
@@ -5444,18 +5445,18 @@ paths:
                         - group
                         - name
                         - isGroup
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /cargoes:
     get:
       tags:
@@ -5491,7 +5492,7 @@ paths:
           required: false
           description: Складская зона
           schema:
-            type: string        
+            type: string
             example: ГГ2
         - name: page
           in: query
@@ -5508,7 +5509,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Информация о наличии груза успешно получена
           content:
             application/json:
@@ -5540,24 +5541,24 @@ paths:
                         cargoes:
                           type: array
                           items:
-                            $ref: '#/components/schemas/Cargo'
+                            $ref: "#/components/schemas/Cargo"
                 required:
                   - total
                   - page
                   - pageSize
                   - cargoAvailability
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /cargoes/acts:
     get:
       tags:
@@ -5606,7 +5607,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Информация о наличии груза успешно получена
           content:
             application/json:
@@ -5626,23 +5627,23 @@ paths:
                     type: array
                     items:
                       allOf:
-                        - $ref: '#/components/schemas/ReceivingCommon'
+                        - $ref: "#/components/schemas/ReceivingCommon"
                 required:
                   - total
                   - page
                   - pageSize
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /cargoes/acts/{guid}:
     get:
       tags:
@@ -5660,7 +5661,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Информация о приемном акте успешно получена
           content:
             application/json:
@@ -5668,23 +5669,23 @@ paths:
                 type: object
                 properties:
                   document:
-                    $ref: '#/components/schemas/ReceivingDocument'
+                    $ref: "#/components/schemas/ReceivingDocument"
                 required:
                   - total
                   - page
                   - pageSize
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /cargoes/acts/search:
     get:
@@ -5717,16 +5718,16 @@ paths:
           description: Складская зона
           schema:
             type: string
-            example: А-29-2        
+            example: А-29-2
         - name: documentId
           in: query
           required: true
           description: Номер приемного акта
           schema:
             type: string
-            example: 00084244     
+            example: 00084244
       responses:
-        '200':
+        "200":
           description: Информация ПА успешно получена
           content:
             application/json:
@@ -5746,23 +5747,23 @@ paths:
                     type: array
                     items:
                       allOf:
-                        - $ref: '#/components/schemas/ReceivingCommon'
+                        - $ref: "#/components/schemas/ReceivingCommon"
                 required:
                   - total
                   - page
                   - pageSize
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /cargoes/{guid}:
     get:
@@ -5784,24 +5785,24 @@ paths:
             type: string
             example: cargo123456
       responses:
-        '200':
+        "200":
           description: Информация о грузе успешно получена
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cargo'
-        '401':
+                $ref: "#/components/schemas/Cargo"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Груз не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /cargoes/{guid}/photos:
     get:
       tags:
@@ -5820,7 +5821,7 @@ paths:
             type: string
             example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
       responses:
-        '200':
+        "200":
           description: Фотографии груза успешно получены
           content:
             application/json:
@@ -5835,18 +5836,18 @@ paths:
                       format: binary
                 required:
                   - photos
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Груз не найден или фотографии не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /reports:
     get:
       tags:
@@ -5857,7 +5858,7 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Список отчетов успешно получен
           content:
             application/json:
@@ -5915,7 +5916,7 @@ paths:
                             - name: terminalGuid
                               description: Терминал по GUID
                               type: array
-                              example: 
+                              example:
                                 - "e3adea16-72f6-11e9-a9a5-ac1f6b48c241"
                                 - "ecf13f72-72f6-11e9-a9a5-ac1f6b48c241"
                             - name: warehouseGuid
@@ -5930,24 +5931,24 @@ paths:
                           example: /reports/cargoes
                 required:
                   - reports
-        '401':
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Отчеты не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Внутренняя ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /reports/incoming:
     get:
       tags:
@@ -5990,7 +5991,7 @@ paths:
               - Судно
               - ЖД
               - Передача клиенту
-              - Затаренные контейнеры  
+              - Затаренные контейнеры
           description: Вид операции
         - name: terminalGuid
           in: query
@@ -6015,9 +6016,9 @@ paths:
               enum:
                 - 46213e2f-64f4-11e9-a9a5-ac1f6b48c241
                 - 2885b311-8928-11ea-a9ae-ac1f6b48c241
-                - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241     
-          description: Склад по GUID     
-          explode: false                        
+                - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241
+          description: Склад по GUID
+          explode: false
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -6033,7 +6034,7 @@ paths:
             type: integer
             example: 20
       responses:
-        '200':
+        "200":
           description: Отчет успешно сформирован
           content:
             application/json:
@@ -6109,33 +6110,33 @@ paths:
                       - key: "freightUnits"
                         title: "Количество фрахтовых единиц"
                       - key: "quantity"
-                        title: "Количество единиц груза"                 
+                        title: "Количество единиц груза"
                 required:
                   - data
                   - totals
                   - headers
-        '400':
+        "400":
           description: Неверный запрос. Проверьте параметры
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /reports/cargoes:
     get:
       tags:
-        - Отчеты    
+        - Отчеты
       summary: Получение данных отчета о Наличии грузов клиента
       description: >
         Эндпоинт для получения данных отчета "Наличие грузов". Отчет содержит информацию о наличии грузов
@@ -6167,7 +6168,7 @@ paths:
               - Судно
               - ЖД
               - Передача клиенту
-              - Затаренные контейнеры  
+              - Затаренные контейнеры
           description: Вид операции
         - name: terminalGuid
           in: query
@@ -6192,9 +6193,9 @@ paths:
               enum:
                 - 46213e2f-64f4-11e9-a9a5-ac1f6b48c241
                 - 2885b311-8928-11ea-a9ae-ac1f6b48c241
-                - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241     
-          description: Склад по GUID  
-          explode: false            
+                - 8f5d596a-a182-11ea-a9b0-ac1f6b48c241
+          description: Склад по GUID
+          explode: false
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -6208,7 +6209,7 @@ paths:
           required: false
           schema:
             type: integer
-            example: 20          
+            example: 20
       responses:
         "200":
           description: Успешное получение данных отчета
@@ -6253,7 +6254,7 @@ paths:
                       totalQuantity:
                         type: integer
                         description: Общее количество мест
-                        example: 100                  
+                        example: 100
                   headers:
                     type: array
                     description: Заголовки для динамического формирования таблицы
@@ -6331,25 +6332,25 @@ paths:
                         title: "Вес нетто груза"
                       - key: "tareWeight"
                         title: "Вес тары"
-        '400':
+        "400":
           description: Неверный запрос. Проверьте параметры
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'                  
-  
+                $ref: "#/components/schemas/ErrorResponse"
+
   /reports/lukovaya-zapiska:
     get:
       tags:
@@ -6384,7 +6385,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: "c05a8361-c53c-11ec-8112-d89d6732c837"          
+            example: "c05a8361-c53c-11ec-8112-d89d6732c837"
         - name: page
           in: query
           description: Номер страницы для пагинации
@@ -6410,7 +6411,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/LukovayaZapiskaReportItem"              
+                      $ref: "#/components/schemas/LukovayaZapiskaReportItem"
                   headers:
                     type: array
                     description: Заголовки для динамического формирования таблицы
@@ -6460,24 +6461,24 @@ paths:
                         title: "Дата прихода"
                       - key: "data_pogonki"
                         title: "Дата погонки"
-        '400':
+        "400":
           description: Неверный запрос. Проверьте параметры
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'     
+                $ref: "#/components/schemas/ErrorResponse"
 
   /passes:
     get:
@@ -6487,7 +6488,7 @@ paths:
       description: Возвращает список всех пропусков с поддержкой пагинации.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: page
           in: query
@@ -6527,7 +6528,7 @@ paths:
               - Пешеходный пропуск
               - Автомобильный пропуск
       responses:
-        '200':
+        "200":
           description: Список пропусков успешно получен
           content:
             application/json:
@@ -6547,25 +6548,25 @@ paths:
                     type: array
                     items:
                       oneOf:
-                        - $ref: '#/components/schemas/DriverPass'
-                        - $ref: '#/components/schemas/PersonaPass'
+                        - $ref: "#/components/schemas/DriverPass"
+                        - $ref: "#/components/schemas/PersonaPass"
                 required:
                   - total
                   - page
                   - pageSize
                   - passes
-        '400':
+        "400":
           description: Неверный запрос. Отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /passes/{guid}:
     get:
       tags:
@@ -6574,7 +6575,7 @@ paths:
       description: Возвращает данные пропуска по его уникальному идентификатору `guid`.
       security:
         - bearerAuth: []
-        - sessionAuth: []      
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -6583,26 +6584,26 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Данные пропуска успешно получены
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '401':
+                  - $ref: "#/components/schemas/DriverPass"
+                  - $ref: "#/components/schemas/PersonaPass"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Пропуск не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Пропуска"
@@ -6610,7 +6611,7 @@ paths:
       description: Обновляет данные существующего пропуска.
       security:
         - bearerAuth: []
-        - sessionAuth: []           
+        - sessionAuth: []
       parameters:
         - name: guid
           in: path
@@ -6624,37 +6625,37 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/DriverPass'
-                - $ref: '#/components/schemas/PersonaPass'
+                - $ref: "#/components/schemas/DriverPass"
+                - $ref: "#/components/schemas/PersonaPass"
       responses:
-        '200':
+        "200":
           description: Пропуск успешно обновлен
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
-        '400':
+                  - $ref: "#/components/schemas/DriverPass"
+                  - $ref: "#/components/schemas/PersonaPass"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Пропуск не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /passes/search:
     get:
       tags:
@@ -6686,7 +6687,7 @@ paths:
             type: string
             enum:
               - Пешеходный пропуск
-              - Автомобильный пропуск        
+              - Автомобильный пропуск
         - in: query
           name: fio
           required: true
@@ -6694,14 +6695,14 @@ paths:
             type: string
             description: Полное имя физического лица
       responses:
-        '200':
+        "200":
           description: Поиск прошел успешно
           content:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/schemas/DriverPass'
-                  - $ref: '#/components/schemas/PersonaPass'
+                  - $ref: "#/components/schemas/DriverPass"
+                  - $ref: "#/components/schemas/PersonaPass"
   /persons:
     get:
       tags:
@@ -6729,7 +6730,7 @@ paths:
             default: 10
             example: 10
       responses:
-        '200':
+        "200":
           description: Список физических лиц успешно получен
           content:
             application/json:
@@ -6748,32 +6749,32 @@ paths:
                   persons:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Person'
+                      $ref: "#/components/schemas/Person"
                 required:
                   - total
                   - page
                   - pageSize
                   - persons
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Физические лица"
@@ -6787,9 +6788,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Person'
+              $ref: "#/components/schemas/Person"
       responses:
-        '201':
+        "201":
           description: Новое физическое лицо успешно добавлено
           content:
             application/json:
@@ -6802,20 +6803,20 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном добавлении физического лица
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /persons/{guid}:
     get:
       tags:
@@ -6833,32 +6834,32 @@ paths:
             type: string
           description: Уникальный идентификатор физического лица
       responses:
-        '200':
+        "200":
           description: Данные физического лица успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'
-        '400':
+                $ref: "#/components/schemas/Person"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Физические лица"
@@ -6879,9 +6880,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Person'
+              $ref: "#/components/schemas/Person"
       responses:
-        '200':
+        "200":
           description: Данные физического лица успешно обновлены
           content:
             application/json:
@@ -6894,26 +6895,26 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном обновлении данных физического лица
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
         - Справочник "Физические лица"
@@ -6932,7 +6933,7 @@ paths:
             type: string
           description: Уникальный идентификатор физического лица
       responses:
-        '200':
+        "200":
           description: Физическое лицо успешно удалено
           content:
             application/json:
@@ -6942,26 +6943,26 @@ paths:
                   message:
                     type: string
                     description: Сообщение об успешном удалении физического лица
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /persons/search:
     get:
       tags:
@@ -6978,14 +6979,14 @@ paths:
             type: string
             description: Полное имя физического лица
       responses:
-        '200':
+        "200":
           description: Поиск прошел успешно
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Person'
+                  $ref: "#/components/schemas/Person"
   /persons/{guid}/documents:
     parameters:
       - in: path
@@ -7005,34 +7006,34 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Список документов успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/_Document'
-        '400':
+                  $ref: "#/components/schemas/_Document"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Документы не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Физические лица"
@@ -7046,28 +7047,28 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/_Document'
+              $ref: "#/components/schemas/_Document"
       responses:
-        '201':
+        "201":
           description: Документ успешно добавлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_Document'
-        '400':
+                $ref: "#/components/schemas/_Document"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /profile:
     get:
       tags:
@@ -7077,12 +7078,12 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Данные профиля успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientProfile'
+                $ref: "#/components/schemas/ClientProfile"
   /profile/{guid}:
     put:
       tags:
@@ -7104,14 +7105,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientProfile'
+              $ref: "#/components/schemas/ClientProfile"
       responses:
-        '200':
+        "200":
           description: Данные профиля организации обновлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientProfile'
+                $ref: "#/components/schemas/ClientProfile"
   /profile/{guid}/contracts:
     get:
       tags:
@@ -7129,14 +7130,14 @@ paths:
             format: uuid
             description: Уникальный идентификатор организации
       responses:
-        '200':
+        "200":
           description: Список договоров успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Contract'
+                  $ref: "#/components/schemas/Contract"
   /profile/fns:
     get:
       tags:
@@ -7154,36 +7155,36 @@ paths:
             type: string
             description: ИНН контрагента
       responses:
-        '200':
+        "200":
           description: Данные контрагента успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Контрагент не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /senders:
     get:
       tags:
@@ -7200,26 +7201,26 @@ paths:
             type: string
             description: Параметру name ищет первые 20 вхождений наименования
       responses:
-        '200':
+        "200":
           description: Список грузоотправителей успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Contractor'
-        '401':
+                  $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Грузоотправитель"
@@ -7232,32 +7233,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '201':
+        "201":
           description: Грузоотправитель успешно создан
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /senders/{guid}:
     get:
       tags:
@@ -7275,30 +7276,30 @@ paths:
             format: uuid
             description: Уникальный идентификатор грузоотправителя
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '401':
+                $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузоотправитель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Грузоотправитель"
@@ -7319,38 +7320,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно обновлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузополучатель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /recipients:
     get:
       tags:
@@ -7365,28 +7366,28 @@ paths:
           required: false
           schema:
             type: string
-            description: Параметру name ищет первые 20 вхождений наименования        
+            description: Параметру name ищет первые 20 вхождений наименования
       responses:
-        '200':
+        "200":
           description: Список грузополучателей успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Contractor'
-        '401':
+                  $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Грузополучатель"
@@ -7399,32 +7400,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '201':
+        "201":
           description: Грузополучатель успешно создан
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /recipients/{guid}:
     get:
       tags:
@@ -7442,30 +7443,30 @@ paths:
             format: uuid
             description: Уникальный идентификатор грузополучателя
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '401':
+                $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузополучатель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Грузополучатель"
@@ -7486,38 +7487,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно обновлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузополучатель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /final-recipients:
     get:
       tags:
@@ -7532,28 +7533,28 @@ paths:
           required: false
           schema:
             type: string
-            description: Параметру name ищет первые 20 вхождений наименования        
+            description: Параметру name ищет первые 20 вхождений наименования
       responses:
-        '200':
+        "200":
           description: Список грузополучателей успешно получен
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Contractor'
-        '401':
+                  $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Конечный грузополучатель"
@@ -7566,32 +7567,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '201':
+        "201":
           description: Грузополучатель успешно создан
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /final-recipients/{guid}:
     get:
       tags:
@@ -7609,30 +7610,30 @@ paths:
             format: uuid
             description: Уникальный идентификатор грузополучателя
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '401':
+                $ref: "#/components/schemas/Contractor"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузополучатель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Конечный грузополучатель"
@@ -7653,38 +7654,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contractor'
+              $ref: "#/components/schemas/Contractor"
       responses:
-        '200':
+        "200":
           description: Данные грузополучателя успешно обновлены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Contractor'
-        '400':
+                $ref: "#/components/schemas/Contractor"
+        "400":
           description: Неверный запрос. Некорректные данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Грузополучатель не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Ошибка сервера
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /autos:
     get:
@@ -7711,7 +7712,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Список автотранспортных средств успешно получен
           content:
             application/json:
@@ -7730,24 +7731,24 @@ paths:
                   autos:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Auto'
+                      $ref: "#/components/schemas/Auto"
                 required:
                   - total
                   - page
                   - pageSize
                   - autos
-        '400':
+        "400":
           description: Неверный запрос. Отсутствуют необходимые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       tags:
         - Справочник "Автотранспорт"
@@ -7761,9 +7762,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Auto'
+              $ref: "#/components/schemas/Auto"
       responses:
-        '201':
+        "201":
           description: Новое автотранспортное средство успешно добавлено
           content:
             application/json:
@@ -7778,20 +7779,20 @@ paths:
                     description: >-
                       Сообщение об успешном добавлении автотранспортного
                       средства
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /autos/{guid}:
     get:
       tags:
@@ -7811,24 +7812,24 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Данные автотранспортного средства успешно получены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Auto'
-        '401':
+                $ref: "#/components/schemas/Auto"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Автотранспортное средство не найдено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     put:
       tags:
         - Справочник "Автотранспорт"
@@ -7849,34 +7850,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Auto'
+              $ref: "#/components/schemas/Auto"
       responses:
-        '200':
+        "200":
           description: Автотранспортное средство успешно обновлено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Auto'
-        '400':
+                $ref: "#/components/schemas/Auto"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Автотранспортное средство не найдено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       tags:
         - Справочник "Автотранспорт"
@@ -7893,28 +7894,28 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Автотранспортное средство успешно удалено
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные
             некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Автотранспортное средство не найдено
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /terminals:
     get:
       tags:
@@ -7925,26 +7926,26 @@ paths:
         - bearerAuth: []
         - sessionAuth: []
       responses:
-        '200':
+        "200":
           description: Успешный ответ. Список доступных терминалов.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Terminal'
-        '401':
+                  $ref: "#/components/schemas/Terminal"
+        "401":
           description: Неавторизованный доступ. Проверьте токен.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Внутренняя ошибка сервера.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /terminals/{guid}/map:
     get:
       tags:
@@ -7964,7 +7965,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Успешный ответ. Картинка карты терминала и координаты складских зон.
           content:
             application/json:
@@ -7973,7 +7974,7 @@ paths:
                 properties:
                   terminal:
                     allOf:
-                      - $ref: '#/components/schemas/Terminal'
+                      - $ref: "#/components/schemas/Terminal"
                     description: Параметры терминала
                   mapImage:
                     type: string
@@ -7983,31 +7984,31 @@ paths:
                     type: array
                     description: Склады и координаты складских зон
                     items:
-                      $ref: '#/components/schemas/Warehouse'
-        '400':
+                      $ref: "#/components/schemas/Warehouse"
+        "400":
           description: Неверный запрос. Проверьте передаваемые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ. Проверьте токен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Терминал не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Внутренняя ошибка сервера.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /terminals/{guid}/gis:
     get:
@@ -8028,7 +8029,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Успешный ответ. Картинка карты терминала и координаты складских зон.
           content:
             application/json:
@@ -8037,42 +8038,42 @@ paths:
                 properties:
                   terminal:
                     allOf:
-                      - $ref: '#/components/schemas/Terminal'
+                      - $ref: "#/components/schemas/Terminal"
                     description: Параметры терминала
                   warehouses:
                     type: array
                     description: Склады и координаты складских зон
                     items:
-                      $ref: '#/components/schemas/Warehouse'
-        '400':
+                      $ref: "#/components/schemas/Warehouse"
+        "400":
           description: Неверный запрос. Проверьте передаваемые данные
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Неавторизованный доступ. Проверьте токен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Терминал не найден
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
           description: Внутренняя ошибка сервера.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /terminals/{guid}/warehouses:
     get:
       tags:
-        - "Справочник \"Терминалы\""
+        - 'Справочник "Терминалы"'
       summary: "Получение списка всех складов по GUID терминала"
       description: "Возвращает список складов для указанного терминала."
       security:
@@ -8139,7 +8140,7 @@ paths:
             default: 10
             example: 10
       responses:
-        '200':
+        "200":
           description: Список портов успешно получен
           content:
             application/json:
@@ -8158,31 +8159,31 @@ paths:
                   ports:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Port'
+                      $ref: "#/components/schemas/Port"
                 required:
                   - total
                   - page
                   - pageSize
                   - ports
-        '400':
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /ports/search:
     get:
       tags:
@@ -8201,33 +8202,33 @@ paths:
             type: string
           example: Калининград
       responses:
-        '200':
+        "200":
           description: Результаты поиска портов успешно получены
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Port'
-        '400':
+                  $ref: "#/components/schemas/Port"
+        "400":
           description: >-
             Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /stations:
     get:
@@ -8264,7 +8265,7 @@ paths:
             default: 10
           example: 10
       responses:
-        '200':
+        "200":
           description: Список ЖД станций успешно получен
           content:
             application/json:
@@ -8283,30 +8284,30 @@ paths:
                   stations:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Station'
+                      $ref: "#/components/schemas/Station"
                 required:
                   - total
                   - page
                   - pageSize
                   - stations
-        '400':
+        "400":
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /stations/search:
     get:
       tags:
@@ -8325,32 +8326,32 @@ paths:
             type: string
           example: "АППАРАТНАЯ"
       responses:
-        '200':
+        "200":
           description: Результаты поиска ЖД станций успешно получены
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Station'
-        '400':
+                  $ref: "#/components/schemas/Station"
+        "400":
           description: Неверный запрос. Отсутствуют необходимые данные или данные некорректны
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Данные не найдены
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'                
+                $ref: "#/components/schemas/ErrorResponse"
   /locations:
     get:
       tags:
@@ -8376,7 +8377,7 @@ paths:
             type: integer
             default: 10
       responses:
-        '200':
+        "200":
           description: Список локаций успешно получен
           content:
             application/json:
@@ -8417,25 +8418,25 @@ paths:
                 pageSize: 10
                 passes:
                   - guid: 6374b447-6027-11ed-8112-d89d6732c837
-                    name: ' д.Казанцево'
+                    name: " д.Казанцево"
                   - guid: 060ea4cd-e109-11e9-a9a9-ac1f6b48c241
                     name: AALEN
                   - guid: 09c9ddda-7fcb-11ef-bbaf-e6c543e51ba3
                     name: Abidjan, Ivory Coast
                   - guid: aaa83552-23cb-11ef-bbac-904d466aa48a
                     name: Abu Dhabi, United Arab Emirates
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /locations/search:
     get:
       tags:
@@ -8453,7 +8454,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Список найденных локаций
           content:
             application/json:
@@ -8480,19 +8481,15 @@ paths:
                   name: Архангельская обл. п.Ширшинский
                 - guid: 848e26e0-7dd2-11ec-a9b9-ac1f6b48c241
                   name: Архангельский Траловый Флот
-        '400':
+        "400":
           description: Неверный запрос
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Истек токен сессии
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-
-
-
+                $ref: "#/components/schemas/ErrorResponse"
