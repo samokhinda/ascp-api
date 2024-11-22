@@ -22,8 +22,8 @@ info:
 servers:
   - url: https://gate.ascp.ru:8443/Ugt-test/hs/v2/
     description: Сервер для тестирования
-  - url: https://gate.ascp.ru:8443/ugt-dev-6/hs/v2/
-    description: Сервер 6 для разработчиков
+  - url: https://gate.ascp.ru:8443/ugt-dev-5/hs/v2/
+    description: Сервер 5 для разработчиков
   - url: https://gate.ascp.ru:8443/ugt-dev-7/hs/v2/
     description: Сервер 7 для разработчиков
 tags:
