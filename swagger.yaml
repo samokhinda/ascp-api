@@ -118,67 +118,59 @@ components:
         - gender
         - position
         - passport
+
+    typeTrailer:
+      type: object
+      properties:
+        guid:
+          type: string
+          description: Уникальный идентификатор типа прицепа
+          example: "a1058bb4-a3d6-11ee-bba7-e1593639e293"
+          readOnly: true
+        name:
+          type: string
+          description: Наименование типа прицепа
+          example: "Автовоз"
+
     Auto:
       type: object
       properties:
         guid:
           type: string
           description: Уникальный идентификатор авто
-          example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
+          example: "9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241"
           readOnly: true
+        name:
+          type: string
+          description: Наименование авто, включающее номер и марку
+          example: "М628РТ МАЗ"
         number:
           type: string
           description: Гос. номер автомобиля
-          example: A770E067
+          example: "М628РТ"
         make:
           type: string
           description: Марка автомобиля
-          example: Toyota
-        model:
-          type: string
-          description: Модель автомобиля
-          example: Camry
+          example: "МАЗ"
         owner:
           type: string
           description: Собственник автомобиля
-          example: Иванов Иван Иванович
+          example: "КАРИМОВА ЕЛЕНА ВАСИЛЬЕВНА"
         vin:
           type: string
           description: VIN автомобиля
-          example: 1HGCM82633A123456
+          example: "ХТМ642290Р0007751"
         color:
           type: string
           description: Цвет автомобиля
-          example: Черный
-        trailer:
-          type: object
-          description: Информация о прицепе (если имеется)
-          properties:
-            licensePlate:
-              type: string
-              description: Гос. номер прицепа
-              example: AK544367
-            make:
-              type: string
-              description: Марка прицепа
-              example: Schmitz
-            model:
-              type: string
-              description: Модель прицепа
-              example: S.KO
-            vin:
-              type: string
-              description: VIN прицепа
-              example: WDB93012345678901
-            color:
-              type: string
-              description: Цвет прицепа
-              example: Белый
-      required:
-        - number
-        - licensePlate
-        - make
-        - owner
+          example: "СИНИЙ"
+        type:
+          type: string
+          description: Тип автомобиля
+          example: "Автомобиль"
+        typeTrailer:
+          $ref: '#/components/schemas/typeTrailer'
+
     Driver:
       allOf:
         - $ref: "#/components/schemas/Person"
@@ -8050,6 +8042,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+
+  /autos/trailers:
+    get:
+      tags:
+        - Справочник "Автотранспорт"
+      summary: Получить список типов прицепов
+      description: Возвращает список всех типов прицепов.
+      security:
+        - bearerAuth: []
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Список типов прицепов успешно получен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Общее количество типов прицепов
+                    example: 26
+                  typeTrailer:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/typeTrailer"
+                required:
+                  - total
+                  - typeTrailer
+        "400":
+          description: Неверный запрос. Отсутствуют необходимые данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Истек токен сессии
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /terminals:
     get:
       tags:
