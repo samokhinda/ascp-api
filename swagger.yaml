@@ -192,7 +192,7 @@ components:
         guid:
           type: string
           description: Уникальный идентификатор груза
-          readOnly: true
+          # readOnly: true
           example: 9ea51b1f-5f7f-11ea-a9ac-ac1f6b48c241
         name:
           type: string
@@ -282,14 +282,8 @@ components:
           description: Номер приемного акта порта
           example: "0000041334"
       required:
-        - name
-        # - nomenklatura
+        # - name
         - cargoType
-        - weight
-        # - length
-        # - width
-        # - height
-        # - quantity
     VesselCall:
       type: object
       properties:
@@ -797,56 +791,58 @@ components:
       allOf:
         - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
-        # operationType:
-        #   type: string
-        #   readOnly: false
-        #   description: Вид операции по заявке
-        #   example: Погрузка
-        # documentID:
-        #   type: string
-        #   description: Номер документа
-        #   readOnly: false
-        #   example: '000078945'
         cargoList:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            type: object
-            properties:
-              guid:
-                type: string
-                format: uuid
-              destinationPort:
-                allOf:
-                  - $ref: "#/components/schemas/Port"
-                description: Порт назначения
-                example: Владивосток
-              urgent:
-                type: boolean
-                description: Срочный груз или нет
-                example: true
-              quantity:
-                type: number
-                description: Количество грузовых мест
-                example: 1
-              sender:
-                type: string
-                format: uuid
-                description: Грузоотправитель
-                example: 0fd50d38-c53d-11ec-8112-d89d6732c837
-              recipient:
-                type: string
-                description: Грузополучатель
-                format: uuid
-                example: c05a8361-c53c-11ec-8112-d89d6732c837
-              portReceiver:
-                type: string
-                format: uuid
-                description: Грузополучатель в порту назначения
-                example: c05a8361-c53c-11ec-8112-d89d6732c837
+            allOf:
+              - $ref: "#/components/schemas/Cargo"
+              - type: object
+                properties:
+                  sender:
+                    type: object
+                    description: "Идентификатор отправителя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор отправителя"
+                      name:
+                        type: string
+                        description: "Название отправителя"
+                  recipient:
+                    type: object
+                    description: "Информация о получателе"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор получателя"
+                      name:
+                        type: string
+                        description: "Название получателя"
+                  portReceiver:
+                    type: object
+                    description: "Информация о порте получателя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор порта"
+                      name:
+                        type: string
+                        description: "Название порта"
+                      code:
+                        type: string
+                        description: "Код порта"
+                  destinationPort:
+                    allOf:
+                      - $ref: "#/components/schemas/Port"
+                    description: Порт назначения
+                    example: Владивосток
+                  urgent:
+                    type: boolean
+                    description: Срочный груз или нет
+                    example: true
             required:
               - guid
-              - recipient
               - quantity
       required:
         - cargoList
@@ -854,17 +850,60 @@ components:
       allOf:
         - $ref: "#/components/schemas/CargoRequestShipCommon"
       properties:
-        # operationType:
-        #   type: string
-        #   readOnly: false
-        #   description: Вид операции по заявке
-        #   example: Разгрузка
         cargoList:
           type: array
-          description: Табличная часть со списком грузов к разгрузке в заявке
+          description: Табличная часть со списком грузов к погрузке в заявке
           items:
             allOf:
               - $ref: "#/components/schemas/Cargo"
+              - type: object
+                properties:
+                  sender:
+                    type: object
+                    description: "Идентификатор отправителя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор отправителя"
+                      name:
+                        type: string
+                        description: "Название отправителя"
+                  recipient:
+                    type: object
+                    description: "Информация о получателе"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор получателя"
+                      name:
+                        type: string
+                        description: "Название получателя"
+                  portReceiver:
+                    type: object
+                    description: "Информация о порте получателя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор порта"
+                      name:
+                        type: string
+                        description: "Название порта"
+                      code:
+                        type: string
+                        description: "Код порта"
+                  destinationPort:
+                    allOf:
+                      - $ref: "#/components/schemas/Port"
+                    description: Порт назначения
+                    example: Владивосток
+                  urgent:
+                    type: boolean
+                    description: Срочный груз или нет
+                    example: true
+            required:
+              - name
+              - quantity
+
       required:
         - cargoList
     CargoRequestShipLoadPUT:
@@ -886,42 +925,54 @@ components:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            type: object
-            properties:
-              guid:
-                type: string
-                format: uuid
-              destinationPort:
-                allOf:
-                  - $ref: "#/components/schemas/Port"
-                description: Порт назначения
-                example: Владивосток
-              urgent:
-                type: boolean
-                description: Срочный груз или нет
-                example: true
-              quantity:
-                type: number
-                description: Количество грузовых мест
-                example: 1
-              sender:
-                type: string
-                format: uuid
-                description: Грузоотправитель
-                example: 0fd50d38-c53d-11ec-8112-d89d6732c837
-              recipient:
-                type: string
-                description: Грузополучатель
-                format: uuid
-                example: c05a8361-c53c-11ec-8112-d89d6732c837
-              portReceiver:
-                type: string
-                format: uuid
-                description: Грузополучатель в порту назначения
-                example: c05a8361-c53c-11ec-8112-d89d6732c837
+            allOf:
+              - $ref: "#/components/schemas/Cargo"
+              - type: object
+                properties:
+                  sender:
+                    type: object
+                    description: "Идентификатор отправителя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор отправителя"
+                      name:
+                        type: string
+                        description: "Название отправителя"
+                  recipient:
+                    type: object
+                    description: "Информация о получателе"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор получателя"
+                      name:
+                        type: string
+                        description: "Название получателя"
+                  portReceiver:
+                    type: object
+                    description: "Информация о порте получателя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор порта"
+                      name:
+                        type: string
+                        description: "Название порта"
+                      code:
+                        type: string
+                        description: "Код порта"
+                  destinationPort:
+                    allOf:
+                      - $ref: "#/components/schemas/Port"
+                    description: Порт назначения
+                    example: Владивосток
+                  urgent:
+                    type: boolean
+                    description: Срочный груз или нет
+                    example: true
             required:
               - guid
-              - recipient
               - quantity
       required:
         - cargoList
@@ -944,10 +995,57 @@ components:
           readOnly: false
         cargoList:
           type: array
-          description: Табличная часть со списком грузов к разгрузке в заявке
+          description: Табличная часть со списком грузов к погрузке в заявке
           items:
             allOf:
               - $ref: "#/components/schemas/Cargo"
+              - type: object
+                properties:
+                  sender:
+                    type: object
+                    description: "Идентификатор отправителя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор отправителя"
+                      name:
+                        type: string
+                        description: "Название отправителя"
+                  recipient:
+                    type: object
+                    description: "Информация о получателе"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор получателя"
+                      name:
+                        type: string
+                        description: "Название получателя"
+                  portReceiver:
+                    type: object
+                    description: "Информация о порте получателя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор порта"
+                      name:
+                        type: string
+                        description: "Название порта"
+                      code:
+                        type: string
+                        description: "Код порта"
+                  destinationPort:
+                    allOf:
+                      - $ref: "#/components/schemas/Port"
+                    description: Порт назначения
+                    example: Владивосток
+                  urgent:
+                    type: boolean
+                    description: Срочный груз или нет
+                    example: true
+            required:
+              - name
+              - quantity
       required:
         - cargoList
         - documentId
@@ -1542,7 +1640,43 @@ components:
           type: array
           description: Табличная часть со списком грузов к погрузке в заявке
           items:
-            $ref: "#/components/schemas/Cargo"
+            allOf:
+              - $ref: "#/components/schemas/Cargo"
+              - type: object
+                properties:
+                  sender:
+                    type: object
+                    description: "Идентификатор отправителя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор отправителя"
+                      name:
+                        type: string
+                        description: "Название отправителя"                    
+                  recipient:
+                    type: object
+                    description: "Информация о получателе"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор получателя"
+                      name:
+                        type: string
+                        description: "Название получателя"
+                  portReceiver:
+                    type: object
+                    description: "Информация о порте получателя"
+                    properties:
+                      guid:
+                        type: string
+                        description: "Глобальный идентификатор порта"
+                      name:
+                        type: string
+                        description: "Название порта"
+                      code:
+                        type: string
+                        description: "Код порта"
       required:
         - guid
         - RequestName
